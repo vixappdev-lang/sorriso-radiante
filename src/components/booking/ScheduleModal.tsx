@@ -304,11 +304,9 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
               <div className="pointer-events-none absolute -top-20 -right-20 h-60 w-60 rounded-full bg-success/15 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-24 -left-16 h-60 w-60 rounded-full bg-primary/10 blur-3xl" />
 
-              <motion-wrapper>
-                <div className="relative mx-auto grid place-items-center h-20 w-20 rounded-full bg-gradient-to-br from-success to-success/70 text-success-foreground shadow-[0_10px_40px_-10px_hsl(var(--success)/0.5)]">
-                  <CheckCircle2 className="h-10 w-10" strokeWidth={2.2} />
-                </div>
-              </motion-wrapper>
+              <div className="relative mx-auto grid place-items-center h-20 w-20 rounded-full bg-gradient-to-br from-success to-success/70 text-success-foreground shadow-[0_10px_40px_-10px_hsl(var(--success)/0.5)]">
+                <CheckCircle2 className="h-10 w-10" strokeWidth={2.2} />
+              </div>
 
               <h3 className="relative font-display text-2xl sm:text-3xl mt-6 text-balance">
                 Pronto, {submitted.name.split(" ")[0]}! 🎉
