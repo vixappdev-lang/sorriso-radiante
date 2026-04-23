@@ -238,11 +238,31 @@
   .admin-card {
     background: hsl(var(--admin-card));
     border: 1px solid hsl(var(--admin-border));
-    border-radius: 14px;
-    box-shadow: 0 1px 2px hsl(220 25% 12% / 0.03), 0 1px 3px hsl(220 25% 12% / 0.04);
+    border-radius: 16px;
+    box-shadow:
+      0 1px 2px hsl(220 25% 12% / 0.04),
+      0 8px 24px -16px hsl(220 25% 12% / 0.08);
+  }
+  .admin-card-hover { transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease; }
+  .admin-card-hover:hover {
+    box-shadow:
+      0 1px 2px hsl(220 25% 12% / 0.05),
+      0 14px 32px -18px hsl(220 25% 12% / 0.18);
+    border-color: hsl(220 18% 86%);
   }
   .admin-soft-grid {
     background-image: radial-gradient(circle, hsl(220 20% 70% / 0.18) 1px, transparent 1px);
     background-size: 22px 22px;
   }
+  .admin-mesh {
+    background:
+      radial-gradient(60% 50% at 20% 20%, hsl(215 80% 50% / 0.18), transparent 60%),
+      radial-gradient(50% 40% at 80% 80%, hsl(215 80% 40% / 0.16), transparent 60%),
+      radial-gradient(40% 30% at 60% 30%, hsl(215 70% 60% / 0.10), transparent 60%);
+  }
+  @keyframes admin-pan {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(-2%, -1%, 0) scale(1.04); }
+  }
+  .admin-pan { animation: admin-pan 22s ease-in-out infinite; }
 }
