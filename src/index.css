@@ -90,6 +90,26 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* ===== Admin Panel tokens (premium SaaS look) ===== */
+    --admin-bg: 220 24% 97%;
+    --admin-card: 0 0% 100%;
+    --admin-border: 220 18% 91%;
+    --admin-border-strong: 220 18% 84%;
+    --admin-text: 222 32% 12%;
+    --admin-text-muted: 220 12% 46%;
+    --admin-sidebar: 222 32% 9%;
+    --admin-sidebar-2: 222 30% 12%;
+    --admin-sidebar-text: 220 15% 78%;
+    --admin-sidebar-active: 215 80% 55%;
+
+    /* Soft chart palette */
+    --chart-blue: 215 80% 55%;
+    --chart-emerald: 152 60% 45%;
+    --chart-amber: 38 92% 55%;
+    --chart-rose: 350 80% 60%;
+    --chart-violet: 262 70% 62%;
+    --chart-sky: 200 85% 55%;
   }
 
   .dark {
