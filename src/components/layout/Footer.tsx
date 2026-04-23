@@ -1,8 +1,11 @@
 import { Link } from "react-router-dom";
 import { Instagram, Facebook, Mail, MapPin, Phone, Clock } from "lucide-react";
+import { useState } from "react";
+import LocationModal from "./LocationModal";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const [locOpen, setLocOpen] = useState(false);
   return (
     <footer className="bg-surface-dark text-surface-dark-foreground">
       <div className="container-edge py-14 sm:py-20">
@@ -67,9 +70,13 @@ export default function Footer() {
                 CEP 29190-036
               </span>
             </p>
-            <Link to="/localizacao" className="mt-4 inline-flex items-center text-sm font-medium text-primary-glow hover:text-white link-underline">
-              Como chegar
-            </Link>
+            <button
+              type="button"
+              onClick={() => setLocOpen(true)}
+              className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary-glow hover:text-white link-underline"
+            >
+              <MapPin className="h-3.5 w-3.5" /> Como chegar
+            </button>
           </div>
         </div>
 
