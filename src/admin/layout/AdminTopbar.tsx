@@ -1,5 +1,5 @@
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { Bell, Menu, Search, ChevronDown, Mail } from "lucide-react";
+import { Bell, Menu, Search, ChevronDown, Mail, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -9,6 +9,7 @@ import { useAdminSession, adminSignOut } from "@/admin/hooks/useAdminSession";
 import { useAppointments } from "@/admin/hooks/useAppointments";
 import { NAV_ITEMS } from "./AdminSidebar";
 import { useState } from "react";
+import ConfirmDialog from "@/admin/components/ConfirmDialog";
 
 export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
   const location = useLocation();
@@ -16,6 +17,7 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
   const { user } = useAdminSession();
   const { data: appts = [] } = useAppointments();
   const [q, setQ] = useState("");
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const pending = appts.filter((a) => a.status === "pending").slice(0, 6);
   const current = NAV_ITEMS.find((i) => location.pathname.startsWith(i.to));
@@ -51,7 +53,7 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Buscar paciente, agendamento, lead…"
-              className="h-10 pl-9 bg-[hsl(220_24%_97%)] border-transparent rounded-full focus-visible:bg-background focus-visible:border-input"
+              className="h-10 pl-9 bg-white border-[hsl(var(--admin-border))] rounded-full shadow-sm focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             />
           </div>
         </form>
@@ -119,16 +121,30 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
               <div className="p-1">
                 <Link to="/admin/configuracoes" className="block px-3 py-2 text-sm rounded-md hover:bg-muted">Preferências</Link>
                 <button
-                  className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-muted text-destructive"
-                  onClick={() => adminSignOut().then(() => window.location.assign("/admin/login"))}
+                  className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-destructive/10 text-destructive"
+                  onClick={() => setLogoutOpen(true)}
                 >
-                  Sair da conta
+                  <LogOut className="h-4 w-4" /> Sair da conta
                 </button>
               </div>
             </PopoverContent>
           </Popover>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Tem certeza que deseja sair?"
+        description="Você será desconectado da sua conta de administrador e precisará entrar novamente para acessar o painel."
+        confirmLabel="Sim, sair"
+        cancelLabel="Cancelar"
+        destructive
+        onConfirm={async () => {
+          await adminSignOut();
+          window.location.assign("/admin/login");
+        }}
+      />
     </header>
   );
 }

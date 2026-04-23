@@ -92,10 +92,11 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* ===== Admin Panel tokens (premium SaaS look) ===== */
-    --admin-bg: 220 22% 95%;
+    --admin-bg: 220 24% 96.5%;
     --admin-card: 0 0% 100%;
-    --admin-border: 220 16% 86%;
-    --admin-border-strong: 220 16% 78%;
+    --admin-border: 220 18% 82%;
+    --admin-border-strong: 220 18% 72%;
+    --admin-input-bg: 220 22% 97%;
     --admin-text: 222 32% 12%;
     --admin-text-muted: 220 12% 46%;
     --admin-sidebar: 222 32% 9%;
@@ -255,15 +256,29 @@
     border: 1px solid hsl(var(--admin-border));
     border-radius: 14px;
     box-shadow:
-      0 1px 2px hsl(220 25% 12% / 0.04),
-      0 1px 3px hsl(220 25% 12% / 0.05);
+      0 1px 0 hsl(220 25% 12% / 0.02),
+      0 2px 4px -2px hsl(220 25% 12% / 0.06),
+      0 4px 12px -6px hsl(220 25% 12% / 0.05);
   }
   .admin-card-hover { transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease; }
   .admin-card-hover:hover {
     box-shadow:
-      0 1px 2px hsl(220 25% 12% / 0.05),
-      0 8px 22px -10px hsl(220 25% 12% / 0.16);
+      0 1px 0 hsl(220 25% 12% / 0.03),
+      0 10px 24px -12px hsl(220 25% 12% / 0.18);
     border-color: hsl(var(--admin-border-strong));
+  }
+  .admin-shell input,
+  .admin-shell textarea,
+  .admin-shell select,
+  .admin-shell [data-slot="input"] {
+    background-color: hsl(var(--admin-input-bg));
+    border-color: hsl(var(--admin-border));
+  }
+  .admin-shell input:focus,
+  .admin-shell textarea:focus,
+  .admin-shell select:focus {
+    background-color: hsl(var(--admin-card));
+    border-color: hsl(var(--ring));
   }
   .admin-soft-grid {
     background-image: radial-gradient(circle, hsl(220 20% 70% / 0.18) 1px, transparent 1px);
