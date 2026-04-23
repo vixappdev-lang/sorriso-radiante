@@ -51,7 +51,7 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Buscar paciente, agendamento, lead…"
-              className="h-10 pl-9 bg-[hsl(220_24%_97%)] border-transparent rounded-full focus-visible:bg-background focus-visible:border-input"
+              className="h-10 pl-9 bg-white border-[hsl(var(--admin-border))] rounded-full shadow-sm focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             />
           </div>
         </form>
