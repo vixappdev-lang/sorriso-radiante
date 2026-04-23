@@ -84,7 +84,7 @@ export default function Header() {
             (11) 3000-0000
           </a>
           <Button
-            onClick={openSchedule}
+            onClick={() => openSchedule()}
             size="sm"
             className="hidden sm:inline-flex bg-primary hover:bg-primary/90 text-primary-foreground shadow-soft"
           >
