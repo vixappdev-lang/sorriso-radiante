@@ -1,5 +1,5 @@
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { Bell, Menu, Search, ChevronDown, Mail } from "lucide-react";
+import { Bell, Menu, Search, ChevronDown, Mail, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -9,6 +9,7 @@ import { useAdminSession, adminSignOut } from "@/admin/hooks/useAdminSession";
 import { useAppointments } from "@/admin/hooks/useAppointments";
 import { NAV_ITEMS } from "./AdminSidebar";
 import { useState } from "react";
+import ConfirmDialog from "@/admin/components/ConfirmDialog";
 
 export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => void }) {
   const location = useLocation();
