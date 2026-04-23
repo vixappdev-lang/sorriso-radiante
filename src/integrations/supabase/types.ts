@@ -14,12 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_keys: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          key_hash: string
+          key_prefix: string
+          label: string
+          last_used_at: string | null
+          scopes: string[]
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          key_hash: string
+          key_prefix: string
+          label: string
+          last_used_at?: string | null
+          scopes?: string[]
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          key_hash?: string
+          key_prefix?: string
+          label?: string
+          last_used_at?: string | null
+          scopes?: string[]
+        }
+        Relationships: []
+      }
       appointments: {
         Row: {
           appointment_date: string
           appointment_time: string
           created_at: string
           email: string | null
+          external_id: string | null
+          external_source: string | null
           id: string
           name: string
           notes: string | null
@@ -35,6 +70,8 @@ export type Database = {
           appointment_time: string
           created_at?: string
           email?: string | null
+          external_id?: string | null
+          external_source?: string | null
           id?: string
           name: string
           notes?: string | null
@@ -50,6 +87,8 @@ export type Database = {
           appointment_time?: string
           created_at?: string
           email?: string | null
+          external_id?: string | null
+          external_source?: string | null
           id?: string
           name?: string
           notes?: string | null
@@ -137,6 +176,57 @@ export type Database = {
         }
         Relationships: []
       }
+      clinic_settings: {
+        Row: {
+          is_public: boolean
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          is_public?: boolean
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          is_public?: boolean
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
+      external_integrations: {
+        Row: {
+          config: Json
+          last_error: string | null
+          last_sync_at: string | null
+          provider: string
+          secrets_set: boolean
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          last_error?: string | null
+          last_sync_at?: string | null
+          provider: string
+          secrets_set?: boolean
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          last_error?: string | null
+          last_sync_at?: string | null
+          provider?: string
+          secrets_set?: boolean
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       financial_entries: {
         Row: {
           amount_cents: number
@@ -179,42 +269,81 @@ export type Database = {
         }
         Relationships: []
       }
+      landing_pages: {
+        Row: {
+          active: boolean
+          content: Json
+          created_at: string
+          id: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          content?: Json
+          created_at?: string
+          id?: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          content?: Json
+          created_at?: string
+          id?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
           email: string | null
+          estimated_value_cents: number | null
           id: string
           last_touch_at: string | null
           name: string
+          next_followup_at: string | null
           notes: string | null
           owner: string | null
           phone: string | null
           source: string | null
           status: string
+          treatment_interest: string | null
         }
         Insert: {
           created_at?: string
           email?: string | null
+          estimated_value_cents?: number | null
           id?: string
           last_touch_at?: string | null
           name: string
+          next_followup_at?: string | null
           notes?: string | null
           owner?: string | null
           phone?: string | null
           source?: string | null
           status?: string
+          treatment_interest?: string | null
         }
         Update: {
           created_at?: string
           email?: string | null
+          estimated_value_cents?: number | null
           id?: string
           last_touch_at?: string | null
           name?: string
+          next_followup_at?: string | null
           notes?: string | null
           owner?: string | null
           phone?: string | null
           source?: string | null
           status?: string
+          treatment_interest?: string | null
         }
         Relationships: []
       }
@@ -385,6 +514,24 @@ export type Database = {
         }
         Relationships: []
       }
+      site_content: {
+        Row: {
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
+      }
       site_promotions: {
         Row: {
           active: boolean
@@ -427,22 +574,37 @@ export type Database = {
       treatments_overrides: {
         Row: {
           active: boolean
+          availability: string[] | null
+          category: string | null
+          description: string | null
           duration: string | null
+          name: string | null
           price_from: string | null
+          professional_slug: string | null
           slug: string
           updated_at: string
         }
         Insert: {
           active?: boolean
+          availability?: string[] | null
+          category?: string | null
+          description?: string | null
           duration?: string | null
+          name?: string | null
           price_from?: string | null
+          professional_slug?: string | null
           slug: string
           updated_at?: string
         }
         Update: {
           active?: boolean
+          availability?: string[] | null
+          category?: string | null
+          description?: string | null
           duration?: string | null
+          name?: string | null
           price_from?: string | null
+          professional_slug?: string | null
           slug?: string
           updated_at?: string
         }
@@ -466,6 +628,33 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      webhook_endpoints: {
+        Row: {
+          active: boolean
+          created_at: string
+          events: string[]
+          id: string
+          secret: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          events?: string[]
+          id?: string
+          secret: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          events?: string[]
+          id?: string
+          secret?: string
+          url?: string
         }
         Relationships: []
       }
