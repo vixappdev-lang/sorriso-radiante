@@ -142,6 +142,21 @@ export default function AdminLogin() {
                   Não há cadastro público. Se precisa de acesso, fale com a coordenação da Clínica Levii.
                 </p>
               </div>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  const { data, error } = await supabase.functions.invoke("admin-bootstrap");
+                  if (error || data?.error) {
+                    toast({ title: "Bootstrap indisponível", description: error?.message || data?.error, variant: "destructive" });
+                    return;
+                  }
+                  toast({ title: "Acesso pronto", description: "Use o e-mail e a senha que você cadastrou nos secrets para entrar." });
+                }}
+                className="block mx-auto text-[11px] text-muted-foreground hover:text-primary underline-offset-4 hover:underline mt-2"
+              >
+                Primeiro acesso? Inicializar conta admin
+              </button>
             </form>
 
             <p className="text-[11px] text-muted-foreground mt-8 text-center">
