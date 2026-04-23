@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useState } from "react";
 import {
   ArrowRight, Sparkles, ShieldCheck, Award, Stethoscope, Smile, Star,
   Clock, Users, Microscope, HeartHandshake, Quote, ChevronRight
@@ -8,6 +9,7 @@ import SEO from "@/components/SEO";
 import SiteLayout from "@/components/layout/SiteLayout";
 import { Button } from "@/components/ui/button";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
+import ContactModal from "@/components/layout/ContactModal";
 import { TREATMENTS, TESTIMONIALS, DENTISTS } from "@/data/clinic";
 
 const fadeUp = {
@@ -19,6 +21,7 @@ const fadeUp = {
 
 export default function Home() {
   const { open } = useScheduleModal();
+  const [contactOpen, setContactOpen] = useState(false);
 
   return (
     <SiteLayout>
@@ -323,14 +326,16 @@ export default function Home() {
                 >
                   Agendar agora <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
-                <Button asChild variant="outline" size="lg" className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white h-12 px-7">
-                  <Link to="/contato">Falar com a equipe</Link>
+                <Button onClick={() => setContactOpen(true)} variant="outline" size="lg" className="bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white h-12 px-7">
+                  Falar com a equipe
                 </Button>
               </div>
             </div>
           </motion.div>
         </div>
       </section>
+
+      <ContactModal open={contactOpen} onOpenChange={setContactOpen} />
     </SiteLayout>
   );
 }
