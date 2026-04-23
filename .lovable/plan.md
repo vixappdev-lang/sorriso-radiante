@@ -1,130 +1,183 @@
 
-# Plano: Site Clínica Levii
 
-Site multi-página completo de clínica odontológica em **português brasileiro**, 100% responsivo (mobile, tablet, desktop), visual altamente profissional com toques sutis de **glassmorphism** (sem neon, sem brilhos exagerados). Integração WhatsApp via **ChatPro** para confirmação automática de agendamentos.
+# Painel Administrativo Levii — Plano completo
 
-## Direção visual
+Painel profissional, separado do site público, com **login dedicado** (split-screen com animação à esquerda + formulário à direita), **layout com sidebar fixa**, **dashboard com gráficos interativos** (Recharts) e **dados 100% reais do Supabase** (sem mock). Design clean, glass sutil, zero neon.
 
-- **Tema híbrido**:
-  - Hero da Home em **dark mode** premium (preto profundo `#0a0a0a` + azul corporativo `#2563eb`), com cartões em vidro fosco sutil (backdrop-blur leve, borda 1px branca a 8% de opacidade).
-  - Demais seções e páginas em **light mode clínico** (branco, cinzas suaves, azul como cor de marca, dourado discreto como acento).
-- **Glass sutil**: aplicado em header sticky, cards de tratamento em hover, modal de agendamento e botão flutuante WhatsApp. Blur de 12-16px, opacidade controlada, **nada de neon ou glow saturado**.
-- **Tipografia**: Montserrat (Google Fonts) — 600/700 para títulos, 400/500 para corpo. Hierarquia 48-64 / 32-40 / 24-28 / 16-18 px.
-- **Microinterações**: Framer Motion — fade + translate-y de 20px no scroll, hover scale 1.02 em botões, transições de 200-300ms. Sem efeitos chamativos.
-- **Tom de voz**: brasileiro próximo, "você", foco em confiança, segurança, transformação do sorriso.
+## Decisões-chave
 
-## Responsividade (obrigatória 100%)
+- **Acesso restrito por convite**: a tela de login **não tem opção de "criar conta"**. O admin é criado por você (ou por mim, via seed). Auth via Supabase Email+Password.
+- **Apenas o que tem dados reais hoje aparece com números**; o restante mostra **estado vazio elegante** ("Nenhum registro ainda — comece adicionando…") com CTA. Nada de gráfico mockado.
+- **Migração unificada do `Config` antigo**: o `/config` (ChatPro/QR) vira uma sub-rota dentro do painel (`/admin/whatsapp` e `/admin/configuracoes/integracoes`). Mantém 100% da integração ChatPro funcionando — só muda a casca visual.
+- **Site público continua intacto.** Nada do `/`, `/sobre`, `/tratamentos` etc. é tocado.
 
-- **Mobile-first** com breakpoints `sm 640 / md 768 / lg 1024 / xl 1280`.
-- Menu hamburger em mobile (drawer Shadcn), menu horizontal em desktop.
-- Grids adaptativos: 1 col mobile → 2 cols tablet → 3-4 cols desktop.
-- Áreas de toque mínimas de 44px, fontes fluidas com `clamp()`.
-- Imagens responsivas com `srcset` e lazy loading.
-- Modais e formulários full-screen em mobile, centralizados em desktop.
-- Teste visual em 375px, 768px e 1280px+ antes da entrega.
-
-## Estrutura (10 rotas)
+## Arquitetura de rotas
 
 ```text
-/                Home (hero dark + seções claras)
-/sobre           História, missão, valores, diferenciais
-/tratamentos     Grid de tratamentos detalhados
-/equipe          Perfil dos dentistas
-/tecnologia      Equipamentos e diferenciais técnicos
-/galeria         Antes/depois e ambiente
-/servicos        Lista completa com faixas de preço
-/localizacao     Mapa + horários
-/contato         Formulário + WhatsApp + redes
-/config          Painel admin ChatPro (protegido por senha)
+/admin/login                  → tela split-screen (pública)
+/admin                        → redireciona para /admin/dashboard
+/admin/dashboard              → visão geral + gráficos
+/admin/agenda                 → calendário, bloqueios, confirmações
+/admin/pacientes              → cadastro, histórico, observações
+/admin/tratamentos            → procedimentos, valores, duração
+/admin/profissionais          → dentistas, especialidades, agendas
+/admin/financeiro             → pagamentos, pendências, orçamentos, relatórios
+/admin/leads                  → captação, funil, follow-up, inativos
+/admin/whatsapp               → mensagens auto, lembretes, campanhas + ChatPro
+/admin/avaliacoes             → reviews Google, reputação local
+/admin/site                   → landing pages, formulários, promoções
+/admin/relatorios             → performance, conversão, faltas, cancelamentos
+/admin/configuracoes          → horários, feriados, integrações, usuários, branding
+
+/config (legado)              → redireciona para /admin/whatsapp
 ```
 
-**Agendamento em modal** acessível por qualquer CTA "Agendar consulta" do site (não é rota separada). Header sticky, footer rico, botão flutuante WhatsApp em todas as páginas.
+Tudo protegido por `<RequireAdmin>` — sem sessão Supabase válida, redireciona para `/admin/login`.
 
-## Conteúdo placeholder realista
+## Tela de login (split-screen)
 
-- **Tratamentos**: Implantes, Clareamento a Laser, Ortodontia (alinhadores invisíveis), Lentes de Contato Dental, Endodontia, Harmonização Orofacial, Odontopediatria, Próteses, Periodontia, Emergência 24h.
-- **Equipe**: 4 dentistas fictícios com nome, CRO, especialidade, formação e foto placeholder profissional.
-- **Depoimentos**: 6 depoimentos brasileiros persuasivos com nomes e cidades realistas.
-- **Headlines exemplo**: *"O sorriso que você sempre quis está mais perto do que imagina"*, *"Tecnologia de ponta, atendimento humano, resultados que duram"*.
+```text
+┌──────────────────────────┬────────────────────────────┐
+│                          │                            │
+│   [LADO ESQUERDO]        │   [LADO DIREITO]           │
+│   Animação suave:        │   Logo Levii (top)         │
+│   - gradiente azul       │                            │
+│     animado (CSS)        │   "Bem-vindo de volta"     │
+│   - mesh blobs em        │   "Acesse o painel da      │
+│     blur lento           │    Clínica Levii"          │
+│   - ícone dental         │                            │
+│     flutuando (Lucide    │   [ Email          ]       │
+│     + framer-motion)     │   [ Senha       👁 ]       │
+│   - frase rotativa:      │                            │
+│     "Cuidado humano,     │   [   Entrar           ]   │
+│      tecnologia          │                            │
+│      precisa."           │   ─────  ou  ─────         │
+│                          │   "Esqueceu a senha?"      │
+│                          │                            │
+│                          │   (sem botão "criar conta")│
+│                          │                            │
+└──────────────────────────┴────────────────────────────┘
+```
 
-## Modal de Agendamento
+- **Mobile**: lado esquerdo vira faixa superior reduzida (h-32) com a animação compacta; o formulário ocupa o restante.
+- **Animação**: blobs SVG com `animate-pulse-slow` (CSS keyframes próprios, sem libs pesadas), além de `framer-motion` para o fade do título rotativo. Sem neon, paleta `--primary` + `--primary-glow` em opacidade baixa, glass sutil sobre o gradiente.
+- **Validação**: `zod` (email + senha mínima). Erros inline. Toast de erro em falhas de auth.
 
-Acionado por todos os CTAs principais. Etapas em uma tela única (responsiva, vira tela cheia em mobile):
-1. Tratamento desejado (select)
-2. Profissional preferido (opcional)
-3. Data e horário sugeridos
-4. Nome, telefone (com máscara BR), e-mail
-5. Botão "Confirmar agendamento"
+## Layout do painel (com sidebar)
 
-Validação client-side com **Zod** + React Hook Form. Tela de sucesso com resumo e botão WhatsApp direto.
+```text
+┌──────────┬────────────────────────────────────────────────────┐
+│          │  [Topbar]                                          │
+│          │   Breadcrumb            🔔(badge)    👤Avatar▾     │
+│ SIDEBAR  ├────────────────────────────────────────────────────┤
+│ (260px)  │                                                    │
+│          │   Conteúdo da página                               │
+│ Logo     │   - Cards / gráficos / tabelas                     │
+│          │   - Layout em grid 12 colunas, alinhado à esquerda │
+│ Dashboard│   - Padding generoso, sem centralização forçada    │
+│ Agenda   │                                                    │
+│ Pacientes│                                                    │
+│ ...      │                                                    │
+│          │                                                    │
+│ Sair     │                                                    │
+└──────────┴────────────────────────────────────────────────────┘
+```
 
-## Integração ChatPro (WhatsApp)
+- **Sidebar** (Shadcn `Sidebar` com `collapsible="icon"`): grupos colapsáveis, ícones Lucide, item ativo destacado com barra à esquerda em `--primary`. Em mobile, vira drawer.
+- **Topbar**: breadcrumb dinâmico, **sino de notificações** (popover com lista de eventos reais — novos agendamentos, novos leads), **avatar do admin** (popover com nome/email + "Sair").
+- **Sem centralização**: `container` com `max-w-none` e `px-8`, conteúdo encosta à esquerda do canvas útil.
+- **Glass sutil**: topbar com `glass` (blur leve sobre o fundo), cards com `card-elevated`.
 
-Backend via **Lovable Cloud** (Supabase) — necessário para guardar credenciais com segurança e persistir agendamentos.
+## Dashboard — visão geral (com gráficos reais)
 
-### Rota `/config` (painel admin)
-Protegida por senha (verificada server-side via edge function, nunca no client).
+Layout em grid:
 
-Campos do formulário:
-- **Instance ID** (instância ChatPro)
-- **Token / API Key**
-- **Endpoint base** (ex.: `https://v5.chatpro.com.br`)
-- **Número padrão da clínica**
-- **Mensagem template** com variáveis `{{nome}}`, `{{data}}`, `{{hora}}`, `{{tratamento}}`
+```text
+[ KPI Agendamentos hoje ] [ KPI Novos pacientes (30d) ] [ KPI Em andamento ] [ KPI Faturamento estimado ]
 
-Ações:
-- **Salvar configuração** → grava em tabela `chatpro_config`
-- **Gerar QR Code** → chama edge function que aciona endpoint ChatPro e exibe QR escaneável
-- **Verificar status** → polling mostrando *Desconectado* / *Aguardando QR* / *Conectado* (badge com cor)
-- **Desconectar instância**
-- **Enviar mensagem de teste**
+[ Gráfico: Agendamentos por dia (área, 30 dias)        ] [ Donut: Status dos agendamentos        ]
+[ — Recharts AreaChart, dados de appointments          ] [ pending / confirmed / done / cancelled ]
 
-### Fluxo de agendamento
-1. Visitante envia o modal.
-2. Edge function `create-appointment`:
-   - Valida com Zod
-   - Salva em tabela `appointments`
-   - Chama ChatPro `/send_message` enviando confirmação para o telefone do paciente
-   - Envia notificação para o número da clínica
-3. Modal mostra tela de sucesso com resumo.
+[ Tabela: Próximos agendamentos (7 dias)               ] [ Lista: Notificações importantes        ]
+```
 
-### Tabelas (Lovable Cloud)
-- `chatpro_config` — singleton (id fixo) com credenciais, endpoint, template
-- `appointments` — id, nome, telefone, email, tratamento, profissional, data, hora, status, criado_em
-- **RLS**: leitura/escrita apenas via edge functions (service role). Painel `/config` autentica via senha → edge function valida.
+- **Fonte de dados**: tudo de `appointments` no Supabase (já existe). Faturamento estimado = soma de `priceFrom` por tratamento × agendamentos confirmados (cálculo no client a partir de `TREATMENTS` em `src/data/clinic.ts`).
+- **Avaliações recentes**: usa `TESTIMONIALS` do `clinic.ts` enquanto não há integração Google.
+- **Sem dados → estado vazio**: ilustração + texto "Ainda não há agendamentos. Eles aparecerão aqui assim que chegarem pelo site."
+- **Gráficos**: `recharts` (já instalado via Shadcn). Tooltips, animações, cores da paleta brand.
 
-### Edge functions
-- `chatpro-save-config` — valida e salva credenciais (requer senha admin)
-- `chatpro-qrcode` — gera/retorna QR Code
-- `chatpro-status` — consulta status da instância
-- `chatpro-test-message` — envia mensagem de teste
-- `create-appointment` — cria agendamento + dispara confirmação WhatsApp
-- `admin-login` — valida senha admin e retorna token de sessão
+## Demais páginas (escopo desta entrega)
 
-## Detalhes técnicos
+| Página | O que entra agora | O que fica como "em breve" |
+|---|---|---|
+| **Agenda** | Calendário mensal (Shadcn Calendar) com pontos nos dias com agendamento + lista lateral do dia selecionado + ações: confirmar / cancelar / reagendar | Bloqueios de agenda, encaixes (UI pronta, persistência futura) |
+| **Pacientes** | Lista derivada de `appointments` (agrupada por phone), busca, drawer de detalhes com histórico | Cadastro completo + documentos (placeholder) |
+| **Tratamentos** | CRUD visual lendo `TREATMENTS` (read-only nesta v1, com aviso "edite em `src/data/clinic.ts`") | Persistência em DB futura |
+| **Profissionais** | Mesma abordagem dos tratamentos, lendo `DENTISTS` | — |
+| **WhatsApp** | **Toda a UI atual de `/config`** migrada (QR, status, teste, template, lista de agendamentos com WhatsApp ✓) | Campanhas, lembretes programados |
+| **Financeiro / Leads / Avaliações / Site / Relatórios / Configurações** | Página com header, breadcrumb e **estado vazio bem desenhado** + lista de subitens previstos (cards "em breve" navegáveis) | Implementação completa em iterações futuras |
 
-- **Stack**: React 18 + TypeScript + Vite + Tailwind + Shadcn/UI + Framer Motion + React Hook Form + Zod + Lucide Icons + React Router + TanStack Query.
-- **Design tokens** em `index.css` (HSL) e `tailwind.config.ts` — variantes light/dark, classe `.glass` reutilizável.
-- **SEO**: componente `<SEO>` por página, sitemap.xml, robots.txt, JSON-LD `Dentist` schema na Home.
-- **Acessibilidade WCAG AA**: contraste ≥4.5:1, focus visible, alt text, navegação por teclado, ARIA labels.
-- **Performance**: lazy loading de imagens, code splitting por rota, fontes com `display: swap`.
-- **WhatsApp flutuante**: link `wa.me` com mensagem pré-preenchida.
-- **Imagens**: placeholders Unsplash (clínica odontológica, dentistas, sorrisos) com lazy loading.
-- **Senha admin**: armazenada como secret `ADMIN_PASSWORD` no Lovable Cloud, validada server-side.
+> Princípio: **nenhum número falso**. Onde não há fonte real, mostro estado vazio profissional, não mock.
 
-## Ordem de implementação
+## Backend / Auth
 
-1. Design system (cores, fontes, tokens, classe `.glass`) + Header, Footer, WhatsApp flutuante, layout base 100% responsivo
-2. Home completa (hero dark + seções claras + modal de agendamento)
-3. Páginas institucionais (Sobre, Tratamentos, Equipe, Tecnologia, Galeria, Serviços, Localização, Contato)
-4. Ativar Lovable Cloud + criar tabelas + RLS + edge functions ChatPro
-5. Página `/config` (painel admin com login, QR Code, status, teste)
-6. Modal de agendamento integrado ao backend (salva + dispara WhatsApp)
-7. SEO, sitemap, polish final, QA visual em 375 / 768 / 1280px
+1. **Habilitar Supabase Auth Email+Password** (já disponível no Cloud).
+2. **Tabela `admin_users`** (apenas marcador, RLS bloqueando client) + **tabela `user_roles`** + enum `app_role` (`admin`) + função `has_role()` security definer — exatamente como dita o padrão obrigatório de roles.
+3. **Seed do primeiro admin**: solicito email + senha via tool de secret e crio o usuário no `auth.users` mais a linha em `user_roles`. **Sem signup público.** O componente de login só faz `signInWithPassword`.
+4. **Edge function `admin-data`** (nova): centraliza queries privilegiadas para o dashboard (lê `appointments` ignorando RLS via service role) — verifica `has_role(user, 'admin')` antes de responder.
+5. **`chatpro-admin` permanece**, mas passa a aceitar **JWT do admin logado** em vez da senha hardcoded. Mantém compatibilidade com a senha como fallback durante a migração.
 
-## O que vou pedir depois
+## Componentes a criar
 
-- Logotipo da Clínica Levii (se tiver) — senão crio um wordmark elegante
-- Telefone, endereço e Instagram reais (ou uso placeholders coerentes)
-- Credenciais ChatPro (Instance ID, Token, Endpoint) — você cola direto no `/config` quando estiver pronto
-- Senha de admin para proteger o `/config`
+```text
+src/admin/
+  layout/
+    AdminLayout.tsx        ← Sidebar + Topbar + <Outlet/>
+    AdminSidebar.tsx       ← grupos + ícones + item ativo
+    AdminTopbar.tsx        ← breadcrumb + sino + avatar
+    NotificationsPopover.tsx
+    UserMenu.tsx
+    RequireAdmin.tsx       ← guard de rota
+  pages/
+    Login.tsx              ← split-screen
+    Dashboard.tsx
+    Agenda.tsx
+    Pacientes.tsx
+    Tratamentos.tsx
+    Profissionais.tsx
+    Financeiro.tsx
+    Leads.tsx
+    WhatsApp.tsx           ← absorve Config.tsx
+    Avaliacoes.tsx
+    Site.tsx
+    Relatorios.tsx
+    Configuracoes.tsx
+  components/
+    KpiCard.tsx
+    EmptyState.tsx
+    AppointmentsAreaChart.tsx
+    StatusDonut.tsx
+    LoginAside.tsx         ← animação do lado esquerdo
+  hooks/
+    useAdminSession.ts     ← wrapper do supabase.auth
+    useAppointments.ts     ← React Query
+```
+
+## Ordem de execução
+
+1. Migração SQL: `app_role` enum + `user_roles` + `has_role()` + RLS de leitura admin em `appointments` e `chatpro_config`.
+2. Criar primeiro admin (vou pedir email/senha via secret).
+3. `AdminLayout` + `AdminSidebar` + `AdminTopbar` + `RequireAdmin` + rotas.
+4. Tela `/admin/login` split-screen com animação.
+5. `Dashboard` com gráficos reais (Recharts) ligados aos `appointments`.
+6. `Agenda` (calendário + lista do dia + ações).
+7. `Pacientes`, `Tratamentos`, `Profissionais` (read-only desta v1).
+8. `WhatsApp` absorvendo todo o `Config.tsx` atual + redirect de `/config`.
+9. Páginas restantes com estado vazio profissional + estrutura pronta para evoluir.
+10. QA responsivo (375 / 768 / 1280) + checagem de que site público segue intacto e ChatPro segue funcionando.
+
+## O que vou pedir antes de começar a codar
+
+- **Email + senha** do primeiro admin (cria você como dono do painel).
+- Confirmação de que posso adicionar `framer-motion` (~30kb gz) para a animação do login — se preferir, faço só com CSS puro.
+
