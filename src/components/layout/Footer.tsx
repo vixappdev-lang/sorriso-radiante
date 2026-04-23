@@ -88,6 +88,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+      <LocationModal open={locOpen} onOpenChange={setLocOpen} />
     </footer>
   );
 }
