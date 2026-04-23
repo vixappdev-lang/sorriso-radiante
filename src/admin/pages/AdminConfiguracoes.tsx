@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { useSettings, useUpsertSetting } from "@/admin/hooks/useSettings";
+import { useClinicSettings as useSettings, useUpsertSetting } from "@/admin/hooks/useSettings";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
