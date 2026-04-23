@@ -33,10 +33,10 @@ export default function KpiCard({
   const trendUp = trend && (trend.positive ?? trend.value >= 0);
 
   return (
-    <div className={cn("admin-card admin-card-hover relative overflow-hidden", compact ? "p-4" : "p-5 sm:p-6")}>
+    <div className={cn("admin-card admin-card-hover relative flex flex-col h-full overflow-hidden", compact ? "p-4" : "p-4 sm:p-5")}>
       <div className="flex items-start justify-between gap-3">
-        <div className={cn("grid place-items-center rounded-xl ring-4 ring-inset", accentCls, compact ? "h-9 w-9" : "h-11 w-11")}>
-          <Icon className={cn(compact ? "h-4 w-4" : "h-5 w-5")} />
+        <div className={cn("grid place-items-center rounded-xl ring-4 ring-inset shrink-0", accentCls, compact ? "h-9 w-9" : "h-10 w-10")}>
+          <Icon className={cn(compact ? "h-4 w-4" : "h-[18px] w-[18px]")} />
         </div>
         {trend && (
           <span
@@ -56,10 +56,18 @@ export default function KpiCard({
         )}
       </div>
 
-      <div className={cn("mt-4", compact && "mt-3")}>
-        <p className={cn("font-semibold tracking-[-0.02em] tabular-nums leading-none", compact ? "text-2xl" : "text-[28px] sm:text-[32px]")}>{value}</p>
-        <p className={cn("mt-2 text-[13px] font-medium text-[hsl(var(--admin-text))]", compact && "text-xs")}>{label}</p>
-        {hint && <p className="mt-0.5 text-[11px] text-[hsl(var(--admin-text-muted))]">{hint}</p>}
+      <div className={cn("mt-3 min-w-0", compact && "mt-2.5")}>
+        <p
+          className={cn(
+            "font-semibold tracking-[-0.02em] tabular-nums leading-none truncate",
+            compact ? "text-xl" : "text-[24px] sm:text-[26px]",
+          )}
+          title={typeof value === "string" ? value : undefined}
+        >
+          {value}
+        </p>
+        <p className={cn("mt-1.5 text-[12px] font-medium text-[hsl(var(--admin-text-muted))] truncate", compact && "text-[11px]")}>{label}</p>
+        {hint && <p className="mt-0.5 text-[11px] text-[hsl(var(--admin-text-muted))] truncate">{hint}</p>}
       </div>
     </div>
   );

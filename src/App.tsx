@@ -26,14 +26,12 @@ import AdminPacientes from "@/admin/pages/AdminPacientes";
 import AdminTratamentos from "@/admin/pages/AdminTratamentos";
 import AdminProfissionais from "@/admin/pages/AdminProfissionais";
 import AdminWhatsApp from "@/admin/pages/AdminWhatsApp";
-import {
-  AdminFinanceiro,
-  AdminLeads,
-  AdminAvaliacoes,
-  AdminSite,
-  AdminRelatorios,
-  AdminConfiguracoes,
-} from "@/admin/pages/AdminPlaceholders";
+import AdminFinanceiro from "@/admin/pages/AdminFinanceiro";
+import AdminLeads from "@/admin/pages/AdminLeads";
+import AdminAvaliacoes from "@/admin/pages/AdminAvaliacoes";
+import AdminSite from "@/admin/pages/AdminSite";
+import AdminRelatorios from "@/admin/pages/AdminRelatorios";
+import AdminConfiguracoes from "@/admin/pages/AdminConfiguracoes";
 
 const queryClient = new QueryClient();
 
