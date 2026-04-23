@@ -184,11 +184,11 @@ export default function AdminTratamentos() {
         actions={<Button onClick={openCreate}><Plus className="h-4 w-4 mr-2" /> Novo tratamento</Button>}
       />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-5">
-        <KpiCard label="Ativos" value={kpis.actives} icon={CheckCircle2} accent="emerald" />
-        <KpiCard label="Inativos" value={kpis.inactives} icon={Activity} accent="amber" />
-        <KpiCard label="Ticket médio" value={kpis.avg} icon={DollarSign} accent="violet" />
-        <KpiCard label="Mais procurado" value={kpis.top} icon={TrendingUp} accent="blue" hint="por agendamentos" />
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 mb-4">
+        <KpiCard label="Ativos" value={kpis.actives} icon={CheckCircle2} accent="emerald" compact />
+        <KpiCard label="Inativos" value={kpis.inactives} icon={Activity} accent="amber" compact />
+        <KpiCard label="Ticket médio" value={kpis.avg} icon={DollarSign} accent="violet" compact />
+        <KpiCard label="Mais procurado" value={kpis.top} icon={TrendingUp} accent="blue" hint="por agendamentos" compact />
       </div>
 
       {/* Toolbar premium */}
