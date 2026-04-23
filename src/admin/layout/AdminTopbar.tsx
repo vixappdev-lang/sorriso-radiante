@@ -17,6 +17,7 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
   const { user } = useAdminSession();
   const { data: appts = [] } = useAppointments();
   const [q, setQ] = useState("");
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const pending = appts.filter((a) => a.status === "pending").slice(0, 6);
   const current = NAV_ITEMS.find((i) => location.pathname.startsWith(i.to));
@@ -120,16 +121,30 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
               <div className="p-1">
                 <Link to="/admin/configuracoes" className="block px-3 py-2 text-sm rounded-md hover:bg-muted">Preferências</Link>
                 <button
-                  className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-muted text-destructive"
-                  onClick={() => adminSignOut().then(() => window.location.assign("/admin/login"))}
+                  className="w-full text-left flex items-center gap-2 px-3 py-2 text-sm rounded-md hover:bg-destructive/10 text-destructive"
+                  onClick={() => setLogoutOpen(true)}
                 >
-                  Sair da conta
+                  <LogOut className="h-4 w-4" /> Sair da conta
                 </button>
               </div>
             </PopoverContent>
           </Popover>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Tem certeza que deseja sair?"
+        description="Você será desconectado da sua conta de administrador e precisará entrar novamente para acessar o painel."
+        confirmLabel="Sim, sair"
+        cancelLabel="Cancelar"
+        destructive
+        onConfirm={async () => {
+          await adminSignOut();
+          window.location.assign("/admin/login");
+        }}
+      />
     </header>
   );
 }
