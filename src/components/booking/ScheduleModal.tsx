@@ -333,7 +333,7 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
               </p>
               <ol className="space-y-2 text-[13px] text-foreground/85">
                 <Step n={1}>Você receberá a confirmação no WhatsApp em alguns segundos.</Step>
-                <Step n={2}>Em seguida, enviaremos a localização da clínica com mapa interativo.</Step>
+                <Step n={2}>Nossa equipe entrará em contato caso precise ajustar algum detalhe.</Step>
                 <Step n={3}>Chegue 10 min antes para um cafezinho. Te esperamos! ☕</Step>
               </ol>
             </div>
