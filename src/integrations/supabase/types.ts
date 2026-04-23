@@ -92,6 +92,362 @@ export type Database = {
         }
         Relationships: []
       }
+      clinic_holidays: {
+        Row: {
+          created_at: string
+          holiday_date: string
+          id: string
+          label: string
+        }
+        Insert: {
+          created_at?: string
+          holiday_date: string
+          id?: string
+          label: string
+        }
+        Update: {
+          created_at?: string
+          holiday_date?: string
+          id?: string
+          label?: string
+        }
+        Relationships: []
+      }
+      clinic_hours: {
+        Row: {
+          close_time: string | null
+          is_open: boolean
+          open_time: string | null
+          updated_at: string
+          weekday: number
+        }
+        Insert: {
+          close_time?: string | null
+          is_open?: boolean
+          open_time?: string | null
+          updated_at?: string
+          weekday: number
+        }
+        Update: {
+          close_time?: string | null
+          is_open?: boolean
+          open_time?: string | null
+          updated_at?: string
+          weekday?: number
+        }
+        Relationships: []
+      }
+      financial_entries: {
+        Row: {
+          amount_cents: number
+          appointment_id: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          method: string | null
+          paid_at: string | null
+          patient_name: string | null
+          status: string
+          type: string
+        }
+        Insert: {
+          amount_cents?: number
+          appointment_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          method?: string | null
+          paid_at?: string | null
+          patient_name?: string | null
+          status?: string
+          type: string
+        }
+        Update: {
+          amount_cents?: number
+          appointment_id?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          method?: string | null
+          paid_at?: string | null
+          patient_name?: string | null
+          status?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          last_touch_at: string | null
+          name: string
+          notes: string | null
+          owner: string | null
+          phone: string | null
+          source: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_touch_at?: string | null
+          name: string
+          notes?: string | null
+          owner?: string | null
+          phone?: string | null
+          source?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          last_touch_at?: string | null
+          name?: string
+          notes?: string | null
+          owner?: string | null
+          phone?: string | null
+          source?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
+      patient_notes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          note: string
+          patient_phone: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note: string
+          patient_phone: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          note?: string
+          patient_phone?: string
+        }
+        Relationships: []
+      }
+      professional_schedules: {
+        Row: {
+          end_time: string
+          id: string
+          professional_id: string
+          start_time: string
+          weekday: number
+        }
+        Insert: {
+          end_time: string
+          id?: string
+          professional_id: string
+          start_time: string
+          weekday: number
+        }
+        Update: {
+          end_time?: string
+          id?: string
+          professional_id?: string
+          start_time?: string
+          weekday?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "professional_schedules_professional_id_fkey"
+            columns: ["professional_id"]
+            isOneToOne: false
+            referencedRelation: "professionals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      professionals: {
+        Row: {
+          created_at: string
+          cro: string | null
+          email: string | null
+          id: string
+          name: string
+          notes_internal: string | null
+          phone: string | null
+          photo_url: string | null
+          slug: string
+          specialty: string | null
+          status: string
+          updated_at: string
+          weekly_hours: number | null
+        }
+        Insert: {
+          created_at?: string
+          cro?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes_internal?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          slug: string
+          specialty?: string | null
+          status?: string
+          updated_at?: string
+          weekly_hours?: number | null
+        }
+        Update: {
+          created_at?: string
+          cro?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes_internal?: string | null
+          phone?: string | null
+          photo_url?: string | null
+          slug?: string
+          specialty?: string | null
+          status?: string
+          updated_at?: string
+          weekly_hours?: number | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          patient_name: string
+          rating: number
+          replied_at: string | null
+          reply: string | null
+          source: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          patient_name: string
+          rating: number
+          replied_at?: string | null
+          reply?: string | null
+          source?: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          patient_name?: string
+          rating?: number
+          replied_at?: string | null
+          reply?: string | null
+          source?: string
+        }
+        Relationships: []
+      }
+      schedule_blocks: {
+        Row: {
+          block_date: string
+          created_at: string
+          end_time: string | null
+          id: string
+          professional_slug: string | null
+          reason: string | null
+          start_time: string | null
+        }
+        Insert: {
+          block_date: string
+          created_at?: string
+          end_time?: string | null
+          id?: string
+          professional_slug?: string | null
+          reason?: string | null
+          start_time?: string | null
+        }
+        Update: {
+          block_date?: string
+          created_at?: string
+          end_time?: string | null
+          id?: string
+          professional_slug?: string | null
+          reason?: string | null
+          start_time?: string | null
+        }
+        Relationships: []
+      }
+      site_promotions: {
+        Row: {
+          active: boolean
+          created_at: string
+          cta_label: string | null
+          cta_url: string | null
+          description: string | null
+          ends_at: string | null
+          id: string
+          slug: string | null
+          starts_at: string | null
+          title: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          slug?: string | null
+          starts_at?: string | null
+          title: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          description?: string | null
+          ends_at?: string | null
+          id?: string
+          slug?: string | null
+          starts_at?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      treatments_overrides: {
+        Row: {
+          active: boolean
+          duration: string | null
+          price_from: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          duration?: string | null
+          price_from?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          duration?: string | null
+          price_from?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

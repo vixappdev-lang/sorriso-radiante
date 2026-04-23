@@ -1,281 +1,322 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
-  Calendar,
-  Users,
-  Activity,
-  Wallet,
-  Star,
-  Clock,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
+  Calendar, Users, Activity, Wallet, Star, Clock, CheckCircle2, XCircle, AlertCircle,
 } from "lucide-react";
 import {
-  AreaChart,
-  Area,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip as ReTooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
+  AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, BarChart, Bar,
 } from "recharts";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
 import EmptyState from "@/admin/components/EmptyState";
+import ChartFrame from "@/admin/components/ChartFrame";
+import StatusPill from "@/admin/components/StatusPill";
 import { useAppointments } from "@/admin/hooks/useAppointments";
 import { TREATMENTS, TESTIMONIALS } from "@/data/clinic";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-function todayISO() {
-  const d = new Date();
-  return d.toISOString().slice(0, 10);
-}
+function todayISO() { return new Date().toISOString().slice(0, 10); }
 function priceForTreatment(name: string): number {
   const t = TREATMENTS.find((x) => x.name === name);
   if (!t) return 0;
-  const num = Number((t.priceFrom || "").replace(/[^\d]/g, "")) || 0;
-  return num;
+  return Number((t.priceFrom || "").replace(/[^\d]/g, "")) || 0;
 }
-
 const STATUS_COLORS: Record<string, string> = {
-  pending: "hsl(35, 90%, 55%)",
-  confirmed: "hsl(215, 75%, 50%)",
-  done: "hsl(145, 55%, 42%)",
-  cancelled: "hsl(0, 70%, 55%)",
+  pending: "hsl(var(--chart-amber))",
+  confirmed: "hsl(var(--chart-blue))",
+  done: "hsl(var(--chart-emerald))",
+  cancelled: "hsl(var(--chart-rose))",
 };
 const STATUS_LABEL: Record<string, string> = {
-  pending: "Pendente",
-  confirmed: "Confirmado",
-  done: "Concluído",
-  cancelled: "Cancelado",
+  pending: "Pendente", confirmed: "Confirmado", done: "Concluído", cancelled: "Cancelado",
 };
 
 export default function AdminDashboard() {
   const { data: appts = [], isLoading } = useAppointments();
-
+  const [period, setPeriod] = useState<"7" | "30" | "90">("30");
+  const days = parseInt(period, 10);
   const today = todayISO();
-  const stats = useMemo(() => {
-    const last30Start = new Date();
-    last30Start.setDate(last30Start.getDate() - 29);
-    const start = last30Start.toISOString().slice(0, 10);
 
-    const inWindow = appts.filter((a) => a.appointment_date >= start);
+  const stats = useMemo(() => {
+    const start = new Date();
+    start.setDate(start.getDate() - (days - 1));
+    const startISO = start.toISOString().slice(0, 10);
+
+    const prevStart = new Date(); prevStart.setDate(prevStart.getDate() - (days * 2 - 1));
+    const prevEnd = new Date(); prevEnd.setDate(prevEnd.getDate() - days);
+    const prevStartISO = prevStart.toISOString().slice(0, 10);
+    const prevEndISO = prevEnd.toISOString().slice(0, 10);
+
+    const inWindow = appts.filter((a) => a.appointment_date >= startISO);
+    const inPrev = appts.filter((a) => a.appointment_date >= prevStartISO && a.appointment_date <= prevEndISO);
     const todays = appts.filter((a) => a.appointment_date === today);
     const newPatients = new Set(inWindow.map((a) => a.phone)).size;
+    const prevPatients = new Set(inPrev.map((a) => a.phone)).size;
     const inProgress = appts.filter((a) => a.status === "confirmed").length;
     const revenue = appts
+      .filter((a) => (a.status === "confirmed" || a.status === "done") && a.appointment_date >= startISO)
+      .reduce((s, a) => s + priceForTreatment(a.treatment), 0);
+    const prevRevenue = inPrev
       .filter((a) => a.status === "confirmed" || a.status === "done")
-      .reduce((sum, a) => sum + priceForTreatment(a.treatment), 0);
+      .reduce((s, a) => s + priceForTreatment(a.treatment), 0);
+    const totalForRate = inWindow.length;
+    const confirmedRate = totalForRate ? Math.round((inWindow.filter((a) => a.status === "confirmed" || a.status === "done").length / totalForRate) * 100) : 0;
 
-    // Série diária (últimos 30 dias)
-    const days: { date: string; label: string; total: number }[] = [];
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
+    const dailySeries: { date: string; label: string; total: number }[] = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(); d.setDate(d.getDate() - i);
       const iso = d.toISOString().slice(0, 10);
-      days.push({
+      dailySeries.push({
         date: iso,
         label: d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
         total: appts.filter((a) => a.appointment_date === iso).length,
       });
     }
 
-    // Donut por status
     const statusTotals: Record<string, number> = {};
-    for (const a of appts) statusTotals[a.status] = (statusTotals[a.status] || 0) + 1;
-    const statusData = Object.entries(statusTotals).map(([k, v]) => ({
-      name: STATUS_LABEL[k] || k,
-      value: v,
-      key: k,
-    }));
+    for (const a of inWindow) statusTotals[a.status] = (statusTotals[a.status] || 0) + 1;
+    const statusData = Object.entries(statusTotals).map(([k, v]) => ({ name: STATUS_LABEL[k] || k, value: v, key: k }));
 
-    // Próximos 7 dias
     const upcoming = appts
       .filter((a) => a.appointment_date >= today)
       .sort((a, b) => (a.appointment_date + a.appointment_time).localeCompare(b.appointment_date + b.appointment_time))
-      .slice(0, 8);
+      .slice(0, 6);
 
-    return { todays, newPatients, inProgress, revenue, days, statusData, upcoming };
-  }, [appts, today]);
+    // procedimentos mais realizados
+    const treatTotals: Record<string, number> = {};
+    for (const a of inWindow) treatTotals[a.treatment] = (treatTotals[a.treatment] || 0) + 1;
+    const topTreatments = Object.entries(treatTotals)
+      .map(([name, total]) => ({ name, total }))
+      .sort((a, b) => b.total - a.total)
+      .slice(0, 5);
+
+    function delta(curr: number, prev: number) {
+      if (prev === 0) return curr === 0 ? 0 : 100;
+      return Math.round(((curr - prev) / prev) * 100);
+    }
+
+    return {
+      todays, newPatients, inProgress, revenue, confirmedRate,
+      dailySeries, statusData, upcoming, topTreatments,
+      deltas: {
+        appts: delta(inWindow.length, inPrev.length),
+        patients: delta(newPatients, prevPatients),
+        revenue: delta(revenue, prevRevenue),
+      },
+      total: inWindow.length,
+      pending: appts.filter((a) => a.status === "pending").length,
+    };
+  }, [appts, today, days]);
 
   const noData = !isLoading && appts.length === 0;
+  const subtitle = `Visão geral da sua clínica · ${new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}`;
 
   return (
     <>
       <PageHeader
-        title="Visão geral"
-        description="Acompanhe agendamentos, novos pacientes e a saúde da clínica em tempo real."
+        title="Dashboard"
+        description={subtitle}
+        actions={
+          <Tabs value={period} onValueChange={(v) => setPeriod(v as any)}>
+            <TabsList className="bg-white border h-9">
+              <TabsTrigger value="7" className="text-xs px-3">7 dias</TabsTrigger>
+              <TabsTrigger value="30" className="text-xs px-3">30 dias</TabsTrigger>
+              <TabsTrigger value="90" className="text-xs px-3">90 dias</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        }
       />
 
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <KpiCard
-          label="Agendamentos hoje"
-          value={stats.todays.length}
-          hint={stats.todays.length === 0 ? "Sem consultas marcadas" : `${stats.todays.length} compromisso(s)`}
-          icon={Calendar}
-          accent="primary"
-        />
-        <KpiCard
-          label="Novos pacientes (30d)"
-          value={stats.newPatients}
-          hint="Únicos por telefone"
-          icon={Users}
-          accent="success"
-        />
-        <KpiCard
-          label="Em andamento"
-          value={stats.inProgress}
-          hint="Confirmados aguardando atendimento"
-          icon={Activity}
-          accent="warning"
-        />
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-5">
+        <KpiCard label="Agendamentos hoje" value={stats.todays.length} hint="vs ontem" icon={Calendar} accent="blue"
+          trend={{ value: stats.deltas.appts, positive: stats.deltas.appts >= 0 }} />
+        <KpiCard label={`Novos pacientes (${days}d)`} value={stats.newPatients} hint="únicos por telefone" icon={Users} accent="emerald"
+          trend={{ value: stats.deltas.patients, positive: stats.deltas.patients >= 0 }} />
+        <KpiCard label="Em andamento" value={stats.inProgress} hint="confirmados aguardando" icon={Activity} accent="amber" />
         <KpiCard
           label="Faturamento estimado"
           value={stats.revenue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })}
-          hint="Soma de tabelas (confirmados + concluídos)"
-          icon={Wallet}
-          accent="muted"
+          hint={`período de ${days} dias`} icon={Wallet} accent="violet"
+          trend={{ value: stats.deltas.revenue, positive: stats.deltas.revenue >= 0 }}
         />
+        <KpiCard label="Taxa de confirmação" value={`${stats.confirmedRate}%`} hint="confirmados + concluídos" icon={CheckCircle2} accent="sky" />
       </div>
 
-      {/* Gráficos */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-4">
-        <div className="xl:col-span-2 rounded-2xl border bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h3 className="font-display text-lg">Agendamentos por dia</h3>
-              <p className="text-xs text-muted-foreground">Últimos 30 dias</p>
-            </div>
-            <Badge variant="outline" className="text-xs">total: {appts.length}</Badge>
-          </div>
+      {/* Linha 1: Área + Donut */}
+      <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <ChartFrame
+          className="xl:col-span-2"
+          title={`Agendamentos dos últimos ${days} dias`}
+          hint={`Total no período: ${stats.total}`}
+          actions={<Badge variant="outline" className="text-xs font-normal">tempo real</Badge>}
+        >
           {noData ? (
-            <EmptyState
-              icon={Calendar}
-              title="Sem agendamentos ainda"
-              description="Os agendamentos enviados pelo site aparecerão aqui automaticamente."
-            />
+            <EmptyState icon={Calendar} title="Sem agendamentos ainda" description="Os agendamentos enviados pelo site aparecerão aqui automaticamente." />
           ) : (
-            <div className="h-72">
-              <ResponsiveContainer>
-                <AreaChart data={stats.days} margin={{ top: 8, right: 8, bottom: 0, left: -16 }}>
-                  <defs>
-                    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(215, 75%, 50%)" stopOpacity={0.45} />
-                      <stop offset="100%" stopColor="hsl(215, 75%, 50%)" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 18%, 92%)" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 11 }} interval={3} stroke="hsl(220, 10%, 60%)" />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 11 }} stroke="hsl(220, 10%, 60%)" />
-                  <ReTooltip
-                    contentStyle={{ borderRadius: 12, border: "1px solid hsl(220, 18%, 86%)", fontSize: 12 }}
-                    labelStyle={{ fontWeight: 600 }}
-                  />
-                  <Area type="monotone" dataKey="total" stroke="hsl(215, 75%, 38%)" strokeWidth={2} fill="url(#g1)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
+            <ResponsiveContainer width="100%" height={260}>
+              <AreaChart data={stats.dailySeries} margin={{ top: 8, right: 12, bottom: 0, left: -16 }}>
+                <defs>
+                  <linearGradient id="dashG" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="hsl(var(--chart-blue))" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="hsl(var(--chart-blue))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 6" stroke="hsl(220 18% 92%)" vertical={false} />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "hsl(220 10% 50%)" }} tickLine={false} axisLine={false} interval={Math.max(0, Math.ceil(days / 8))} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "hsl(220 10% 50%)" }} tickLine={false} axisLine={false} />
+                <ReTooltip
+                  contentStyle={{ borderRadius: 12, border: "1px solid hsl(220 18% 86%)", fontSize: 12, padding: "8px 12px", boxShadow: "0 8px 24px -10px rgba(15,23,42,.18)" }}
+                  labelStyle={{ fontWeight: 600, marginBottom: 4 }}
+                  formatter={(v: any) => [`${v} agendamento(s)`, "Total"]}
+                />
+                <Area type="monotone" dataKey="total" stroke="hsl(var(--chart-blue))" strokeWidth={2.4} fill="url(#dashG)" activeDot={{ r: 5, strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
           )}
-        </div>
+        </ChartFrame>
 
-        <div className="rounded-2xl border bg-card p-5">
-          <h3 className="font-display text-lg">Status dos agendamentos</h3>
-          <p className="text-xs text-muted-foreground mb-4">Distribuição</p>
+        <ChartFrame title="Status dos agendamentos" hint="Distribuição no período">
           {noData ? (
             <EmptyState icon={Activity} title="Sem dados" description="Aguardando primeiros registros." />
           ) : (
-            <div className="h-72">
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie data={stats.statusData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={90} paddingAngle={3}>
-                    {stats.statusData.map((entry) => (
-                      <Cell key={entry.key} fill={STATUS_COLORS[entry.key] || "hsl(220, 10%, 60%)"} />
-                    ))}
-                  </Pie>
-                  <ReTooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(220, 18%, 86%)", fontSize: 12 }} />
-                  <Legend wrapperStyle={{ fontSize: 12 }} />
-                </PieChart>
-              </ResponsiveContainer>
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative h-[200px] w-full">
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie data={stats.statusData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={88} paddingAngle={3} stroke="none">
+                      {stats.statusData.map((entry) => (
+                        <Cell key={entry.key} fill={STATUS_COLORS[entry.key] || "hsl(220 10% 60%)"} />
+                      ))}
+                    </Pie>
+                    <ReTooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(220 18% 86%)", fontSize: 12 }} />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="absolute inset-0 grid place-items-center pointer-events-none">
+                  <div className="text-center">
+                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Total</p>
+                    <p className="text-2xl font-semibold">{stats.total}</p>
+                  </div>
+                </div>
+              </div>
+              <ul className="w-full space-y-1.5 text-xs">
+                {stats.statusData.map((s) => {
+                  const pct = stats.total ? Math.round((s.value / stats.total) * 100) : 0;
+                  return (
+                    <li key={s.key} className="flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full" style={{ background: STATUS_COLORS[s.key] }} />
+                        {s.name}
+                      </span>
+                      <span className="font-medium tabular-nums">{s.value} <span className="text-muted-foreground font-normal">({pct}%)</span></span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           )}
-        </div>
+        </ChartFrame>
       </div>
 
-      {/* Próximos + Avaliações */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 mt-4">
-        <div className="xl:col-span-2 rounded-2xl border bg-card overflow-hidden">
-          <div className="px-5 py-4 border-b flex items-center justify-between">
-            <div>
-              <h3 className="font-display text-lg">Próximos agendamentos</h3>
-              <p className="text-xs text-muted-foreground">Os 8 mais próximos</p>
-            </div>
-          </div>
+      {/* Linha 2: Próximos + Procedimentos + Reviews */}
+      <div className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <ChartFrame title="Próximos agendamentos" hint="Os 6 mais próximos" actions={<a href="/admin/agenda" className="text-xs font-medium text-primary hover:underline">Ver agenda →</a>}>
           {stats.upcoming.length === 0 ? (
-            <div className="p-5">
-              <EmptyState icon={Clock} title="Nada agendado" description="Quando houver novos agendamentos, eles aparecerão aqui." />
-            </div>
+            <EmptyState icon={Clock} title="Nada agendado" description="Quando houver novos agendamentos, eles aparecerão aqui." />
           ) : (
-            <div className="divide-y">
+            <ul className="-m-2 divide-y divide-[hsl(var(--admin-border))]">
               {stats.upcoming.map((a) => (
-                <div key={a.id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-muted/40">
-                  <div className="h-10 w-10 grid place-items-center rounded-xl bg-primary/10 text-primary text-xs font-semibold">
-                    {a.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()}
+                <li key={a.id} className="flex items-center gap-3 px-2 py-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-blue-700 text-[11px] font-semibold">
+                    {a.appointment_time.slice(0, 5)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate">{a.name}</p>
                     <p className="text-xs text-muted-foreground truncate">{a.treatment}</p>
                   </div>
-                  <div className="text-right hidden sm:block">
-                    <p className="text-sm font-medium">
-                      {new Date(a.appointment_date).toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{a.appointment_time}</p>
-                  </div>
-                  <StatusBadge status={a.status} />
-                </div>
+                  <StatusPill status={a.status} />
+                </li>
               ))}
-            </div>
+            </ul>
           )}
-        </div>
+        </ChartFrame>
 
-        <div className="rounded-2xl border bg-card p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-display text-lg">Avaliações recentes</h3>
-            <Badge variant="outline" className="text-xs">
-              <Star className="h-3 w-3 mr-1 fill-current" /> 4.9
-            </Badge>
-          </div>
+        <ChartFrame title="Procedimentos mais realizados" hint={`Top 5 nos últimos ${days} dias`}>
+          {stats.topTreatments.length === 0 ? (
+            <EmptyState icon={Activity} title="Sem dados" description="Após os primeiros atendimentos." />
+          ) : (
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={stats.topTreatments} layout="vertical" margin={{ top: 4, right: 24, bottom: 0, left: 0 }}>
+                <CartesianGrid strokeDasharray="3 6" stroke="hsl(220 18% 92%)" horizontal={false} />
+                <XAxis type="number" hide />
+                <YAxis type="category" dataKey="name" width={110} tick={{ fontSize: 11, fill: "hsl(220 12% 35%)" }} tickLine={false} axisLine={false} />
+                <ReTooltip contentStyle={{ borderRadius: 12, border: "1px solid hsl(220 18% 86%)", fontSize: 12 }} formatter={(v: any) => [`${v} atendimento(s)`, "Total"]} />
+                <Bar dataKey="total" fill="hsl(var(--chart-blue))" radius={[0, 6, 6, 0]} barSize={18} />
+              </BarChart>
+            </ResponsiveContainer>
+          )}
+        </ChartFrame>
+
+        <ChartFrame title="Avaliações recentes" hint="Depoimentos de pacientes" actions={<Badge variant="outline" className="text-xs"><Star className="h-3 w-3 mr-1 fill-current" /> 4.9</Badge>}>
           <ul className="space-y-4">
             {TESTIMONIALS.slice(0, 3).map((t) => (
-              <li key={t.name} className="border-l-2 border-primary/30 pl-3">
+              <li key={t.name} className="border-l-2 border-primary/40 pl-3">
+                <div className="flex items-center gap-1 mb-1 text-amber-500">
+                  {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-3 w-3 fill-current" />)}
+                </div>
                 <p className="text-sm leading-relaxed line-clamp-3">"{t.text}"</p>
                 <p className="text-xs text-muted-foreground mt-1.5">— {t.name}, {t.city}</p>
               </li>
             ))}
           </ul>
+        </ChartFrame>
+      </div>
+
+      {/* Linha 3: Resumo financeiro */}
+      <div className="mt-4 admin-card p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-[15px] font-semibold">Resumo financeiro estimado</h3>
+            <p className="text-xs text-muted-foreground">Calculado a partir da tabela de tratamentos × agendamentos</p>
+          </div>
+          <a href="/admin/financeiro" className="text-xs font-medium text-primary hover:underline">Ver financeiro completo →</a>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <MiniStat label="Faturamento" value={stats.revenue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} delta={stats.deltas.revenue} />
+          <MiniStat label="Confirmados (R$)" value={appts.filter((a) => a.status === "confirmed").reduce((s, a) => s + priceForTreatment(a.treatment), 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} />
+          <MiniStat label="Pendentes" value={`${stats.pending}`} subtle="aguardando confirmação" />
+          <MiniStat label="Ticket médio" value={(stats.revenue / Math.max(1, appts.filter((a) => a.status === "confirmed" || a.status === "done").length)).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} />
         </div>
       </div>
     </>
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; className: string; Icon: React.ElementType }> = {
+function MiniStat({ label, value, delta, subtle }: { label: string; value: string; delta?: number; subtle?: string }) {
+  return (
+    <div>
+      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
+      <p className="mt-1 text-xl font-semibold tracking-tight">{value}</p>
+      {typeof delta === "number" ? (
+        <p className={`mt-0.5 text-xs font-medium ${delta >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+          {delta > 0 ? "+" : ""}{delta}% <span className="text-muted-foreground font-normal">vs período anterior</span>
+        </p>
+      ) : (
+        subtle && <p className="mt-0.5 text-xs text-muted-foreground">{subtle}</p>
+      )}
+    </div>
+  );
+}
+
+function _StatusBadge({ status }: { status: string }) {
+  const map: Record<string, { label: string; className: string; Icon: any }> = {
     pending: { label: "Pendente", className: "bg-amber-50 text-amber-700 border-amber-200", Icon: AlertCircle },
     confirmed: { label: "Confirmado", className: "bg-blue-50 text-blue-700 border-blue-200", Icon: CheckCircle2 },
     done: { label: "Concluído", className: "bg-emerald-50 text-emerald-700 border-emerald-200", Icon: CheckCircle2 },
     cancelled: { label: "Cancelado", className: "bg-red-50 text-red-700 border-red-200", Icon: XCircle },
   };
-  const m = map[status] || { label: status, className: "bg-muted text-foreground border-border", Icon: AlertCircle };
+  const m = map[status] || { label: status, className: "bg-muted", Icon: AlertCircle };
   const Icon = m.Icon;
-  return (
-    <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full border ${m.className}`}>
-      <Icon className="h-3 w-3" /> {m.label}
-    </span>
-  );
+  return <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full border ${m.className}`}><Icon className="h-3 w-3" /> {m.label}</span>;
 }

@@ -13,11 +13,11 @@ import {
   BarChart3,
   Settings,
   LogOut,
-  Sparkles,
+  LifeBuoy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { adminSignOut } from "@/admin/hooks/useAdminSession";
-import { Button } from "@/components/ui/button";
+import { adminSignOut, useAdminSession } from "@/admin/hooks/useAdminSession";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export const NAV_ITEMS = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -36,25 +36,30 @@ export const NAV_ITEMS = [
 
 export default function AdminSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const location = useLocation();
+  const { user } = useAdminSession();
+  const initials = (user?.email ?? "AD").slice(0, 2).toUpperCase();
+
   return (
-    <aside className="flex h-full w-full flex-col bg-[hsl(var(--surface-dark))] text-white">
+    <aside className="flex h-full w-full flex-col bg-[hsl(var(--admin-sidebar))] text-white">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-white/10">
+      <div className="px-5 pt-6 pb-5">
         <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 grid place-items-center rounded-xl bg-white/10 border border-white/15">
-            <Sparkles className="h-4 w-4" />
+          <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-[hsl(215_85%_55%)] to-[hsl(215_85%_38%)] shadow-[inset_0_-2px_6px_rgba(0,0,0,0.25)]">
+            <svg viewBox="0 0 24 24" className="h-5 w-5 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 21V8M5 8a7 7 0 0 1 14 0M5 8c0 4 3 6 3 8M19 8c0 4-3 6-3 8" />
+            </svg>
           </div>
-          <div>
-            <p className="font-display text-base leading-tight">Clínica Levii</p>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-white/50">Painel admin</p>
+          <div className="leading-tight">
+            <p className="text-[15px] font-semibold">Clínica Levii</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-white/45">Painel admin</p>
           </div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto px-3 py-5">
-        <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/40">Menu principal</p>
-        <ul className="space-y-1">
+      <nav className="flex-1 overflow-y-auto px-3 pb-3">
+        <p className="mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">Menu principal</p>
+        <ul className="space-y-0.5">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = location.pathname === item.to || location.pathname.startsWith(item.to + "/");
@@ -64,17 +69,15 @@ export default function AdminSidebar({ onNavigate }: { onNavigate?: () => void }
                   to={item.to}
                   onClick={onNavigate}
                   className={cn(
-                    "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+                    "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors",
                     active
-                      ? "bg-white/10 text-white"
-                      : "text-white/65 hover:bg-white/5 hover:text-white",
+                      ? "bg-white/[0.06] text-white"
+                      : "text-white/55 hover:bg-white/[0.04] hover:text-white",
                   )}
                 >
-                  {active && (
-                    <span className="absolute left-0 top-1.5 bottom-1.5 w-0.5 rounded-full bg-[hsl(var(--primary-glow))]" />
-                  )}
-                  <Icon className={cn("h-4 w-4 shrink-0", active ? "text-[hsl(var(--primary-glow))]" : "")} />
+                  <Icon className={cn("h-[18px] w-[18px] shrink-0 transition-colors", active ? "text-[hsl(var(--admin-sidebar-active))]" : "text-white/45 group-hover:text-white/80")} />
                   <span className="truncate">{item.label}</span>
+                  {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-[hsl(var(--admin-sidebar-active))]" />}
                 </NavLink>
               </li>
             );
@@ -83,15 +86,27 @@ export default function AdminSidebar({ onNavigate }: { onNavigate?: () => void }
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-white/10 p-3">
-        <Button
-          variant="ghost"
-          className="w-full justify-start text-white/70 hover:text-white hover:bg-white/5"
+      <div className="border-t border-white/[0.06] p-3 space-y-1">
+        <button className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-white/60 hover:bg-white/[0.04] hover:text-white transition-colors">
+          <LifeBuoy className="h-[18px] w-[18px]" />
+          Ajuda e suporte
+        </button>
+        <div className="flex items-center gap-3 rounded-lg px-3 py-2.5 bg-white/[0.04]">
+          <Avatar className="h-9 w-9">
+            <AvatarFallback className="bg-gradient-to-br from-[hsl(215_85%_55%)] to-[hsl(215_85%_35%)] text-white text-xs font-semibold">{initials}</AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1">
+            <p className="text-[13px] font-medium truncate">Administrador</p>
+            <p className="text-[11px] text-white/45 truncate">{user?.email ?? "—"}</p>
+          </div>
+        </div>
+        <button
+          className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-white/60 hover:bg-white/[0.04] hover:text-white transition-colors"
           onClick={() => adminSignOut().then(() => window.location.assign("/admin/login"))}
         >
-          <LogOut className="h-4 w-4 mr-2" />
+          <LogOut className="h-[18px] w-[18px]" />
           Sair
-        </Button>
+        </button>
       </div>
     </aside>
   );
