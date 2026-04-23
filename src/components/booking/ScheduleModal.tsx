@@ -298,24 +298,54 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
             </form>
           </>
         ) : (
-          <div className="p-8 sm:p-10 text-center">
-            <div className="mx-auto grid place-items-center h-16 w-16 rounded-full bg-success/10 text-success mb-5">
-              <CheckCircle2 className="h-8 w-8" />
+          <div className="relative overflow-hidden">
+            {/* Cabeçalho de sucesso com gradient */}
+            <div className="relative px-6 pt-10 pb-8 sm:px-10 sm:pt-12 sm:pb-10 text-center bg-gradient-to-br from-success/15 via-primary-soft/40 to-background overflow-hidden">
+              <div className="pointer-events-none absolute -top-20 -right-20 h-60 w-60 rounded-full bg-success/15 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 -left-16 h-60 w-60 rounded-full bg-primary/10 blur-3xl" />
+
+              <div className="relative mx-auto grid place-items-center h-20 w-20 rounded-full bg-gradient-to-br from-success to-success/70 text-success-foreground shadow-[0_10px_40px_-10px_hsl(var(--success)/0.5)]">
+                <CheckCircle2 className="h-10 w-10" strokeWidth={2.2} />
+              </div>
+
+              <h3 className="relative font-display text-2xl sm:text-3xl mt-6 text-balance">
+                Pronto, {submitted.name.split(" ")[0]}! 🎉
+              </h3>
+              <p className="relative text-muted-foreground mt-2 text-sm sm:text-[15px] max-w-md mx-auto leading-relaxed">
+                Seu agendamento foi <strong className="text-foreground">confirmado</strong> com sucesso.
+                Em instantes você receberá os detalhes no WhatsApp.
+              </p>
             </div>
-            <h3 className="font-display text-2xl sm:text-3xl mb-2">Agendamento confirmado!</h3>
-            <p className="text-muted-foreground max-w-md mx-auto">
-              Olá, <strong className="text-foreground">{submitted.name.split(" ")[0]}</strong>! Recebemos sua solicitação para
-              {" "}<strong className="text-foreground">{treatmentName(submitted.treatment)}</strong> em
-              {" "}<strong className="text-foreground">{new Date(submitted.date + "T00:00:00").toLocaleDateString("pt-BR")} às {submitted.time}</strong>.
-            </p>
-            <p className="text-sm text-muted-foreground mt-3">
-              Você receberá uma mensagem no WhatsApp com todos os detalhes em instantes.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+
+            {/* Resumo do agendamento — destaque */}
+            <div className="px-6 sm:px-10 -mt-4 relative">
+              <div className="rounded-2xl border border-border/70 bg-card shadow-soft p-5 grid sm:grid-cols-3 gap-4">
+                <Summary icon={Stethoscope} label="Tratamento" value={treatmentName(submitted.treatment)} />
+                <Summary icon={CalendarIcon} label="Data" value={format(new Date(submitted.date + "T00:00:00"), "dd 'de' MMM", { locale: ptBR })} />
+                <Summary icon={Clock} label="Horário" value={submitted.time} />
+              </div>
+            </div>
+
+            {/* Próximos passos */}
+            <div className="px-6 sm:px-10 mt-6">
+              <p className="text-[11px] uppercase tracking-[0.16em] font-semibold text-muted-foreground mb-2.5">
+                Próximos passos
+              </p>
+              <ol className="space-y-2 text-[13px] text-foreground/85">
+                <Step n={1}>Você receberá a confirmação no WhatsApp em alguns segundos.</Step>
+                <Step n={2}>Em seguida, enviaremos a localização da clínica com mapa interativo.</Step>
+                <Step n={3}>Chegue 10 min antes para um cafezinho. Te esperamos! ☕</Step>
+              </ol>
+            </div>
+
+            <div className="px-6 pb-6 pt-6 sm:px-10 sm:pb-8 mt-2 flex flex-col sm:flex-row gap-2.5">
+              <Button variant="outline" size="lg" onClick={() => onOpenChange(false)} className="sm:flex-1">
+                Fechar
+              </Button>
               <Button
                 asChild
                 size="lg"
-                className="bg-[#25D366] hover:bg-[#25D366]/90 text-white"
+                className="sm:flex-[2] bg-[#25D366] hover:bg-[#1FBA5A] text-white shadow-soft"
               >
                 <a
                   href={`https://wa.me/5527999990000?text=${encodeURIComponent(`Olá! Acabei de agendar uma consulta de ${treatmentName(submitted.treatment)} para ${submitted.date} às ${submitted.time}. Meu nome é ${submitted.name}.`)}`}
@@ -324,7 +354,6 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
                   <MessageCircle className="h-4 w-4 mr-2" /> Abrir WhatsApp
                 </a>
               </Button>
-              <Button variant="outline" size="lg" onClick={() => onOpenChange(false)}>Fechar</Button>
             </div>
           </div>
         )}
@@ -357,5 +386,16 @@ function Summary({ icon: Icon, label, value }: { icon: any; label: string; value
         <p className="text-sm font-semibold text-foreground truncate capitalize">{value}</p>
       </div>
     </div>
+  );
+}
+
+function Step({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className="grid place-items-center h-6 w-6 rounded-full bg-primary-soft text-primary text-[11px] font-bold shrink-0 mt-0.5">
+        {n}
+      </span>
+      <span className="leading-relaxed pt-0.5">{children}</span>
+    </li>
   );
 }
