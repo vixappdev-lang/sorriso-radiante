@@ -114,97 +114,100 @@ export default function Header() {
                 <Menu className="h-5 w-5" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[88vw] sm:w-[400px] p-0 border-l border-border/60 bg-background">
+            <SheetContent
+              side="right"
+              className="w-[88vw] sm:w-[400px] p-0 border-l border-border/60 bg-background flex flex-col overflow-hidden"
+            >
               {/* Cabeçalho do menu — gradient sutil */}
-              <SheetHeader className="px-6 pt-6 pb-5 border-b border-border/60 bg-gradient-to-br from-primary-soft/60 via-background to-background">
+              <SheetHeader className="px-6 pt-6 pb-5 border-b border-border/60 bg-gradient-to-br from-primary-soft/60 via-background to-background shrink-0">
                 <SheetTitle className="flex items-center gap-2 text-left">
                   <Logo />
                 </SheetTitle>
                 <p className="text-xs text-muted-foreground text-left mt-1">Odontologia de excelência em Aracruz/ES</p>
               </SheetHeader>
 
-              {/* CTA prioritário no topo */}
-              <div className="px-5 pt-5 pb-2">
-                <Button
-                  onClick={() => { setOpen(false); openSchedule(); }}
-                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-soft h-12"
-                  size="lg"
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Agendar consulta
-                </Button>
-              </div>
-
-              {/* Navegação */}
-              <nav className="px-3 py-3" aria-label="Navegação móvel">
-                <p className="px-3 pt-2 pb-1.5 text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
-                  Principal
-                </p>
-                {NAV.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    end={item.to === "/"}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center justify-between px-3 py-2.5 rounded-lg text-[15px] font-medium transition-colors",
-                        isActive ? "bg-primary-soft text-primary" : "text-foreground/85 hover:bg-secondary"
-                      )
-                    }
+              {/* Área rolável */}
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+                {/* CTA prioritário no topo */}
+                <div className="px-5 pt-5 pb-2">
+                  <Button
+                    onClick={() => { setOpen(false); openSchedule(); }}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-soft h-12"
+                    size="lg"
                   >
-                    {item.label}
-                  </NavLink>
-                ))}
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Agendar consulta
+                  </Button>
+                </div>
 
-                <p className="px-3 pt-5 pb-1.5 text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
-                  Mais
-                </p>
-                {NAV_EXTRA.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    className={({ isActive }) =>
-                      cn(
-                        "flex items-center justify-between px-3 py-2.5 rounded-lg text-[15px] font-medium transition-colors",
-                        isActive ? "bg-primary-soft text-primary" : "text-foreground/85 hover:bg-secondary"
-                      )
-                    }
-                  >
-                    {item.label}
-                  </NavLink>
-                ))}
-              </nav>
-
-              {/* Contato direto */}
-              <div className="px-5 pb-6 mt-auto border-t border-border/60 pt-5 space-y-2.5">
-                <a
-                  href="tel:+552732560000"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/60 hover:bg-secondary transition-colors"
-                >
-                  <span className="grid place-items-center h-9 w-9 rounded-lg bg-primary-soft text-primary"><Phone className="h-4 w-4" /></span>
-                  <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Telefone</p>
-                    <p className="text-sm font-semibold text-foreground">(27) 3256-0000</p>
-                  </div>
-                </a>
-                <a
-                  href="https://wa.me/5527999990000"
-                  target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/60 hover:bg-secondary transition-colors"
-                >
-                  <span className="grid place-items-center h-9 w-9 rounded-lg bg-[#25D366]/15 text-[#128C7E]">
-                    <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><path d="M20.52 3.48A11.86 11.86 0 0 0 12.05 0C5.5 0 .2 5.3.2 11.85a11.78 11.78 0 0 0 1.6 5.94L0 24l6.36-1.66a11.84 11.84 0 0 0 5.69 1.45h.01c6.54 0 11.84-5.3 11.84-11.85 0-3.16-1.23-6.13-3.38-8.46Z"/></svg>
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">WhatsApp</p>
-                    <p className="text-sm font-semibold text-foreground">(27) 99999-0000</p>
-                  </div>
-                </a>
-                <div className="flex items-start gap-3 px-3 pt-1">
-                  <MapPin className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
-                  <p className="text-[11px] text-muted-foreground leading-relaxed">
-                    Av. Venâncio Flores, 350 — Centro, Aracruz/ES
+                {/* Navegação */}
+                <nav className="px-3 py-3" aria-label="Navegação móvel">
+                  <p className="px-3 pt-2 pb-1.5 text-[10px] uppercase tracking-[0.18em] font-semibold text-muted-foreground">
+                    Principal
                   </p>
+                  {NAV.map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      end={item.to === "/"}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center justify-between px-3 py-2.5 rounded-lg text-[15px] font-medium transition-colors",
+                          isActive ? "bg-primary-soft text-primary" : "text-foreground/85 hover:bg-secondary"
+                        )
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  ))}
+
+                  {NAV_EXTRA.map((item) => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center justify-between px-3 py-2.5 rounded-lg text-[15px] font-medium transition-colors",
+                          isActive ? "bg-primary-soft text-primary" : "text-foreground/85 hover:bg-secondary"
+                        )
+                      }
+                    >
+                      {item.label}
+                    </NavLink>
+                  ))}
+                </nav>
+
+                {/* Contato direto */}
+                <div className="px-5 pb-6 border-t border-border/60 pt-5 space-y-2.5">
+                  <a
+                    href="tel:+552732560000"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/60 hover:bg-secondary transition-colors"
+                  >
+                    <span className="grid place-items-center h-9 w-9 rounded-lg bg-primary-soft text-primary"><Phone className="h-4 w-4" /></span>
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Telefone</p>
+                      <p className="text-sm font-semibold text-foreground">(27) 3256-0000</p>
+                    </div>
+                  </a>
+                  <a
+                    href="https://wa.me/5527999990000"
+                    target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/60 hover:bg-secondary transition-colors"
+                  >
+                    <span className="grid place-items-center h-9 w-9 rounded-lg bg-[#25D366]/15 text-[#128C7E]">
+                      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><path d="M20.52 3.48A11.86 11.86 0 0 0 12.05 0C5.5 0 .2 5.3.2 11.85a11.78 11.78 0 0 0 1.6 5.94L0 24l6.36-1.66a11.84 11.84 0 0 0 5.69 1.45h.01c6.54 0 11.84-5.3 11.84-11.85 0-3.16-1.23-6.13-3.38-8.46Z"/></svg>
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">WhatsApp</p>
+                      <p className="text-sm font-semibold text-foreground">(27) 99999-0000</p>
+                    </div>
+                  </a>
+                  <div className="flex items-start gap-3 px-3 pt-1">
+                    <MapPin className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Av. Venâncio Flores, 350 — Centro, Aracruz/ES
+                    </p>
+                  </div>
                 </div>
               </div>
             </SheetContent>
