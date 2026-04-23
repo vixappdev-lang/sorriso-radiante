@@ -26,7 +26,7 @@ function emptyPromo() { return { id: "", title: "", description: "", cta_label: 
 
 export default function AdminSite() {
   const { data: promos = [] } = usePromotions();
-  const { data: siteContent = [] } = useSiteContent();
+  const { data: siteContent = {} } = useSiteContent();
   const upsertPromo = useUpsertPromotion();
   const delPromo = useDeletePromotion();
   const upsertContent = useUpsertSiteContent();
@@ -56,8 +56,7 @@ export default function AdminSite() {
   }
 
   function getContent(key: string): Record<string, any> {
-    const row = siteContent.find((c: any) => c.key === key);
-    return (row?.value as any) || {};
+    return ((siteContent as Record<string, any>)[key] as any) || {};
   }
   async function saveSection(sectionKey: string, value: Record<string, any>) {
     try {
