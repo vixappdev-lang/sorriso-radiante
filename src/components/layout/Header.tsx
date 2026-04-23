@@ -56,7 +56,7 @@ export default function Header() {
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1" aria-label="Principal">
-          {NAV.slice(0, 7).map((item) => (
+          {NAV.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
@@ -78,14 +78,14 @@ export default function Header() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <a
-            href="tel:+551130000000"
+            href="tel:+552732560000"
             className={cn(
               "hidden md:inline-flex items-center gap-2 text-sm font-medium",
               transparent ? "text-white/90 hover:text-white" : "text-foreground/80 hover:text-primary"
             )}
           >
             <Phone className="h-4 w-4" />
-            (11) 3000-0000
+            (27) 3256-0000
           </a>
           <Button
             onClick={() => openSchedule()}
@@ -116,7 +116,7 @@ export default function Header() {
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col p-4" aria-label="Navegação móvel">
-                {NAV.map((item) => (
+                {[...NAV, ...NAV_EXTRA].map((item) => (
                   <NavLink
                     key={item.to}
                     to={item.to}
@@ -139,10 +139,10 @@ export default function Header() {
                   Agendar consulta
                 </Button>
                 <a
-                  href="tel:+551130000000"
+                  href="tel:+552732560000"
                   className="mt-3 inline-flex items-center justify-center gap-2 text-sm font-medium text-foreground/80 py-3"
                 >
-                  <Phone className="h-4 w-4" /> (11) 3000-0000
+                  <Phone className="h-4 w-4" /> (27) 3256-0000
                 </a>
               </nav>
             </SheetContent>
