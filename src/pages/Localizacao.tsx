@@ -7,13 +7,13 @@ export default function Localizacao() {
   return (
     <SiteLayout>
       <SEO
-        title="Localização — Clínica Levii"
-        description="Av. Paulista, 1000 — São Paulo. Como chegar, horários de funcionamento e estacionamento da Clínica Levii."
+        title="Localização — Clínica Levii em Aracruz/ES"
+        description="Av. Venâncio Flores, 350 — Centro, Aracruz/ES. Como chegar, horários e estacionamento da Clínica Levii."
       />
       <PageHero
         eyebrow="Localização"
         title="Estamos prontos para te receber."
-        subtitle="No coração de São Paulo, com fácil acesso por metrô, ônibus e carro."
+        subtitle="No coração de Aracruz/ES, com fácil acesso e estacionamento próximo."
       />
 
       <section className="section">
@@ -21,7 +21,7 @@ export default function Localizacao() {
           <div className="lg:col-span-3 rounded-2xl overflow-hidden border border-border/70 shadow-soft aspect-[4/3] lg:aspect-auto lg:min-h-[460px]">
             <iframe
               title="Localização da Clínica Levii no mapa"
-              src="https://www.google.com/maps?q=Av.+Paulista,+1000,+S%C3%A3o+Paulo&output=embed"
+              src="https://www.google.com/maps?q=Av.+Ven%C3%A2ncio+Flores+Aracruz+ES&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="w-full h-full border-0"
@@ -30,26 +30,26 @@ export default function Localizacao() {
 
           <aside className="lg:col-span-2 grid gap-4 content-start">
             <Info icon={MapPin} title="Endereço">
-              Av. Paulista, 1000 — 12º andar<br />
-              Bela Vista, São Paulo — SP<br />
-              CEP 01310-100
+              Av. Venâncio Flores, 350 — Sala 04<br />
+              Centro, Aracruz — ES<br />
+              CEP 29190-036
             </Info>
             <Info icon={Clock} title="Horário de funcionamento">
-              Segunda a Sexta: 8h às 20h<br />
-              Sábado: 8h às 14h<br />
+              Segunda a Sexta: 8h às 19h<br />
+              Sábado: 8h às 13h<br />
               Emergências: 24h
             </Info>
             <Info icon={Phone} title="Contato">
-              (11) 3000-0000<br />
-              (11) 9 0000-0000 (WhatsApp)<br />
+              (27) 3256-0000<br />
+              (27) 99999-0000 (WhatsApp)<br />
               contato@clinicalevii.com.br
             </Info>
-            <Info icon={TrainFront} title="Transporte público">
-              Metrô Trianon-MASP — 250m<br />
-              Diversas linhas de ônibus
+            <Info icon={TrainFront} title="Como chegar">
+              A 2 min do Centro de Aracruz<br />
+              Próximo à Praça Monsenhor Guilherme Schmitz
             </Info>
             <Info icon={Car} title="Estacionamento">
-              Estacionamento conveniado no edifício, com desconto para pacientes.
+              Estacionamento gratuito para pacientes nas dependências do edifício.
             </Info>
           </aside>
         </div>

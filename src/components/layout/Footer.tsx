@@ -20,7 +20,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="mt-5 text-sm leading-relaxed text-white/70 max-w-xs">
-              Cuidado odontológico de excelência: tecnologia de ponta, atendimento humano e resultados que duram.
+              Cuidado odontológico de excelência em Aracruz/ES: tecnologia de ponta, atendimento humano e resultados que duram.
             </p>
             <div className="mt-5 flex items-center gap-2">
               <a aria-label="Instagram" href="#" className="grid place-items-center h-9 w-9 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-smooth">
@@ -29,8 +29,8 @@ export default function Footer() {
               <a aria-label="Facebook" href="#" className="grid place-items-center h-9 w-9 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-smooth">
                 <Facebook className="h-4 w-4" />
               </a>
-              <a aria-label="WhatsApp" href="https://wa.me/5511900000000" className="grid place-items-center h-9 w-9 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-smooth">
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><path d="M20.52 3.48A11.86 11.86 0 0 0 12.05 0C5.5 0 .2 5.3.2 11.85a11.78 11.78 0 0 0 1.6 5.94L0 24l6.36-1.66a11.84 11.84 0 0 0 5.69 1.45h.01c6.54 0 11.84-5.3 11.84-11.85 0-3.16-1.23-6.13-3.38-8.46Zm-8.47 18.2h-.01a9.84 9.84 0 0 1-5.02-1.38l-.36-.21-3.78.99 1.01-3.68-.23-.38a9.83 9.83 0 0 1-1.51-5.18c0-5.43 4.42-9.85 9.86-9.85 2.63 0 5.1 1.03 6.96 2.89a9.78 9.78 0 0 1 2.88 6.97c0 5.44-4.42 9.83-9.8 9.83Zm5.4-7.36c-.3-.15-1.75-.86-2.02-.96-.27-.1-.47-.15-.66.15-.2.3-.76.96-.93 1.16-.17.2-.34.22-.63.07-.3-.15-1.25-.46-2.38-1.47-.88-.78-1.47-1.74-1.65-2.04-.17-.3-.02-.46.13-.6.13-.13.3-.34.45-.5.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.66-1.6-.91-2.18-.24-.57-.48-.5-.66-.5l-.56-.01c-.2 0-.5.07-.77.37-.26.3-1 1-1 2.43s1.03 2.82 1.18 3.02c.15.2 2.04 3.12 4.95 4.37.69.3 1.23.48 1.65.61.69.22 1.32.19 1.82.12.55-.08 1.75-.71 2-1.4.25-.69.25-1.27.17-1.4-.07-.12-.27-.2-.57-.34Z"/></svg>
+              <a aria-label="WhatsApp" href="https://wa.me/5527999990000" className="grid place-items-center h-9 w-9 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 transition-smooth">
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden><path d="M20.52 3.48A11.86 11.86 0 0 0 12.05 0C5.5 0 .2 5.3.2 11.85a11.78 11.78 0 0 0 1.6 5.94L0 24l6.36-1.66a11.84 11.84 0 0 0 5.69 1.45h.01c6.54 0 11.84-5.3 11.84-11.85 0-3.16-1.23-6.13-3.38-8.46Z"/></svg>
               </a>
             </div>
           </div>
@@ -38,10 +38,10 @@ export default function Footer() {
           <div>
             <h3 className="font-display text-base font-semibold mb-4 text-white">Atendimento</h3>
             <ul className="space-y-3 text-sm text-white/75">
-              <li className="flex items-start gap-2.5"><Phone className="h-4 w-4 mt-0.5 text-primary" /> (11) 3000-0000</li>
-              <li className="flex items-start gap-2.5"><svg viewBox="0 0 24 24" className="h-4 w-4 mt-0.5 text-primary" fill="currentColor" aria-hidden><path d="M20.52 3.48A11.86 11.86 0 0 0 12.05 0C5.5 0 .2 5.3.2 11.85a11.78 11.78 0 0 0 1.6 5.94L0 24l6.36-1.66a11.84 11.84 0 0 0 5.69 1.45h.01c6.54 0 11.84-5.3 11.84-11.85 0-3.16-1.23-6.13-3.38-8.46Z"/></svg>(11) 9 0000-0000 — WhatsApp</li>
-              <li className="flex items-start gap-2.5"><Mail className="h-4 w-4 mt-0.5 text-primary" /> contato@clinicalevii.com.br</li>
-              <li className="flex items-start gap-2.5"><Clock className="h-4 w-4 mt-0.5 text-primary" /> Seg–Sex 8h–20h • Sáb 8h–14h</li>
+              <li className="flex items-start gap-2.5"><Phone className="h-4 w-4 mt-0.5 text-primary-glow" /> (27) 3256-0000</li>
+              <li className="flex items-start gap-2.5"><svg viewBox="0 0 24 24" className="h-4 w-4 mt-0.5 text-primary-glow shrink-0" fill="currentColor" aria-hidden><path d="M20.52 3.48A11.86 11.86 0 0 0 12.05 0C5.5 0 .2 5.3.2 11.85a11.78 11.78 0 0 0 1.6 5.94L0 24l6.36-1.66a11.84 11.84 0 0 0 5.69 1.45h.01c6.54 0 11.84-5.3 11.84-11.85 0-3.16-1.23-6.13-3.38-8.46Z"/></svg>(27) 99999-0000 — WhatsApp</li>
+              <li className="flex items-start gap-2.5"><Mail className="h-4 w-4 mt-0.5 text-primary-glow" /> contato@clinicalevii.com.br</li>
+              <li className="flex items-start gap-2.5"><Clock className="h-4 w-4 mt-0.5 text-primary-glow" /> Seg–Sex 8h–19h • Sáb 8h–13h</li>
             </ul>
           </div>
 
@@ -60,19 +60,21 @@ export default function Footer() {
           <div>
             <h3 className="font-display text-base font-semibold mb-4 text-white">Endereço</h3>
             <p className="text-sm text-white/75 leading-relaxed flex items-start gap-2.5">
-              <MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-              Av. Paulista, 1000 — 12º andar<br/>
-              Bela Vista, São Paulo — SP<br/>
-              CEP 01310-100
+              <MapPin className="h-4 w-4 mt-0.5 text-primary-glow shrink-0" />
+              <span>
+                Av. Venâncio Flores, 350 — Sala 04<br/>
+                Centro, Aracruz — ES<br/>
+                CEP 29190-036
+              </span>
             </p>
-            <Link to="/localizacao" className="mt-4 inline-flex items-center text-sm font-medium text-primary hover:text-primary-glow link-underline">
+            <Link to="/localizacao" className="mt-4 inline-flex items-center text-sm font-medium text-primary-glow hover:text-white link-underline">
               Como chegar
             </Link>
           </div>
         </div>
 
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between text-xs text-white/55">
-          <p>© {year} Clínica Levii. Todos os direitos reservados. CNPJ 00.000.000/0001-00 — Resp. Técnico CRO/SP 00000.</p>
+          <p>© {year} Clínica Levii. Todos os direitos reservados. CNPJ 00.000.000/0001-00 — Resp. Técnico CRO/ES 0000.</p>
           <div className="flex items-center gap-4">
             <a href="#" className="hover:text-white">Política de Privacidade</a>
             <a href="#" className="hover:text-white">Termos de Uso</a>

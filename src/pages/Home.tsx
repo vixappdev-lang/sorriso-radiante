@@ -23,8 +23,8 @@ export default function Home() {
   return (
     <SiteLayout>
       <SEO
-        title="Clínica Levii — Odontologia de Excelência em São Paulo"
-        description="Tecnologia de ponta, atendimento humano e resultados que duram. Implantes, ortodontia, lentes de contato dental e emergência 24h."
+        title="Clínica Levii — Odontologia de Excelência em Aracruz/ES"
+        description="Tecnologia de ponta, atendimento humano e resultados que duram em Aracruz/ES. Implantes, ortodontia, lentes de contato dental e emergência 24h."
       />
 
       {/* HERO — DARK */}
@@ -44,7 +44,7 @@ export default function Home() {
           >
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-dark text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
               <Sparkles className="h-3.5 w-3.5 text-primary-glow" />
-              Odontologia de excelência em São Paulo
+              Odontologia de excelência em Aracruz/ES
             </span>
 
             <h1 className="mt-6 font-display font-semibold h-display text-white text-balance">
@@ -75,15 +75,15 @@ export default function Home() {
               </Button>
             </div>
 
-            <dl className="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-lg">
+            <dl className="mt-12 grid grid-cols-3 gap-3 sm:gap-8 max-w-lg mx-auto sm:mx-0 text-center sm:text-left">
               {[
                 { v: "+15 anos", l: "de experiência" },
                 { v: "+5.000", l: "sorrisos transformados" },
                 { v: "4,9★", l: "avaliação Google" },
               ].map((s) => (
-                <div key={s.l}>
-                  <dt className="font-display text-2xl sm:text-3xl text-white">{s.v}</dt>
-                  <dd className="text-xs sm:text-sm text-white/60 mt-1">{s.l}</dd>
+                <div key={s.l} className="px-1">
+                  <dt className="font-display text-xl sm:text-3xl text-white leading-tight">{s.v}</dt>
+                  <dd className="text-[11px] sm:text-sm text-white/60 mt-1 leading-snug">{s.l}</dd>
                 </div>
               ))}
             </dl>
@@ -200,7 +200,7 @@ export default function Home() {
                 key={t.slug}
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: (i % 3) * 0.06 }}
-                className="group rounded-2xl bg-card border border-border/70 p-6 sm:p-7 hover:border-primary/30 hover:shadow-elegant transition-smooth"
+                className="group rounded-2xl card-elevated p-6 sm:p-7 transition-smooth"
               >
                 <h3 className="font-display text-xl font-semibold">{t.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3">{t.description}</p>
@@ -273,7 +273,7 @@ export default function Home() {
                 key={t.name}
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: (i % 3) * 0.06 }}
-                className="rounded-2xl p-6 sm:p-7 bg-card border border-border/70 shadow-soft"
+                className="rounded-2xl p-6 sm:p-7 card-elevated transition-smooth"
               >
                 <Quote className="h-6 w-6 text-primary/30" />
                 <blockquote className="mt-3 text-[15px] leading-relaxed text-foreground/90">"{t.text}"</blockquote>
