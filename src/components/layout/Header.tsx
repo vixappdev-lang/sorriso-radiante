@@ -20,7 +20,6 @@ const NAV = [
 const NAV_EXTRA = [
   { to: "/equipe", label: "Equipe" },
   { to: "/galeria", label: "Galeria" },
-  { to: "/tecnologia", label: "Tecnologia" },
 ];
 
 export default function Header() {
