@@ -1,10 +1,13 @@
 import { useMemo, useState } from "react";
-import { Calendar as CalendarIcon, RefreshCw, Loader2, Plus, MoreHorizontal, MessageCircle } from "lucide-react";
+import { Plus, RefreshCw, Loader2, Calendar as CalIcon, MessageCircle, Lock } from "lucide-react";
+import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ptBR } from "date-fns/locale";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import PageHeader from "@/admin/components/PageHeader";
 import EmptyState from "@/admin/components/EmptyState";
 import KpiCard from "@/admin/components/KpiCard";
@@ -16,35 +19,55 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { TREATMENTS, DENTISTS } from "@/data/clinic";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { CheckCircle2, XCircle, Clock, Activity } from "lucide-react";
+import { CheckCircle2, XCircle, Clock } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function iso(d: Date) { return d.toISOString().slice(0, 10); }
+function addDays(d: Date, n: number) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function startOfWeek(d: Date) { const x = new Date(d); const day = x.getDay(); x.setDate(x.getDate() - day); return x; }
+
+const STATUS_BG: Record<string, string> = {
+  pending: "bg-amber-50 border-amber-200 text-amber-900",
+  confirmed: "bg-blue-50 border-blue-200 text-blue-900",
+  done: "bg-emerald-50 border-emerald-200 text-emerald-900",
+  cancelled: "bg-rose-50 border-rose-200 text-rose-900 opacity-70",
+};
+
+const HOURS = Array.from({ length: 14 }).map((_, i) => 7 + i); // 07h-20h
 
 export default function AdminAgenda() {
   const { data: appts = [], isLoading, refetch } = useAppointments();
   const qc = useQueryClient();
+  const [view, setView] = useState<"day" | "week" | "month">("day");
   const [selected, setSelected] = useState<Date>(new Date());
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
-  const [drawer, setDrawer] = useState<any | null>(null);
+  const [filterPro, setFilterPro] = useState<string>("__all");
+  const [filterStatus, setFilterStatus] = useState<string>("__all");
+  const [search, setSearch] = useState("");
   const [creating, setCreating] = useState(false);
+  const [blocking, setBlocking] = useState(false);
+  const [drawer, setDrawer] = useState<any | null>(null);
+  const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
   const [form, setForm] = useState({ name: "", phone: "", email: "", treatment: TREATMENTS[0]?.name ?? "", professional: DENTISTS[0]?.name ?? "", date: iso(new Date()), time: "09:00", notes: "" });
+  const [block, setBlock] = useState({ block_date: iso(new Date()), start_time: "12:00", end_time: "13:00", professional_slug: "", reason: "" });
+
+  const filteredAll = useMemo(() => appts.filter((a) => {
+    if (filterPro !== "__all" && a.professional !== filterPro) return false;
+    if (filterStatus !== "__all" && a.status !== filterStatus) return false;
+    if (search && !`${a.name} ${a.phone} ${a.treatment}`.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  }), [appts, filterPro, filterStatus, search]);
 
   const dayKey = iso(selected);
-  const dayAppts = useMemo(
-    () => appts.filter((a) => a.appointment_date === dayKey).sort((a, b) => a.appointment_time.localeCompare(b.appointment_time)),
-    [appts, dayKey],
-  );
-  const datesWith = useMemo(() => new Set(appts.map((a) => a.appointment_date)), [appts]);
+  const dayAppts = useMemo(() => filteredAll.filter((a) => a.appointment_date === dayKey).sort((a,b)=>a.appointment_time.localeCompare(b.appointment_time)), [filteredAll, dayKey]);
 
-  const dayKpis = useMemo(() => ({
+  const dayKpis = {
     total: dayAppts.length,
     confirmed: dayAppts.filter((a) => a.status === "confirmed" || a.status === "done").length,
     pending: dayAppts.filter((a) => a.status === "pending").length,
     cancelled: dayAppts.filter((a) => a.status === "cancelled").length,
-  }), [dayAppts]);
+  };
 
   async function setStatus(id: string, status: string) {
     setBusyId(id);
@@ -77,111 +100,114 @@ export default function AdminAgenda() {
     qc.invalidateQueries({ queryKey: ["admin", "appointments"] });
   }
 
+  async function createBlock() {
+    const { error } = await supabase.from("schedule_blocks").insert(block as any);
+    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
+    toast({ title: "Horário bloqueado" });
+    setBlocking(false);
+    setBlock({ block_date: iso(new Date()), start_time: "12:00", end_time: "13:00", professional_slug: "", reason: "" });
+  }
+
   return (
     <>
       <PageHeader
         title="Agenda"
-        description="Calendário completo, encaixes, confirmações, reagendamentos e cancelamentos."
+        description="Gerencie agendamentos, encaixes e bloqueios em uma visão profissional."
         actions={
           <>
             <Button variant="outline" size="sm" onClick={() => refetch()}><RefreshCw className="h-4 w-4 mr-2" /> Atualizar</Button>
+            <Button variant="outline" size="sm" onClick={() => setBlocking(true)}><Lock className="h-4 w-4 mr-2" /> Bloquear horário</Button>
             <Button size="sm" onClick={() => setCreating(true)}><Plus className="h-4 w-4 mr-2" /> Novo encaixe</Button>
           </>
         }
       />
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
-        <KpiCard label="Agendamentos do dia" value={dayKpis.total} icon={CalendarIcon} accent="blue" />
+        <KpiCard label="Agendamentos do dia" value={dayKpis.total} icon={CalIcon} accent="blue" />
         <KpiCard label="Confirmados" value={dayKpis.confirmed} icon={CheckCircle2} accent="emerald" />
         <KpiCard label="Pendentes" value={dayKpis.pending} icon={Clock} accent="amber" />
         <KpiCard label="Cancelados" value={dayKpis.cancelled} icon={XCircle} accent="rose" />
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-[360px_1fr]">
-        <div className="admin-card p-4">
-          <Calendar
-            mode="single" selected={selected} onSelect={(d) => d && setSelected(d)} locale={ptBR} className="rounded-md"
-            modifiers={{ hasAppt: (d) => datesWith.has(iso(d)) }}
-            modifiersClassNames={{ hasAppt: "relative after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:h-1 after:w-1 after:rounded-full after:bg-primary" }}
-          />
-          <div className="mt-3 px-2 text-xs text-muted-foreground flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary" /> dias com agendamento
+      {/* Toolbar */}
+      <div className="admin-card p-4 mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-wrap items-center gap-3">
+          <Tabs value={view} onValueChange={(v) => setView(v as any)}>
+            <TabsList className="bg-white border h-9">
+              <TabsTrigger value="day" className="text-xs px-3">Dia</TabsTrigger>
+              <TabsTrigger value="week" className="text-xs px-3">Semana</TabsTrigger>
+              <TabsTrigger value="month" className="text-xs px-3">Mês</TabsTrigger>
+            </TabsList>
+          </Tabs>
+          <div className="flex items-center gap-1.5">
+            <Button variant="outline" size="sm" className="h-9" onClick={() => setSelected(addDays(selected, view === "month" ? -30 : view === "week" ? -7 : -1))}>‹</Button>
+            <Button variant="outline" size="sm" className="h-9" onClick={() => setSelected(new Date())}>Hoje</Button>
+            <Button variant="outline" size="sm" className="h-9" onClick={() => setSelected(addDays(selected, view === "month" ? 30 : view === "week" ? 7 : 1))}>›</Button>
           </div>
+          <p className="text-sm font-medium capitalize">
+            {view === "month"
+              ? selected.toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
+              : selected.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}
+          </p>
         </div>
-
-        <div className="admin-card overflow-hidden">
-          <div className="px-5 py-4 border-b border-[hsl(var(--admin-border))] flex items-center justify-between">
-            <div>
-              <h3 className="text-[15px] font-semibold capitalize">
-                {selected.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" })}
-              </h3>
-              <p className="text-xs text-muted-foreground">{dayAppts.length} agendamento(s)</p>
-            </div>
-          </div>
-
-          {isLoading ? (
-            <div className="p-10 grid place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>
-          ) : dayAppts.length === 0 ? (
-            <div className="p-5">
-              <EmptyState icon={CalendarIcon} title="Sem agendamentos neste dia" description="Selecione outro dia ou crie um encaixe." action={<Button size="sm" onClick={() => setCreating(true)}><Plus className="h-4 w-4 mr-2" /> Criar encaixe</Button>} />
-            </div>
-          ) : (
-            <ul className="divide-y divide-[hsl(var(--admin-border))]">
-              {dayAppts.map((a) => (
-                <li key={a.id} className="px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                  <div className="text-center min-w-[68px]">
-                    <p className="text-lg font-semibold tabular-nums">{a.appointment_time}</p>
-                    <StatusPill status={a.status} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium">{a.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{a.treatment} {a.professional && `· ${a.professional}`} · {a.phone}</p>
-                    {a.notes && <p className="text-xs text-muted-foreground mt-1 italic line-clamp-2">"{a.notes}"</p>}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <Button size="sm" variant="outline" disabled={busyId === a.id || a.status === "confirmed"} onClick={() => setStatus(a.id, "confirmed")}>Confirmar</Button>
-                    <Button size="sm" variant="outline" disabled={busyId === a.id || a.status === "done"} onClick={() => setStatus(a.id, "done")}>Concluir</Button>
-                    <Button size="sm" variant="ghost" onClick={() => setDrawer({ ...a })}><MoreHorizontal className="h-4 w-4" /></Button>
-                    <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setConfirmCancel(a.id)}>Cancelar</Button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
+        <div className="flex flex-wrap items-center gap-2">
+          <Select value={filterPro} onValueChange={setFilterPro}>
+            <SelectTrigger className="h-9 w-[180px]"><SelectValue placeholder="Profissional" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all">Todos profissionais</SelectItem>
+              {DENTISTS.map((d) => <SelectItem key={d.slug} value={d.name}>{d.name}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="h-9 w-[160px]"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__all">Todos status</SelectItem>
+              <SelectItem value="pending">Pendentes</SelectItem>
+              <SelectItem value="confirmed">Confirmados</SelectItem>
+              <SelectItem value="done">Concluídos</SelectItem>
+              <SelectItem value="cancelled">Cancelados</SelectItem>
+            </SelectContent>
+          </Select>
+          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar paciente…" className="h-9 w-full sm:w-56" />
         </div>
       </div>
 
+      {/* Visões */}
+      {view === "day" && (
+        <DayTimeline appts={dayAppts} isLoading={isLoading} onOpen={(a) => setDrawer({ ...a })} onSetStatus={setStatus} onCancel={(id) => setConfirmCancel(id)} busyId={busyId} />
+      )}
+      {view === "week" && (
+        <WeekGrid base={selected} appts={filteredAll} onOpen={(a) => setDrawer({ ...a })} />
+      )}
+      {view === "month" && (
+        <MonthCalendar selected={selected} setSelected={setSelected} appts={filteredAll} />
+      )}
+
       {/* Drawer reagendar */}
-      <EntityDrawer
-        open={!!drawer} onOpenChange={(v) => !v && setDrawer(null)}
-        title="Reagendar / detalhes"
-        footer={<div className="flex gap-2 justify-end"><Button variant="outline" onClick={() => setDrawer(null)}>Fechar</Button><Button onClick={reschedule}>Salvar</Button></div>}
-      >
+      <EntityDrawer open={!!drawer} onOpenChange={(v) => !v && setDrawer(null)} title="Reagendar / detalhes"
+        footer={drawer ? <div className="flex gap-2 justify-end"><Button variant="outline" onClick={() => setDrawer(null)}>Fechar</Button><Button onClick={reschedule}>Salvar</Button></div> : undefined}>
         {drawer && (
           <div className="space-y-4">
-            <div>
-              <Label className="text-xs">Paciente</Label>
-              <p className="text-sm font-medium">{drawer.name} · {drawer.phone}</p>
-            </div>
+            <div><Label className="text-xs">Paciente</Label><p className="text-sm font-medium">{drawer.name} · {drawer.phone}</p><p className="text-xs text-muted-foreground">{drawer.treatment} · {drawer.professional}</p></div>
             <div className="grid grid-cols-2 gap-3">
               <div><Label className="text-xs">Data</Label><Input type="date" value={drawer.appointment_date} onChange={(e) => setDrawer({ ...drawer, appointment_date: e.target.value })} /></div>
               <div><Label className="text-xs">Horário</Label><Input type="time" value={drawer.appointment_time} onChange={(e) => setDrawer({ ...drawer, appointment_time: e.target.value })} /></div>
             </div>
-            <div>
-              <a href={`https://wa.me/55${(drawer.phone || "").replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
-                <Button variant="outline" className="w-full"><MessageCircle className="h-4 w-4 mr-2 text-emerald-600" /> Avisar paciente no WhatsApp</Button>
-              </a>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" onClick={() => setStatus(drawer.id, "confirmed")} disabled={busyId === drawer.id}>Confirmar</Button>
+              <Button size="sm" variant="outline" onClick={() => setStatus(drawer.id, "done")} disabled={busyId === drawer.id}>Concluir</Button>
+              <Button size="sm" variant="ghost" className="text-destructive ml-auto" onClick={() => setConfirmCancel(drawer.id)}>Cancelar</Button>
             </div>
+            <a href={`https://wa.me/55${(drawer.phone || "").replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+              <Button variant="outline" className="w-full"><MessageCircle className="h-4 w-4 mr-2 text-emerald-600" /> Avisar paciente no WhatsApp</Button>
+            </a>
           </div>
         )}
       </EntityDrawer>
 
-      {/* Drawer criar encaixe */}
-      <EntityDrawer
-        open={creating} onOpenChange={setCreating}
-        title="Novo encaixe" description="Cria um agendamento já confirmado"
-        footer={<div className="flex gap-2 justify-end"><Button variant="outline" onClick={() => setCreating(false)}>Cancelar</Button><Button onClick={createEncaixe} disabled={!form.name || !form.phone}>Criar</Button></div>}
-      >
+      {/* Drawer encaixe */}
+      <EntityDrawer open={creating} onOpenChange={setCreating} title="Novo encaixe" description="Cria um agendamento já confirmado"
+        footer={<div className="flex gap-2 justify-end"><Button variant="outline" onClick={() => setCreating(false)}>Cancelar</Button><Button onClick={createEncaixe} disabled={!form.name || !form.phone}>Criar</Button></div>}>
         <div className="grid gap-3">
           <div><Label className="text-xs">Nome*</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
           <div className="grid grid-cols-2 gap-3">
@@ -189,15 +215,13 @@ export default function AdminAgenda() {
             <div><Label className="text-xs">E-mail</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="text-xs">Tratamento</Label>
+            <div><Label className="text-xs">Tratamento</Label>
               <Select value={form.treatment} onValueChange={(v) => setForm({ ...form, treatment: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{TREATMENTS.map((t) => <SelectItem key={t.slug} value={t.name}>{t.name}</SelectItem>)}</SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className="text-xs">Profissional</Label>
+            <div><Label className="text-xs">Profissional</Label>
               <Select value={form.professional} onValueChange={(v) => setForm({ ...form, professional: v })}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>{DENTISTS.map((d) => <SelectItem key={d.slug} value={d.name}>{d.name}</SelectItem>)}</SelectContent>
@@ -212,12 +236,130 @@ export default function AdminAgenda() {
         </div>
       </EntityDrawer>
 
-      <ConfirmDialog
-        open={!!confirmCancel} onOpenChange={(v) => !v && setConfirmCancel(null)}
-        title="Cancelar agendamento?" description="Essa ação não pode ser desfeita pelo painel." destructive
-        confirmLabel="Sim, cancelar"
-        onConfirm={async () => { if (confirmCancel) { await setStatus(confirmCancel, "cancelled"); setConfirmCancel(null); } }}
-      />
+      {/* Drawer bloqueio */}
+      <EntityDrawer open={blocking} onOpenChange={setBlocking} title="Bloquear horário" description="Bloqueia um intervalo na agenda."
+        footer={<div className="flex gap-2 justify-end"><Button variant="outline" onClick={() => setBlocking(false)}>Cancelar</Button><Button onClick={createBlock}>Bloquear</Button></div>}>
+        <div className="grid gap-3">
+          <div><Label className="text-xs">Data</Label><Input type="date" value={block.block_date} onChange={(e) => setBlock({ ...block, block_date: e.target.value })} /></div>
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label className="text-xs">Início</Label><Input type="time" value={block.start_time} onChange={(e) => setBlock({ ...block, start_time: e.target.value })} /></div>
+            <div><Label className="text-xs">Fim</Label><Input type="time" value={block.end_time} onChange={(e) => setBlock({ ...block, end_time: e.target.value })} /></div>
+          </div>
+          <div><Label className="text-xs">Profissional (opcional)</Label>
+            <Select value={block.professional_slug} onValueChange={(v) => setBlock({ ...block, professional_slug: v })}>
+              <SelectTrigger><SelectValue placeholder="Todos" /></SelectTrigger>
+              <SelectContent>{DENTISTS.map((d) => <SelectItem key={d.slug} value={d.slug}>{d.name}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div><Label className="text-xs">Motivo</Label><Input value={block.reason} onChange={(e) => setBlock({ ...block, reason: e.target.value })} placeholder="Almoço, reunião…" /></div>
+        </div>
+      </EntityDrawer>
+
+      <ConfirmDialog open={!!confirmCancel} onOpenChange={(v) => !v && setConfirmCancel(null)}
+        title="Cancelar agendamento?" description="Essa ação não pode ser desfeita pelo painel." destructive confirmLabel="Sim, cancelar"
+        onConfirm={async () => { if (confirmCancel) { await setStatus(confirmCancel, "cancelled"); setConfirmCancel(null); } }} />
     </>
+  );
+}
+
+function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }: any) {
+  if (isLoading) return <div className="admin-card p-10 grid place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>;
+  if (appts.length === 0) return <div className="admin-card p-5"><EmptyState icon={CalIcon} title="Sem agendamentos neste dia" description="Selecione outro dia, crie um encaixe ou ajuste os filtros." /></div>;
+
+  const map: Record<number, any[]> = {};
+  appts.forEach((a: any) => { const h = parseInt(a.appointment_time.slice(0, 2), 10); (map[h] = map[h] || []).push(a); });
+
+  return (
+    <div className="admin-card overflow-hidden">
+      <div className="divide-y divide-[hsl(var(--admin-border))]">
+        {HOURS.map((h) => (
+          <div key={h} className="grid grid-cols-[64px_1fr] gap-3 px-3 sm:px-5 py-3 min-h-[68px]">
+            <div className="text-xs font-semibold text-muted-foreground tabular-nums pt-1">{String(h).padStart(2, "0")}:00</div>
+            <div className="flex flex-col gap-2">
+              {(map[h] ?? []).length === 0 ? <div className="h-full" /> : (map[h] ?? []).map((a) => (
+                <button key={a.id} onClick={() => onOpen(a)} className={cn("group text-left rounded-xl border px-3 py-2.5 hover:shadow-sm transition", STATUS_BG[a.status] || "bg-slate-50 border-slate-200")}>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold tabular-nums">{a.appointment_time}</span>
+                    <span className="text-sm font-medium truncate">{a.name}</span>
+                    <StatusPill status={a.status} />
+                  </div>
+                  <p className="text-[12px] mt-0.5 opacity-80 truncate">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
+                  <div className="mt-2 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                    <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busyId === a.id || a.status === "confirmed"} onClick={() => onSetStatus(a.id, "confirmed")}>Confirmar</Button>
+                    <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busyId === a.id || a.status === "done"} onClick={() => onSetStatus(a.id, "done")}>Concluir</Button>
+                    <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive ml-auto" onClick={() => onCancel(a.id)}>Cancelar</Button>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WeekGrid({ base, appts, onOpen }: any) {
+  const start = startOfWeek(base);
+  const days = Array.from({ length: 7 }).map((_, i) => addDays(start, i));
+  return (
+    <div className="admin-card overflow-hidden">
+      <div className="grid grid-cols-7 border-b border-[hsl(var(--admin-border))]">
+        {days.map((d) => (
+          <div key={iso(d)} className="px-3 py-3 text-center border-r last:border-r-0 border-[hsl(var(--admin-border))]">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.toLocaleDateString("pt-BR", { weekday: "short" })}</p>
+            <p className="text-lg font-semibold tabular-nums">{d.getDate()}</p>
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 min-h-[420px]">
+        {days.map((d) => {
+          const list = appts.filter((a: any) => a.appointment_date === iso(d)).sort((a: any, b: any) => a.appointment_time.localeCompare(b.appointment_time));
+          return (
+            <div key={iso(d)} className="border-r last:border-r-0 border-[hsl(var(--admin-border))] p-2 space-y-1.5">
+              {list.length === 0 && <p className="text-[11px] text-muted-foreground text-center mt-2">—</p>}
+              {list.map((a: any) => (
+                <button key={a.id} onClick={() => onOpen(a)} className={cn("w-full text-left rounded-lg border px-2 py-1.5", STATUS_BG[a.status] || "bg-slate-50 border-slate-200")}>
+                  <p className="text-[11px] font-semibold tabular-nums">{a.appointment_time}</p>
+                  <p className="text-[11px] truncate font-medium">{a.name}</p>
+                  <p className="text-[10px] truncate opacity-75">{a.treatment}</p>
+                </button>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function MonthCalendar({ selected, setSelected, appts }: any) {
+  const counts = useMemo(() => {
+    const m: Record<string, number> = {};
+    appts.forEach((a: any) => { m[a.appointment_date] = (m[a.appointment_date] || 0) + 1; });
+    return m;
+  }, [appts]);
+  return (
+    <div className="admin-card p-5 grid lg:grid-cols-[420px_1fr] gap-6">
+      <Calendar mode="single" selected={selected} onSelect={(d) => d && setSelected(d)} locale={ptBR}
+        modifiers={{ hasAppt: (d) => !!counts[iso(d)] }}
+        modifiersClassNames={{ hasAppt: "relative font-semibold after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:h-1.5 after:w-1.5 after:rounded-full after:bg-primary" }} />
+      <div>
+        <p className="text-sm font-medium mb-3">Agendamentos em {selected.toLocaleDateString("pt-BR", { day: "2-digit", month: "long" })}</p>
+        <ul className="space-y-2">
+          {appts.filter((a: any) => a.appointment_date === iso(selected)).map((a: any) => (
+            <li key={a.id} className={cn("rounded-lg border px-3 py-2 flex items-center gap-3", STATUS_BG[a.status])}>
+              <span className="text-sm font-semibold tabular-nums w-14">{a.appointment_time}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{a.name}</p>
+                <p className="text-xs opacity-80 truncate">{a.treatment} · {a.professional}</p>
+              </div>
+              <StatusPill status={a.status} />
+            </li>
+          ))}
+          {!appts.some((a: any) => a.appointment_date === iso(selected)) && <p className="text-xs text-muted-foreground">Sem agendamentos.</p>}
+        </ul>
+      </div>
+    </div>
   );
 }

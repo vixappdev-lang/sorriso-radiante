@@ -273,50 +273,6 @@ export default function AdminDashboard() {
         </ChartFrame>
       </div>
 
-      {/* Linha 3: Resumo financeiro */}
-      <div className="mt-4 admin-card p-5">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h3 className="text-[15px] font-semibold">Resumo financeiro estimado</h3>
-            <p className="text-xs text-muted-foreground">Calculado a partir da tabela de tratamentos × agendamentos</p>
-          </div>
-          <a href="/admin/financeiro" className="text-xs font-medium text-primary hover:underline">Ver financeiro completo →</a>
-        </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <MiniStat label="Faturamento" value={stats.revenue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} delta={stats.deltas.revenue} />
-          <MiniStat label="Confirmados (R$)" value={appts.filter((a) => a.status === "confirmed").reduce((s, a) => s + priceForTreatment(a.treatment), 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} />
-          <MiniStat label="Pendentes" value={`${stats.pending}`} subtle="aguardando confirmação" />
-          <MiniStat label="Ticket médio" value={(stats.revenue / Math.max(1, appts.filter((a) => a.status === "confirmed" || a.status === "done").length)).toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 })} />
-        </div>
-      </div>
     </>
   );
-}
-
-function MiniStat({ label, value, delta, subtle }: { label: string; value: string; delta?: number; subtle?: string }) {
-  return (
-    <div>
-      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="mt-1 text-xl font-semibold tracking-tight">{value}</p>
-      {typeof delta === "number" ? (
-        <p className={`mt-0.5 text-xs font-medium ${delta >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-          {delta > 0 ? "+" : ""}{delta}% <span className="text-muted-foreground font-normal">vs período anterior</span>
-        </p>
-      ) : (
-        subtle && <p className="mt-0.5 text-xs text-muted-foreground">{subtle}</p>
-      )}
-    </div>
-  );
-}
-
-function _StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; className: string; Icon: any }> = {
-    pending: { label: "Pendente", className: "bg-amber-50 text-amber-700 border-amber-200", Icon: AlertCircle },
-    confirmed: { label: "Confirmado", className: "bg-blue-50 text-blue-700 border-blue-200", Icon: CheckCircle2 },
-    done: { label: "Concluído", className: "bg-emerald-50 text-emerald-700 border-emerald-200", Icon: CheckCircle2 },
-    cancelled: { label: "Cancelado", className: "bg-red-50 text-red-700 border-red-200", Icon: XCircle },
-  };
-  const m = map[status] || { label: status, className: "bg-muted", Icon: AlertCircle };
-  const Icon = m.Icon;
-  return <span className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full border ${m.className}`}><Icon className="h-3 w-3" /> {m.label}</span>;
 }
