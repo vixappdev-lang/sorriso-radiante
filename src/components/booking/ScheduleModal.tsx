@@ -388,3 +388,14 @@ function Summary({ icon: Icon, label, value }: { icon: any; label: string; value
     </div>
   );
 }
+
+function Step({ n, children }: { n: number; children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-3">
+      <span className="grid place-items-center h-6 w-6 rounded-full bg-primary-soft text-primary text-[11px] font-bold shrink-0 mt-0.5">
+        {n}
+      </span>
+      <span className="leading-relaxed pt-0.5">{children}</span>
+    </li>
+  );
+}
