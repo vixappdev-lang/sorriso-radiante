@@ -15,7 +15,7 @@ export default function PageHero({ eyebrow, title, subtitle, children }: Props) 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
+          transition={{ duration: 0.6, ease: "easeOut" as const }}
           className="max-w-3xl"
         >
           {eyebrow && <span className="eyebrow">{eyebrow}</span>}

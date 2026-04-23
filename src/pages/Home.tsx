@@ -39,7 +39,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.7, ease: "easeOut" as const }}
             className="lg:col-span-7"
           >
             <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-dark text-xs font-semibold uppercase tracking-[0.18em] text-white/85">
@@ -93,7 +93,7 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.15, ease: [0.2, 0.8, 0.2, 1] }}
+            transition={{ duration: 0.8, delay: 0.15, ease: "easeOut" as const }}
             className="lg:col-span-5 relative"
           >
             <div className="relative rounded-[28px] overflow-hidden border border-white/10 shadow-elegant">
