@@ -92,10 +92,10 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     /* ===== Admin Panel tokens (premium SaaS look) ===== */
-    --admin-bg: 220 24% 97%;
+    --admin-bg: 220 22% 95%;
     --admin-card: 0 0% 100%;
-    --admin-border: 220 18% 91%;
-    --admin-border-strong: 220 18% 84%;
+    --admin-border: 220 16% 86%;
+    --admin-border-strong: 220 16% 78%;
     --admin-text: 222 32% 12%;
     --admin-text-muted: 220 12% 46%;
     --admin-sidebar: 222 32% 9%;
@@ -229,8 +229,23 @@
   }
 
   /* ===== Admin namespace utilities ===== */
-  .admin-shell { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-feature-settings: 'cv11','ss01','ss03'; color: hsl(var(--admin-text)); }
-  .admin-shell h1, .admin-shell h2, .admin-shell h3, .admin-shell h4 {
+  .admin-shell,
+  .admin-shell p,
+  .admin-shell span,
+  .admin-shell button,
+  .admin-shell input,
+  .admin-shell select,
+  .admin-shell textarea,
+  .admin-shell label,
+  .admin-shell li,
+  .admin-shell a,
+  .admin-shell td,
+  .admin-shell th {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'cv11','ss01','ss03';
+  }
+  .admin-shell { color: hsl(var(--admin-text)); }
+  .admin-shell h1, .admin-shell h2, .admin-shell h3, .admin-shell h4, .admin-shell h5, .admin-shell h6 {
     font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     letter-spacing: -0.018em;
     font-weight: 600;
@@ -238,17 +253,17 @@
   .admin-card {
     background: hsl(var(--admin-card));
     border: 1px solid hsl(var(--admin-border));
-    border-radius: 16px;
+    border-radius: 14px;
     box-shadow:
       0 1px 2px hsl(220 25% 12% / 0.04),
-      0 8px 24px -16px hsl(220 25% 12% / 0.08);
+      0 1px 3px hsl(220 25% 12% / 0.05);
   }
   .admin-card-hover { transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease; }
   .admin-card-hover:hover {
     box-shadow:
       0 1px 2px hsl(220 25% 12% / 0.05),
-      0 14px 32px -18px hsl(220 25% 12% / 0.18);
-    border-color: hsl(220 18% 86%);
+      0 8px 22px -10px hsl(220 25% 12% / 0.16);
+    border-color: hsl(var(--admin-border-strong));
   }
   .admin-soft-grid {
     background-image: radial-gradient(circle, hsl(220 20% 70% / 0.18) 1px, transparent 1px);

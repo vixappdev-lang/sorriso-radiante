@@ -10,9 +10,9 @@ export default function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-4 flex flex-col gap-2 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
+    <div className="mb-3 flex flex-col gap-2 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="min-w-0">
-        <h1 className="text-[22px] font-semibold tracking-[-0.02em] sm:text-[26px] leading-tight">{title}</h1>
+        <h1 className="text-[20px] font-semibold tracking-[-0.02em] sm:text-[24px] leading-tight">{title}</h1>
         {description && (
           <p className="mt-0.5 max-w-2xl text-[13px] text-[hsl(var(--admin-text-muted))]">{description}</p>
         )}

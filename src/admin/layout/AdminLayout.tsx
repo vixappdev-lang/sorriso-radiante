@@ -25,7 +25,7 @@ export default function AdminLayout() {
         {/* Conteúdo */}
         <div className="flex-1 min-w-0 flex flex-col">
           <AdminTopbar onOpenSidebar={() => setMobileOpen(true)} />
-          <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-4 pb-8 lg:pt-5 lg:pb-10 w-full max-w-[1600px]">
+          <main className="flex-1 px-4 sm:px-6 lg:px-8 pt-3 pb-8 lg:pt-4 lg:pb-10 w-full max-w-[1600px]">
             <Outlet />
           </main>
         </div>
