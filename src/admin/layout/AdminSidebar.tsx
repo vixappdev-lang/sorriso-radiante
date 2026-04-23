@@ -15,9 +15,11 @@ import {
   LogOut,
   LifeBuoy,
 } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { adminSignOut, useAdminSession } from "@/admin/hooks/useAdminSession";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import ConfirmDialog from "@/admin/components/ConfirmDialog";
 
 export const NAV_ITEMS = [
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -38,6 +40,7 @@ export default function AdminSidebar({ onNavigate }: { onNavigate?: () => void }
   const location = useLocation();
   const { user } = useAdminSession();
   const initials = (user?.email ?? "AD").slice(0, 2).toUpperCase();
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   return (
     <aside className="flex h-full w-full flex-col bg-[hsl(var(--admin-sidebar))] text-white">
@@ -102,12 +105,26 @@ export default function AdminSidebar({ onNavigate }: { onNavigate?: () => void }
         </div>
         <button
           className="w-full flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] text-white/60 hover:bg-white/[0.04] hover:text-white transition-colors"
-          onClick={() => adminSignOut().then(() => window.location.assign("/admin/login"))}
+          onClick={() => setLogoutOpen(true)}
         >
           <LogOut className="h-[18px] w-[18px]" />
           Sair
         </button>
       </div>
+
+      <ConfirmDialog
+        open={logoutOpen}
+        onOpenChange={setLogoutOpen}
+        title="Tem certeza que deseja sair?"
+        description="Você será desconectado da sua conta de administrador e precisará entrar novamente para acessar o painel."
+        confirmLabel="Sim, sair"
+        cancelLabel="Cancelar"
+        destructive
+        onConfirm={async () => {
+          await adminSignOut();
+          window.location.assign("/admin/login");
+        }}
+      />
     </aside>
   );
 }
