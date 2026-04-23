@@ -54,7 +54,6 @@ export default function Footer() {
               <li><Link to="/sobre" className="link-underline hover:text-white">Sobre a clínica</Link></li>
               <li><Link to="/tratamentos" className="link-underline hover:text-white">Tratamentos</Link></li>
               <li><Link to="/equipe" className="link-underline hover:text-white">Equipe</Link></li>
-              <li><Link to="/tecnologia" className="link-underline hover:text-white">Tecnologia</Link></li>
               <li><Link to="/galeria" className="link-underline hover:text-white">Galeria</Link></li>
               <li><Link to="/servicos" className="link-underline hover:text-white">Serviços e preços</Link></li>
             </ul>

@@ -7,7 +7,7 @@ import PageHero from "@/components/layout/PageHero";
 type GalleryItem = {
   src: string;
   alt: string;
-  category: "Ambiente" | "Tecnologia" | "Resultados" | "Equipe";
+  category: "Ambiente" | "Resultados" | "Equipe";
   caption: string;
   size?: "tall" | "wide" | "default";
 };
@@ -15,16 +15,16 @@ type GalleryItem = {
 const IMAGES: GalleryItem[] = [
   { src: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1100&q=80&auto=format&fit=crop", alt: "Sorriso natural após tratamento estético", category: "Resultados", caption: "Lentes de contato dental — resultado natural", size: "tall" },
   { src: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1100&q=80&auto=format&fit=crop", alt: "Recepção moderna e acolhedora da clínica", category: "Ambiente", caption: "Recepção pensada para o seu conforto" },
-  { src: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=1200&q=80&auto=format&fit=crop", alt: "Equipamentos odontológicos modernos", category: "Tecnologia", caption: "Tecnologia de ponta em cada consultório", size: "wide" },
+  { src: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=1200&q=80&auto=format&fit=crop", alt: "Equipamentos odontológicos modernos", category: "Ambiente", caption: "Consultórios com equipamentos de ponta", size: "wide" },
   { src: "https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=1100&q=80&auto=format&fit=crop", alt: "Consultório clínico aconchegante", category: "Ambiente", caption: "Ambiente clínico premium", size: "tall" },
   { src: "https://images.unsplash.com/photo-1606265752439-1f18756aa5fc?w=1100&q=80&auto=format&fit=crop", alt: "Equipe atendendo paciente com cuidado", category: "Equipe", caption: "Atendimento humano e atencioso" },
-  { src: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=1100&q=80&auto=format&fit=crop", alt: "Planejamento digital de tratamento odontológico", category: "Tecnologia", caption: "Planejamento digital 3D" },
+  { src: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=1100&q=80&auto=format&fit=crop", alt: "Planejamento digital de tratamento odontológico", category: "Resultados", caption: "Planejamento digital 3D" },
   { src: "https://images.unsplash.com/photo-1581585504064-a233a2b9e96c?w=1200&q=80&auto=format&fit=crop", alt: "Detalhe do consultório moderno", category: "Ambiente", caption: "Detalhes que fazem a diferença", size: "wide" },
   { src: "https://images.unsplash.com/photo-1564420179856-f70bf493b1bd?w=1100&q=80&auto=format&fit=crop", alt: "Profissional examinando paciente", category: "Equipe", caption: "Diagnóstico preciso, tratamento certeiro" },
-  { src: "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=1100&q=80&auto=format&fit=crop", alt: "Microscópio em uso durante procedimento", category: "Tecnologia", caption: "Microscopia operatória de alta precisão", size: "tall" },
+  { src: "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=1100&q=80&auto=format&fit=crop", alt: "Microscópio em uso durante procedimento", category: "Resultados", caption: "Procedimentos com alta precisão", size: "tall" },
 ];
 
-const CATEGORIES = ["Todos", "Ambiente", "Tecnologia", "Resultados", "Equipe"] as const;
+const CATEGORIES = ["Todos", "Ambiente", "Resultados", "Equipe"] as const;
 
 import { useState } from "react";
 
