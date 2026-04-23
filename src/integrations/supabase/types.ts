@@ -14,7 +14,84 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          professional: string | null
+          status: string
+          treatment: string
+          whatsapp_response: Json | null
+          whatsapp_sent: boolean
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          professional?: string | null
+          status?: string
+          treatment: string
+          whatsapp_response?: Json | null
+          whatsapp_sent?: boolean
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          professional?: string | null
+          status?: string
+          treatment?: string
+          whatsapp_response?: Json | null
+          whatsapp_sent?: boolean
+        }
+        Relationships: []
+      }
+      chatpro_config: {
+        Row: {
+          endpoint: string
+          id: string
+          instance_code: string
+          is_active: boolean
+          message_template: string
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          endpoint: string
+          id?: string
+          instance_code: string
+          is_active?: boolean
+          message_template?: string
+          token: string
+          updated_at?: string
+        }
+        Update: {
+          endpoint?: string
+          id?: string
+          instance_code?: string
+          is_active?: boolean
+          message_template?: string
+          token?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
