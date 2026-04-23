@@ -30,9 +30,17 @@ export default function Tratamentos() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.45, delay: (i % 3) * 0.05, ease: "easeOut" }}
-              className="group flex flex-col rounded-2xl card-elevated p-6 sm:p-7 transition-smooth"
+              className="group relative flex flex-col rounded-2xl card-elevated p-6 sm:p-7 transition-smooth overflow-hidden"
             >
-              <h3 className="font-display text-xl font-semibold">{t.name}</h3>
+              {/* Acento superior sutil */}
+              <span className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+              {/* Numeração discreta */}
+              <span className="absolute top-5 right-5 font-display text-3xl text-primary/10 font-semibold leading-none select-none">
+                {String(i + 1).padStart(2, "0")}
+              </span>
+
+              <h3 className="font-display text-xl font-semibold pr-12">{t.name}</h3>
               <p className="mt-1 text-sm text-primary font-medium">{t.short}</p>
               <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{t.description}</p>
 
@@ -49,8 +57,8 @@ export default function Tratamentos() {
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground">A partir de</p>
                   <p className="font-semibold text-foreground">{t.priceFrom}</p>
                 </div>
-                <Button onClick={() => open(t.slug)} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  Agendar <ArrowRight className="h-4 w-4 ml-1" />
+                <Button onClick={() => open(t.slug)} size="sm" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-soft group-hover:shadow-glow transition-shadow">
+                  Agendar <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-0.5 transition-transform" />
                 </Button>
               </div>
             </motion.article>
