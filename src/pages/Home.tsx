@@ -200,7 +200,7 @@ export default function Home() {
                 key={t.slug}
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: (i % 3) * 0.06 }}
-                className="group rounded-2xl bg-card border border-border/70 p-6 sm:p-7 hover:border-primary/30 hover:shadow-elegant transition-smooth"
+                className="group rounded-2xl card-elevated p-6 sm:p-7 transition-smooth"
               >
                 <h3 className="font-display text-xl font-semibold">{t.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-3">{t.description}</p>
@@ -273,7 +273,7 @@ export default function Home() {
                 key={t.name}
                 {...fadeUp}
                 transition={{ ...fadeUp.transition, delay: (i % 3) * 0.06 }}
-                className="rounded-2xl p-6 sm:p-7 bg-card border border-border/70 shadow-soft"
+                className="rounded-2xl p-6 sm:p-7 card-elevated transition-smooth"
               >
                 <Quote className="h-6 w-6 text-primary/30" />
                 <blockquote className="mt-3 text-[15px] leading-relaxed text-foreground/90">"{t.text}"</blockquote>

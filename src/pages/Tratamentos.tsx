@@ -30,7 +30,7 @@ export default function Tratamentos() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.45, delay: (i % 3) * 0.05, ease: "easeOut" }}
-              className="group flex flex-col rounded-2xl bg-card border border-border/70 p-6 sm:p-7 hover:border-primary/30 hover:shadow-elegant transition-smooth"
+              className="group flex flex-col rounded-2xl card-elevated p-6 sm:p-7 transition-smooth"
             >
               <h3 className="font-display text-xl font-semibold">{t.name}</h3>
               <p className="mt-1 text-sm text-primary font-medium">{t.short}</p>
