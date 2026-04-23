@@ -125,16 +125,16 @@ export const DENTISTS: Dentist[] = [
   {
     slug: "dra-camila-levii",
     name: "Dra. Camila Levii",
-    cro: "CRO/SP 78.421",
+    cro: "CRO/ES 5.421",
     specialty: "Implantodontia & Estética",
-    bio: "Diretora clínica, com mais de 15 anos dedicados à reabilitação oral e estética avançada. Mestre em Implantodontia pela USP.",
+    bio: "Diretora clínica, com mais de 15 anos dedicados à reabilitação oral e estética avançada. Mestre em Implantodontia.",
     photo: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=80",
-    formation: ["Mestre em Implantodontia — USP", "Especialista em Prótese Dental", "Membro ITI Brasil"],
+    formation: ["Mestre em Implantodontia", "Especialista em Prótese Dental", "Membro ITI Brasil"],
   },
   {
     slug: "dr-rafael-monteiro",
     name: "Dr. Rafael Monteiro",
-    cro: "CRO/SP 92.034",
+    cro: "CRO/ES 6.034",
     specialty: "Ortodontia Digital",
     bio: "Especialista em alinhadores invisíveis, com mais de 1.200 casos finalizados. Apaixonado por planejamento digital e resultados naturais.",
     photo: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=900&q=80",
@@ -143,58 +143,82 @@ export const DENTISTS: Dentist[] = [
   {
     slug: "dra-juliana-prado",
     name: "Dra. Juliana Prado",
-    cro: "CRO/SP 85.117",
+    cro: "CRO/ES 5.117",
     specialty: "Odontopediatria",
     bio: "Cuida do sorriso das crianças com ambiente lúdico e abordagem humanizada. Atende desde o primeiro dentinho até a adolescência.",
     photo: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=900&q=80",
-    formation: ["Especialista em Odontopediatria — UNESP", "Atualização em Pacientes Especiais"],
+    formation: ["Especialista em Odontopediatria", "Atualização em Pacientes Especiais"],
   },
   {
     slug: "dr-andre-vasconcelos",
     name: "Dr. André Vasconcelos",
-    cro: "CRO/SP 71.882",
+    cro: "CRO/ES 4.882",
     specialty: "Endodontia & Microscopia",
     bio: "Referência em tratamentos de canal com microscopia de alta precisão. Resolve casos complexos preservando o dente natural.",
     photo: "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?auto=format&fit=crop&w=900&q=80",
-    formation: ["Mestre em Endodontia — UNICAMP", "Especialista em Microscopia Operatória"],
+    formation: ["Mestre em Endodontia", "Especialista em Microscopia Operatória"],
   },
 ];
 
 export const TESTIMONIALS = [
   {
     name: "Mariana Souza",
-    city: "São Paulo, SP",
+    city: "Aracruz, ES",
     text: "Coloquei lentes na Dra. Camila e o resultado superou todas as expectativas. Atendimento de altíssimo nível, do primeiro contato ao acompanhamento.",
     rating: 5,
   },
   {
     name: "Paulo Henrique",
-    city: "Santo André, SP",
+    city: "Linhares, ES",
     text: "Fiz dois implantes com o Dr. Rafael e voltei a sorrir sem medo. Tudo explicado em detalhes, sem pressão e com preço justo.",
     rating: 5,
   },
   {
     name: "Ana Beatriz",
-    city: "Osasco, SP",
+    city: "Aracruz, ES",
     text: "Levei meu filho para a Dra. Juliana e ele simplesmente amou. Saiu pedindo para voltar! Recomendo de olhos fechados.",
     rating: 5,
   },
   {
     name: "Carlos Mendes",
-    city: "São Paulo, SP",
+    city: "Vitória, ES",
     text: "Fiz tratamento de canal com microscópio e foi indolor. Em uma sessão, problema resolvido. Equipe muito atenciosa.",
     rating: 5,
   },
   {
     name: "Larissa Vieira",
-    city: "Guarulhos, SP",
+    city: "Serra, ES",
     text: "Comecei o tratamento com alinhadores invisíveis e nem parece que estou usando. Em 6 meses já vi mudança incrível.",
     rating: 5,
   },
   {
     name: "Felipe Antunes",
-    city: "Barueri, SP",
+    city: "Aracruz, ES",
     text: "Atendimento de emergência num domingo à noite. Salvaram meu fim de semana. Profissionalismo de outro nível.",
     rating: 5,
   },
 ];
+
+// ============= Dados de contato e localização =============
+export const CLINIC_INFO = {
+  name: "Clínica Levii",
+  city: "Aracruz",
+  state: "ES",
+  address: {
+    street: "Av. Venâncio Flores, 350 — Sala 04",
+    district: "Centro",
+    cityState: "Aracruz — ES",
+    zip: "CEP 29190-036",
+  },
+  phone: {
+    display: "(27) 3256-0000",
+    tel: "+552732560000",
+  },
+  whatsapp: {
+    display: "(27) 99999-0000",
+    number: "5527999990000",
+  },
+  email: "contato@clinicalevii.com.br",
+  hours: "Seg–Sex 8h–19h • Sáb 8h–13h",
+  mapsQuery: "Av.+Ven%C3%A2ncio+Flores+Aracruz+ES",
+};

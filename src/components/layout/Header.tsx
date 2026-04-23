@@ -11,11 +11,15 @@ const NAV = [
   { to: "/sobre", label: "Sobre" },
   { to: "/tratamentos", label: "Tratamentos" },
   { to: "/equipe", label: "Equipe" },
-  { to: "/tecnologia", label: "Tecnologia" },
   { to: "/galeria", label: "Galeria" },
   { to: "/servicos", label: "Serviços" },
   { to: "/localizacao", label: "Localização" },
   { to: "/contato", label: "Contato" },
+];
+
+// Páginas adicionais (mostradas apenas no menu mobile e no footer)
+const NAV_EXTRA = [
+  { to: "/tecnologia", label: "Tecnologia" },
 ];
 
 export default function Header() {
