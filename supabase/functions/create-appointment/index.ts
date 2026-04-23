@@ -29,11 +29,17 @@ const TREATMENT_LABELS: Record<string, string> = {
   "emergencia-24h": "Emergência 24h",
 };
 
+// Coordenadas reais do Centro de Aracruz/ES
+const CLINIC_LOCATION = {
+  lat: "-19.8203",
+  lng: "-40.2741",
+  address: "Av. Venâncio Flores, 350 - Sala 04, Centro, Aracruz/ES",
+  name: "Clínica Levii",
+};
+
 function normalizePhoneToE164BR(phone: string): string {
   const digits = phone.replace(/\D/g, "");
-  // Já com DDI 55
   if (digits.startsWith("55") && digits.length >= 12) return digits;
-  // 10 ou 11 dígitos (DDD + número)
   if (digits.length === 10 || digits.length === 11) return "55" + digits;
   return digits;
 }
@@ -51,6 +57,19 @@ function applyTemplate(template: string, vars: Record<string, string>): string {
     .replace(/\{\{hora\}\}/g, vars.hora);
 }
 
+async function chatproSend(endpoint: string, token: string, path: string, body: unknown) {
+  const url = `${endpoint.replace(/\/$/, "")}/api/v1/${path}`;
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": token },
+    body: JSON.stringify(body),
+  });
+  const text = await resp.text();
+  let parsed: unknown;
+  try { parsed = JSON.parse(text); } catch { parsed = { raw: text }; }
+  return { ok: resp.ok, status: resp.status, body: parsed };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -59,7 +78,6 @@ Deno.serve(async (req) => {
   try {
     const body = (await req.json()) as AppointmentBody;
 
-    // Validação simples
     if (!body.name || !body.phone || !body.treatment || !body.date || !body.time) {
       return new Response(JSON.stringify({ error: "Campos obrigatórios faltando" }), {
         status: 400,
@@ -71,7 +89,6 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Salvar agendamento
     const { data: appt, error: insertError } = await supabase
       .from("appointments")
       .insert({
@@ -95,7 +112,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Buscar config ChatPro
     const { data: config } = await supabase
       .from("chatpro_config")
       .select("*")
@@ -105,7 +121,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     let whatsappSent = false;
-    let whatsappResponse: unknown = null;
+    const responses: Record<string, unknown> = {};
 
     if (config?.token && config?.endpoint) {
       const treatmentLabel = TREATMENT_LABELS[body.treatment] ?? body.treatment;
@@ -119,32 +135,38 @@ Deno.serve(async (req) => {
       const number = normalizePhoneToE164BR(body.phone);
 
       try {
-        // ChatPro Send Text API: POST {endpoint}/api/v1/send_message?instance_id=...
-        // Documentação: https://chatpro.readme.io/reference/send-message
-        const url = `${config.endpoint.replace(/\/$/, "")}/api/v1/send_message`;
-        const resp = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": config.token,
-          },
-          body: JSON.stringify({ number, message }),
-        });
-        const text = await resp.text();
-        try { whatsappResponse = JSON.parse(text); } catch { whatsappResponse = { raw: text }; }
-        whatsappSent = resp.ok;
-        if (!resp.ok) console.error("ChatPro send falhou:", resp.status, text);
+        // 1) Mensagem refinada de confirmação
+        const msgResp = await chatproSend(config.endpoint, config.token, "send_message", { number, message });
+        responses.message = msgResp.body;
+        whatsappSent = msgResp.ok;
+        if (!msgResp.ok) console.error("ChatPro send_message falhou:", msgResp.status, msgResp.body);
+
+        // 2) Localização nativa (gera mapa interativo "Como chegar" no WhatsApp)
+        // ChatPro v1 send_button_message está deprecated — usamos send_location que é
+        // a melhor alternativa nativa: o WhatsApp já oferece "Abrir no mapa" automaticamente.
+        if (msgResp.ok) {
+          // pequeno delay para preservar ordem
+          await new Promise((r) => setTimeout(r, 600));
+          const locResp = await chatproSend(config.endpoint, config.token, "send_location", {
+            number,
+            lat: CLINIC_LOCATION.lat,
+            lng: CLINIC_LOCATION.lng,
+            address: CLINIC_LOCATION.address,
+            name: CLINIC_LOCATION.name,
+          });
+          responses.location = locResp.body;
+          if (!locResp.ok) console.error("ChatPro send_location falhou:", locResp.status, locResp.body);
+        }
       } catch (err) {
         console.error("Erro ChatPro:", err);
-        whatsappResponse = { error: String(err) };
+        responses.error = String(err);
       }
 
-      // Atualizar status no banco
       await supabase
         .from("appointments")
         .update({
           whatsapp_sent: whatsappSent,
-          whatsapp_response: whatsappResponse,
+          whatsapp_response: responses,
           status: whatsappSent ? "confirmed" : "pending",
         })
         .eq("id", appt.id);
