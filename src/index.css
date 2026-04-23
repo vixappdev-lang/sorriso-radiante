@@ -48,9 +48,12 @@
 
     --warning: 35 90% 50%;
 
-    --border: 220 15% 90%;
-    --input: 220 15% 90%;
+    --border: 220 18% 86%;
+    --input: 220 18% 86%;
     --ring: 215 75% 38%;
+
+    /* Borda mais sutil para cards (suave porém perceptível) */
+    --card-border: 220 20% 88%;
 
     --radius: 0.875rem;
 
@@ -187,4 +190,21 @@
   .shadow-glow { box-shadow: var(--shadow-glow); }
   .shadow-soft { box-shadow: var(--shadow-md); }
   .transition-smooth { transition: all var(--t); }
+
+  /* Card refinado: contorno sutil + sombra leve para aterrar no fundo branco */
+  .card-elevated {
+    background: hsl(var(--card));
+    border: 1px solid hsl(220 20% 88%);
+    box-shadow:
+      0 1px 0 hsl(220 25% 12% / 0.02),
+      0 2px 6px -2px hsl(220 25% 12% / 0.06),
+      0 8px 24px -16px hsl(220 25% 12% / 0.08);
+  }
+  .card-elevated:hover {
+    border-color: hsl(var(--primary) / 0.28);
+    box-shadow:
+      0 1px 0 hsl(220 25% 12% / 0.03),
+      0 8px 22px -10px hsl(215 75% 25% / 0.16),
+      0 20px 40px -24px hsl(215 75% 25% / 0.18);
+  }
 }
