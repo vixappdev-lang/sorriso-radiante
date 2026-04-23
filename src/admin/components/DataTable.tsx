@@ -13,7 +13,7 @@ export type Column<T> = {
   accessor?: (row: T) => string | number | null | undefined;
 };
 
-export default function DataTable<T extends { id?: string | number }>({
+export default function DataTable<T extends Record<string, any>>({
   rows,
   columns,
   searchable,
