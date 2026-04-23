@@ -29,14 +29,6 @@ const TREATMENT_LABELS: Record<string, string> = {
   "emergencia-24h": "Emergência 24h",
 };
 
-// Coordenadas reais do Centro de Aracruz/ES
-const CLINIC_LOCATION = {
-  lat: "-19.8203",
-  lng: "-40.2741",
-  address: "Av. Venâncio Flores, 350 - Sala 04, Centro, Aracruz/ES",
-  name: "Clínica Levii",
-};
-
 function normalizePhoneToE164BR(phone: string): string {
   const digits = phone.replace(/\D/g, "");
   if (digits.startsWith("55") && digits.length >= 12) return digits;
@@ -57,7 +49,7 @@ function applyTemplate(template: string, vars: Record<string, string>): string {
     .replace(/\{\{hora\}\}/g, vars.hora);
 }
 
-async function chatproSend(endpoint: string, token: string, path: string, body: unknown) {
+async function chatproPost(endpoint: string, token: string, path: string, body: unknown) {
   const url = `${endpoint.replace(/\/$/, "")}/api/v1/${path}`;
   const resp = await fetch(url, {
     method: "POST",
@@ -135,27 +127,31 @@ Deno.serve(async (req) => {
       const number = normalizePhoneToE164BR(body.phone);
 
       try {
-        // 1) Mensagem refinada de confirmação
-        const msgResp = await chatproSend(config.endpoint, config.token, "send_message", { number, message });
-        responses.message = msgResp.body;
-        whatsappSent = msgResp.ok;
-        if (!msgResp.ok) console.error("ChatPro send_message falhou:", msgResp.status, msgResp.body);
+        // Tentativa #1: send_button_message (1 única mensagem com botões interativos).
+        // Doc: https://chatpro.readme.io/reference/send_button_message
+        const buttonPayload = {
+          number,
+          message,
+          title: "Clínica Levii",
+          footer: "Toque em uma opção abaixo",
+          buttons: [
+            { id: "1", text: "Confirmar presença" },
+            { id: "2", text: "Como chegar" },
+            { id: "3", text: "Reagendar" },
+          ],
+        };
 
-        // 2) Localização nativa (gera mapa interativo "Como chegar" no WhatsApp)
-        // ChatPro v1 send_button_message está deprecated — usamos send_location que é
-        // a melhor alternativa nativa: o WhatsApp já oferece "Abrir no mapa" automaticamente.
-        if (msgResp.ok) {
-          // pequeno delay para preservar ordem
-          await new Promise((r) => setTimeout(r, 600));
-          const locResp = await chatproSend(config.endpoint, config.token, "send_location", {
-            number,
-            lat: CLINIC_LOCATION.lat,
-            lng: CLINIC_LOCATION.lng,
-            address: CLINIC_LOCATION.address,
-            name: CLINIC_LOCATION.name,
-          });
-          responses.location = locResp.body;
-          if (!locResp.ok) console.error("ChatPro send_location falhou:", locResp.status, locResp.body);
+        const btnResp = await chatproPost(config.endpoint, config.token, "send_button_message", buttonPayload);
+        responses.button_message = btnResp.body;
+        whatsappSent = btnResp.ok;
+
+        // Fallback: caso a instância/conta não suporte botões, envia mensagem texto única.
+        if (!btnResp.ok) {
+          console.warn("send_button_message indisponível, fallback para send_message:", btnResp.status, btnResp.body);
+          const txtResp = await chatproPost(config.endpoint, config.token, "send_message", { number, message });
+          responses.message = txtResp.body;
+          whatsappSent = txtResp.ok;
+          if (!txtResp.ok) console.error("ChatPro send_message falhou:", txtResp.status, txtResp.body);
         }
       } catch (err) {
         console.error("Erro ChatPro:", err);
