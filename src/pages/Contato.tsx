@@ -45,10 +45,10 @@ export default function Contato() {
       <section className="section">
         <div className="container-edge grid lg:grid-cols-5 gap-8 lg:gap-12">
           <div className="lg:col-span-2 grid gap-4 content-start">
-            <ContactCard icon={MessageCircle} title="WhatsApp" subtitle="Resposta em minutos" link="https://wa.me/5511900000000" linkText="(11) 9 0000-0000" />
-            <ContactCard icon={Phone} title="Telefone" subtitle="Seg–Sex 8h–20h" link="tel:+551130000000" linkText="(11) 3000-0000" />
+            <ContactCard icon={MessageCircle} title="WhatsApp" subtitle="Resposta em minutos" link="https://wa.me/5527999990000" linkText="(27) 99999-0000" />
+            <ContactCard icon={Phone} title="Telefone" subtitle="Seg–Sex 8h–19h" link="tel:+552732560000" linkText="(27) 3256-0000" />
             <ContactCard icon={Mail} title="E-mail" subtitle="Respondemos em até 24h" link="mailto:contato@clinicalevii.com.br" linkText="contato@clinicalevii.com.br" />
-            <ContactCard icon={MapPin} title="Endereço" subtitle="Av. Paulista, 1000 — 12º" />
+            <ContactCard icon={MapPin} title="Endereço" subtitle="Av. Venâncio Flores, 350 — Aracruz/ES" />
           </div>
 
           <div className="lg:col-span-3">

@@ -1,7 +1,7 @@
-import { MessageCircle } from "lucide-react";
+import { CLINIC_INFO } from "@/data/clinic";
 
 export default function WhatsAppFab() {
-  const phone = "5511900000000";
+  const phone = CLINIC_INFO.whatsapp.number;
   const text = encodeURIComponent("Olá! Gostaria de informações sobre tratamentos na Clínica Levii.");
   return (
     <a
