@@ -294,13 +294,44 @@ function ClientApp({ session, config }: any) {
           </Sheet>
         </header>
 
-        <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-10 max-w-5xl w-full mx-auto">
+        <main className="flex-1 px-4 sm:px-6 lg:px-10 py-6 lg:py-10 pb-24 lg:pb-10 max-w-5xl w-full mx-auto">
           {section === "home" && <HomeView config={config} profile={profile} upcoming={upcoming} openInvoices={openInvoices} setSection={setSection} navigate={navigate} bookingSlug={config.booking_slug || "geral"} />}
           {section === "appointments" && <AppointmentsView items={upcoming} title="Próximas consultas" empty="Você não tem consultas agendadas." canBook={config.allow_booking !== false} bookingSlug={config.booking_slug || "geral"} navigate={navigate} portalColor={config.portal_color} />}
           {section === "history" && <AppointmentsView items={past} title="Histórico" empty="Sem consultas concluídas ainda." />}
           {section === "invoices" && <InvoicesView items={invoices} />}
           {section === "profile" && <ProfileView profile={profile} session={session} />}
         </main>
+
+        {/* Mobile bottom nav (Apple-like) */}
+        <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-slate-200 px-2 pt-2 pb-[max(8px,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_-8px_rgba(15,23,42,0.12)]">
+          <div className="grid grid-cols-5 gap-1">
+            {NAV.filter((n) => n.show !== false).map((n) => {
+              const active = section === n.id;
+              const Icon = n.icon;
+              return (
+                <button
+                  key={n.id}
+                  onClick={() => setSection(n.id)}
+                  className={cn(
+                    "flex flex-col items-center gap-0.5 py-2 rounded-xl transition relative",
+                    active ? "text-slate-900" : "text-slate-400"
+                  )}
+                >
+                  <div className="relative">
+                    <Icon className={cn("h-5 w-5 transition-transform", active && "scale-110")} strokeWidth={active ? 2.4 : 2} />
+                    {!!n.count && n.count > 0 && (
+                      <span className="absolute -top-1.5 -right-2 h-4 min-w-4 px-1 rounded-full bg-rose-500 text-white text-[9px] font-bold grid place-items-center">
+                        {n.count > 9 ? "9+" : n.count}
+                      </span>
+                    )}
+                  </div>
+                  <span className={cn("text-[10px]", active ? "font-semibold" : "font-medium")}>{n.label}</span>
+                  {active && <span className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full bg-slate-900" />}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
       </div>
 
       {/* Modal logout */}

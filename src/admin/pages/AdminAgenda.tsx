@@ -310,29 +310,50 @@ function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }
 
   return (
     <div className="admin-card overflow-hidden">
-      <div className="divide-y divide-[hsl(var(--admin-border))]">
-        {HOURS.map((h) => (
-          <div key={h} className="grid grid-cols-[64px_1fr] gap-3 px-3 sm:px-5 py-3 min-h-[68px]">
-            <div className="text-xs font-semibold text-muted-foreground tabular-nums pt-1">{String(h).padStart(2, "0")}:00</div>
-            <div className="flex flex-col gap-2">
-              {(map[h] ?? []).length === 0 ? <div className="h-full" /> : (map[h] ?? []).map((a) => (
-                <button key={a.id} onClick={() => onOpen(a)} className={cn("group text-left rounded-xl border px-3 py-2.5 hover:shadow-sm transition", STATUS_BG[a.status] || "bg-slate-50 border-slate-200")}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold tabular-nums">{a.appointment_time}</span>
-                    <span className="text-sm font-medium truncate">{a.name}</span>
-                    <StatusPill status={a.status} />
-                  </div>
-                  <p className="text-[12px] mt-0.5 opacity-80 truncate">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
-                  <div className="mt-2 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                    <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busyId === a.id || a.status === "confirmed"} onClick={() => onSetStatus(a.id, "confirmed")}>Confirmar</Button>
-                    <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busyId === a.id || a.status === "done"} onClick={() => onSetStatus(a.id, "done")}>Concluir</Button>
-                    <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive ml-auto" onClick={() => onCancel(a.id)}>Cancelar</Button>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
+      <div className="relative">
+        {/* Rail vertical */}
+        <div className="absolute left-[78px] top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-[hsl(var(--admin-border))] to-transparent pointer-events-none" />
+        <div className="divide-y divide-[hsl(var(--admin-border))]/60">
+          {HOURS.map((h) => {
+            const items = map[h] ?? [];
+            return (
+              <div key={h} className="grid grid-cols-[72px_1fr] gap-4 px-3 sm:px-5 py-3 min-h-[72px] hover:bg-slate-50/40 transition-colors">
+                <div className="relative flex items-start pt-1.5">
+                  <span className="text-[11px] font-bold text-slate-400 tabular-nums tracking-wide">{String(h).padStart(2, "0")}:00</span>
+                  <span className={cn("absolute right-[-9px] top-2.5 h-2 w-2 rounded-full ring-4 ring-white", items.length > 0 ? "bg-blue-500" : "bg-slate-200")} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  {items.length === 0 ? (
+                    <div className="h-full min-h-[40px] border border-dashed border-slate-200/70 rounded-lg opacity-0 hover:opacity-100 transition" />
+                  ) : items.map((a) => (
+                    <button
+                      key={a.id}
+                      onClick={() => onOpen(a)}
+                      className={cn(
+                        "group text-left rounded-xl border px-3.5 py-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden",
+                        STATUS_BG[a.status] || "bg-slate-50 border-slate-200"
+                      )}
+                    >
+                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-current opacity-30" />
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span className="text-sm font-bold tabular-nums">{a.appointment_time}</span>
+                        <span className="text-sm font-semibold truncate">{a.name}</span>
+                        <StatusPill status={a.status} />
+                        {a.status === "pending" && <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />}
+                      </div>
+                      <p className="text-[12px] mt-1 opacity-75 truncate font-medium">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
+                      <div className="mt-2.5 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" variant="outline" className="h-7 text-xs bg-white" disabled={busyId === a.id || a.status === "confirmed"} onClick={() => onSetStatus(a.id, "confirmed")}>Confirmar</Button>
+                        <Button size="sm" variant="outline" className="h-7 text-xs bg-white" disabled={busyId === a.id || a.status === "done"} onClick={() => onSetStatus(a.id, "done")}>Concluir</Button>
+                        <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive ml-auto hover:bg-red-50" onClick={() => onCancel(a.id)}>Cancelar</Button>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
