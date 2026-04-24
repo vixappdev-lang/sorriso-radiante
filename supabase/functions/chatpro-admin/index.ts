@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
   try {
     const { action, password, payload } = await req.json();
 
-    const adminPassword = Deno.env.get("ADMIN_PASSWORD") ?? "levii2025"; // fallback inicial
+    const adminPassword = Deno.env.get("ADMIN_PASSWORD") ?? "lynecloud2025"; // fallback inicial
     if (!password || password !== adminPassword) {
       return new Response(JSON.stringify({ error: "Senha incorreta" }), {
         status: 401,
