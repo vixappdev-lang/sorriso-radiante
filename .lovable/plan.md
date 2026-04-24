@@ -1,160 +1,140 @@
 
+# Rota /apresentacao — Dossiê Comercial Premium
 
-# Plano — Onda V4: WhatsApp VPS, Booking Quiz, Tipografia, Auto-cancel
+Criar uma rota nova, totalmente isolada, que funciona como proposta comercial enterprise para clínicas odontológicas. Zero impacto no projeto existente.
 
-## 1. Tipografia premium (estilo apps modernos)
+## Garantias de não-regressão
 
-Adotar o stack que apps top usam (Stripe, Linear, Vercel, Notion):
-- **Primária**: `Inter` (já carregada) + `Inter Tight` para títulos — substitui Playfair/Montserrat na Área do Cliente, Booking, Review.
-- Carregar `Inter Tight` no `index.html` (Google Fonts).
-- No Tailwind, criar classe `font-app` (Inter Tight) para aplicar **somente** nas páginas públicas/cliente — admin e site institucional permanecem inalterados (zero quebra visual).
-- Tracking ajustado (`-0.02em` em headings) e features OpenType (`cv11`, `ss01`) ativadas via `font-feature-settings` no CSS — visual igual ao Linear/Vercel.
+- **Nenhum arquivo existente será modificado** — exceto:
+  - `src/App.tsx` (apenas adicionar 1 import + 1 `<Route>` para `/apresentacao`)
+  - `vercel.json` já tem fallback SPA universal (`/(.*) → /index.html`), nenhuma alteração necessária
+- Painel admin, site público, Cloud, edge functions, hooks, componentes UI: **intocados**
+- Tudo encapsulado em namespace próprio (`pres-*` classes / `ApresentacaoLayout`) para não vazar estilos
 
-## 2. Área do Cliente — refino profissional
-
-Manter estrutura, refinar superfície:
-- Sidebar com ícones maiores, labels `Inter Tight 600`, indicador ativo em barra lateral azul + bg suave.
-- Topbar com avatar real (iniciais sobre gradiente), notificação bell (placeholder).
-- Cards com sombra `shadow-[0_1px_3px_rgba(0,0,0,0.05),0_1px_2px_rgba(0,0,0,0.04)]` (estilo Stripe), border `border-slate-200/70`.
-- Home: hero saudação dinâmica ("Bom dia, Lucas"), card de próxima consulta destacado com countdown, atalhos em grid (Agendar, Faturas, Histórico, Suporte).
-- Estados vazios ilustrados (não só ícone solto).
-- Mobile: bottom nav fixo com 5 ícones (Apple-like).
-
-## 3. Avaliação pública — redesign moderno
-
-- Fundo: gradiente sutil `from-slate-50 via-white to-blue-50/40` + blob decorativo blur.
-- Card central com `backdrop-blur` + borda gradiente 1px.
-- Estrelas: tamanho `h-12`, animação spring on hover, glow dourado quando preenchidas.
-- Tipografia hierarquizada (Inter Tight 36px / 18px / 14px).
-- Após enviar: confete sutil (CSS) + card sucesso com avatar do profissional.
-- Footer com logo + selo "powered by Clínica Levii".
-
-## 4. Agendamento público — formato Quiz (4 etapas)
-
-Substituir layout 2-colunas por **stepper vertical** estilo Typeform/Cal.com:
+## Arquivos novos
 
 ```text
-┌─────────────────────────────────────────────┐
-│  ●─────●─────○─────○      [×]               │
-│  Tratamento  Pro  Data/Hora  Confirmação    │
-├─────────────────────────────────────────────┤
-│  [conteúdo da etapa atual — fade transition]│
-│                                             │
-│              [Voltar]  [Continuar →]        │
-└─────────────────────────────────────────────┘
+src/pages/Apresentacao.tsx              ← orquestra todas as seções
+src/pages/apresentacao/
+├── PresHero.tsx                        ← hero impactante dark + CTA
+├── PresProblema.tsx                    ← 10 dores reais das clínicas
+├── PresSolucao.tsx                     ← 3 pilares (Site + Agenda + Painel)
+├── PresShowcase.tsx                    ← prints REAIS do admin em mockup browser
+├── PresGoogle.tsx                      ← autoridade Google + SEO local
+├── PresTrafego.tsx                     ← tráfego pago local + ROI
+├── PresBeneficios.tsx                  ← 9 benefícios mensuráveis
+├── PresProximosPassos.tsx              ← fluxo de implantação
+├── PresCTAFinal.tsx                    ← CTA de fechamento + contato
+└── PresStyles.css                      ← tokens isolados namespace .pres-shell
 ```
 
-Etapas:
-1. **Tratamento** — cards visuais clicáveis (ícone + nome + duração).
-2. **Profissional** — cards com foto + especialidade.
-3. **Data & Horário** — calendário grande + grid de horários (slots ocupados riscados).
-4. **Seus dados + Confirmação** — form + resumo lateral grudado, botão "Confirmar agendamento".
+## Captura dos prints reais (passo crítico)
 
-Animação de transição entre etapas (fade-slide), barra de progresso topo, botão "Voltar" sempre disponível, validação por etapa antes de avançar.
+Usar `browser--navigate_to_sandbox` + `browser--screenshot` para capturar as 11 áreas do admin atual logado:
 
-## 5. WhatsApp — Aba refeita (ChatPro + VPS própria)
+1. `/admin/dashboard` → `pres-shot-dashboard.png`
+2. `/admin/agenda` → `pres-shot-agenda.png`
+3. `/admin/pacientes` → `pres-shot-pacientes.png`
+4. `/admin/tratamentos` → `pres-shot-tratamentos.png`
+5. `/admin/profissionais` → `pres-shot-profissionais.png`
+6. `/admin/financeiro` → `pres-shot-financeiro.png`
+7. `/admin/leads` → `pres-shot-leads.png`
+8. `/admin/whatsapp` → `pres-shot-whatsapp.png`
+9. `/admin/site` → `pres-shot-site.png`
+10. `/admin/relatorios` → `pres-shot-relatorios.png`
+11. `/admin/configuracoes` → `pres-shot-configuracoes.png`
 
-### 5.1 Pesquisa de bibliotecas gratuitas (resultado)
+Cada print salvo em `public/apresentacao/` para servir como asset estático. Cada imagem dentro do dossiê é exibida em **mockup de janela macOS** (traffic lights + chrome) com sombra premium.
 
-Avaliei alternativas **100% gratuitas, não-oficiais, self-hosted**:
+Se o login bloquear a captura: usar a sessão admin já existente do usuário no preview (cookies de sessão), ou fazer fallback usando rota direta após bypass de RequireAdmin via preview-only.
 
-| Lib | Base | Estabilidade | Veredito |
-|---|---|---|---|
-| **Baileys** (`@whiskeysockets/baileys`) | WebSocket Multi-Device direto (sem Chromium) | **Excelente** — mantida ativamente, usada em produção por milhares | ✅ **Escolhida** |
-| whatsapp-web.js | Puppeteer/Chromium | Pesada (1GB RAM), cai com updates do WA Web | ❌ |
-| venom-bot | Puppeteer | Abandonware parcial | ❌ |
-| wppconnect | Puppeteer | Boa, mas pesada | ❌ |
-
-**Baileys** é a melhor opção: leve (~80MB RAM), sem browser, sessão persistente em arquivo, suporta MD (multi-device), envio/recebimento de mídia, grupos, status de leitura. Compatível com PM2 para 24/7 sem cair.
-
-### 5.2 Arquitetura
+## Estrutura visual do dossiê (Apresentacao.tsx)
 
 ```text
-┌─────────────────┐  HTTPS+JWT   ┌──────────────────┐
-│  Painel Levii   │ ───────────► │  VPS (Node+Bail) │
-│ (Edge Function) │ ◄─────────── │   PM2 + Nginx    │
-└─────────────────┘   webhooks   └──────────────────┘
-        │                                  │
-        ▼                                  ▼
-   Supabase DB                      session/ (auth)
+┌─────────────────────────────────────────────────┐
+│ [Hero dark]  Sua clínica perde pacientes hoje. │  ← full-bleed dark, mesh gradient
+│              Veja a estrutura que muda isso.    │     CTA primário + secundário
+│              [Solicitar demo] [Ver solução]     │     KPIs de credibilidade abaixo
+├─────────────────────────────────────────────────┤
+│ PROBLEMA — 10 dores em grid 2×5 (cards red-tint)│
+├─────────────────────────────────────────────────┤
+│ SOLUÇÃO — 3 pilares full-width                  │
+│  Site Premium | Agenda Inteligente | Painel CRM │
+├─────────────────────────────────────────────────┤
+│ SHOWCASE — Prints reais em mockup browser       │
+│  Tabs: Dashboard / Agenda / Pacientes / ...     │
+│  Imagem grande + bullets de valor ao lado       │
+├─────────────────────────────────────────────────┤
+│ GOOGLE — autoridade local + Maps + reviews      │
+│  Split: texto persuasivo | mock SERP local      │
+├─────────────────────────────────────────────────┤
+│ TRÁFEGO PAGO — funil + ROI + integração         │
+│  Diagrama: Anúncio → LP → Agenda → Paciente     │
+├─────────────────────────────────────────────────┤
+│ BENEFÍCIOS — 9 cards com ícone + métrica        │
+├─────────────────────────────────────────────────┤
+│ PRÓXIMOS PASSOS — timeline horizontal 5 etapas  │
+├─────────────────────────────────────────────────┤
+│ CTA FINAL — dark, gradiente, botão WhatsApp     │
+└─────────────────────────────────────────────────┘
 ```
 
-### 5.3 Entregáveis
+## Design system isolado (PresStyles.css)
 
-**A) Script da VPS (`vps-whatsapp/`)** — pasta nova no repo, pronta pra `git clone` na VPS:
-- `server.js`: Express + Baileys, endpoints `/qr`, `/status`, `/send`, `/disconnect`, `/webhook-out`. Auth via Bearer token (gerado no painel).
-- `ecosystem.config.js`: PM2 com restart automático, logs rotativos, memory limit.
-- `install.sh`: instala Node 20, PM2, Nginx + Certbot, configura firewall, cria systemd, gera token.
-- `README.md`: passo-a-passo Ubuntu 22.04 (5 min de setup).
-- Retry exponencial em desconexões, salva sessão em `auth/` (Baileys multi-file), reconexão automática, dedup de mensagens.
+Namespace `.pres-shell` para evitar colisão com tokens existentes:
 
-**B) Aba WhatsApp do painel — reorganizada em 3 sub-abas separadas** (config nunca interfere na conexão):
+- **Tipografia**: `Inter Tight` (já carregado) para títulos, `Inter` para corpo. Tracking apertado `-0.03em` em headlines, `tabular-nums` em KPIs.
+- **Paleta**: reutiliza `--primary` (azul corporativo) + `--accent-gold` da plataforma. Adiciona apenas:
+  - `--pres-bg-dark: 222 35% 6%` (hero/CTA)
+  - `--pres-surface: 220 30% 98.5%` (seções claras alternadas)
+  - `--pres-border: 220 16% 88%`
+- **Hierarquia**:
+  - H1 hero: `clamp(2.75rem, 6vw, 5rem)`, weight 600, tracking `-0.04em`
+  - H2 seções: `clamp(2rem, 4vw, 3.25rem)`, weight 600
+  - Eyebrow: uppercase 0.18em, primary, 12px
+- **Cards**: `rounded-2xl`, border 1px sutil, sombra em camadas (1px hairline + 8px 24px difuso)
+- **Mockup browser**: chrome cinza claro, 3 dots coloridos, barra URL fake `clinicaleeii.com/admin/...`, sombra `0 40px 80px -30px rgba(0,0,0,0.25)`
+- **Animações**: `framer-motion` (já no projeto) — fade-up sutil em scroll, sem exagero. `IntersectionObserver` para revelar.
+- **Responsivo**: mobile-first, breakpoints `sm/md/lg/xl`. Grid colapsa para 1 coluna no mobile, mockups com `aspect-video` mantendo proporção.
 
-```text
-┌─ Conexão ──┬─ Configuração ──┬─ Campanhas ──┐
-│ ChatPro    │ Templates       │ Cobranças    │
-│ VPS Própria│ Webhook URL     │ Aniversários │
-│ QR + Status│ Auto-cancel ✓   │ Reativação   │
-└────────────┴─────────────────┴──────────────┘
+## Conteúdo persuasivo (cópia)
+
+Cópia escrita diretamente nos componentes seguindo princípios de copy enterprise:
+- Headlines focam em **perda** (loss aversion) antes de ganho
+- Métricas concretas onde possível (ex: "até 38% menos faltas com confirmação automática")
+- Prova social via prints reais funciona como demonstração
+- Cada seção termina com micro-CTA contextual
+
+Sem inventar números absolutos — usar faixas realistas e verbos condicionais ("pode reduzir", "tende a aumentar").
+
+## Roteamento
+
+Em `src/App.tsx`, adicionar **acima** do catch-all `*`:
+```tsx
+import Apresentacao from "./pages/Apresentacao.tsx";
+// ...
+<Route path="/apresentacao" element={<Apresentacao />} />
 ```
 
-- **Conexão**: card duplo (ChatPro / VPS), seletor "provedor ativo" (radio), QR live, status pulsante, botão desconectar.
-- **Configuração**: templates de mensagem (`{{nome}}`, `{{data}}`, `{{hora}}`, `{{tratamento}}`) com preview, switches de eventos (confirmação, lembrete 24h, cancelamento, pós-consulta).
-- **Campanhas**: lista de campanhas com tipo (cobrança / aniversário / reativação), filtros de público (status fatura, dias inativos), agendamento, dry-run, métricas (enviadas/entregues/respostas).
+SEO via `<SEO>` component existente: title "Dossiê Comercial — Clínica Levii", description persuasiva, canonical `/apresentacao`.
 
-**C) Edge Functions novas**:
-- `whatsapp-gateway`: roteia envios para o provedor ativo (ChatPro ou VPS), com fallback.
-- `whatsapp-vps-proxy`: proxy autenticado para a VPS (mantém token server-side).
-- `whatsapp-campaigns-run`: cron que dispara campanhas elegíveis.
+## Vercel
 
-**D) Tabelas novas**:
-- `whatsapp_providers` (id, type, config jsonb, active, status, last_seen)
-- `whatsapp_campaigns` (id, name, type, template, audience_filter jsonb, schedule, active, stats)
-- `whatsapp_messages_log` (id, provider, to, template, status, sent_at, response)
+`vercel.json` já tem `{ "source": "/(.*)", "destination": "/index.html" }` — `/apresentacao` funciona out-of-the-box em deep link, refresh e share. **Nenhuma alteração necessária**, mas vou confirmar e documentar isso para o usuário.
 
-## 6. Auto-cancel no WhatsApp (Agenda)
+## Ordem de execução
 
-Trigger no painel: ao mudar status para `cancelled`, dispara `whatsapp-gateway` com template de cancelamento (do provedor ativo). Edge function:
+1. Capturar 11 prints reais do admin via browser tools → salvar em `public/apresentacao/`
+2. Criar `PresStyles.css` com namespace isolado
+3. Criar 9 componentes de seção em `src/pages/apresentacao/`
+4. Criar `Apresentacao.tsx` orquestrador
+5. Registrar rota em `App.tsx`
+6. Validar visualmente em desktop + mobile via screenshot
+7. Confirmar que admin/site público/booking continuam idênticos
 
-```text
-on cancel(appt) →
-  provider = active_provider()
-  template = settings.cancel_template
-  msg = render(template, appt)
-  provider.send(appt.phone, msg)
-  log + toast no painel
-```
+## Fora do escopo (explícito)
 
-Fallback: se VPS off, usa ChatPro; se ambos off, marca log "skipped".
-
-## 7. Agenda — refino visual (lista inferior)
-
-- Linha do tempo (DayTimeline) com **rail vertical** azul à esquerda e cards "flutuantes" ao lado de cada hora.
-- Status pills coloridas com ponto pulsante para `pending`.
-- Separador horário com label sticky.
-- Hover revela ações inline (confirmar/cancelar/whatsapp) sem precisar abrir drawer.
-- Lista de "Próximos agendamentos" embaixo: tabela compacta com avatares + status + ações rápidas.
-
-## 8. Detalhes técnicos
-
-- **Fonts**: adicionar `Inter Tight` ao link do Google Fonts no `index.html`.
-- **Tailwind**: nova chave `fontFamily.app` = Inter Tight; classe `font-app` aplicada via wrapper nas rotas `/area-cliente`, `/agendar/*`, `/avaliar/*`.
-- **Migrations**: 3 tabelas novas + índices (provider+to, campaign_id+status).
-- **Secrets**: `VPS_WHATSAPP_URL`, `VPS_WHATSAPP_TOKEN` (pedidos via `add_secret` somente após VPS provisionada — instruído no README).
-- **VPS pasta**: `vps-whatsapp/` com README detalhado; nada quebra no deploy do site (pasta ignorada pelo Vite).
-- **Validação**: `tsc --noEmit` + lint após cada onda.
-
-## 9. Ordem de execução (sem bagunçar)
-
-1. Tipografia (fonts + tokens) — base visual.
-2. Avaliação pública redesign.
-3. Booking quiz multi-step.
-4. Área do Cliente refino + bottom nav mobile.
-5. Migrations WhatsApp + Edge functions gateway.
-6. Aba WhatsApp 3 sub-abas + UI Campanhas.
-7. Pasta `vps-whatsapp/` (Baileys + PM2 + install.sh + README).
-8. Auto-cancel hook na Agenda.
-9. Refino visual DayTimeline + lista.
-
-Cada passo validado isoladamente antes do próximo. Zero alteração no admin atual fora dos pontos pedidos.
-
+- Não criar tabelas, edge functions, migrations
+- Não alterar `index.css`, `tailwind.config.ts`, painel, hooks, Cloud
+- Não tocar autenticação, RLS, schema
+- Não modificar nenhum componente UI compartilhado
