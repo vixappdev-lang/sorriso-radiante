@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Calendar, LogOut, User as UserIcon, Clock, CheckCircle2, FileText, Home as HomeIcon,
-  CreditCard, ChevronRight, Loader2, ShieldCheck, Eye, EyeOff, Receipt, Phone, Mail, MapPin
+  CreditCard, ChevronRight, Loader2, ShieldCheck, Eye, EyeOff, Receipt, Phone, Mail, MapPin, Sparkles,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -83,93 +83,139 @@ function LoginScreen({ config }: any) {
   }
 
   return (
-    <main className="min-h-screen grid lg:grid-cols-[1.1fr_1fr] bg-slate-50">
-      {/* Painel lateral (desktop) */}
+    <main className="min-h-screen grid lg:grid-cols-[1.15fr_1fr] bg-gradient-to-br from-slate-100 via-slate-50 to-blue-50/40">
+      {/* Painel lateral (desktop) — premium */}
       <aside
-        className="hidden lg:flex flex-col justify-between p-12 text-white relative overflow-hidden"
-        style={{ background: `linear-gradient(140deg, ${config.portal_color}, ${shade(config.portal_color, -25)})` }}
+        className="hidden lg:flex flex-col justify-between p-14 text-white relative overflow-hidden"
+        style={{ background: `linear-gradient(140deg, ${config.portal_color}, ${shade(config.portal_color, -32)})` }}
       >
-        <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle at 25% 20%, white 1px, transparent 1px)", backgroundSize: "26px 26px" }} />
-        <div className="absolute -top-32 -left-20 h-[400px] w-[400px] rounded-full blur-[120px]" style={{ background: shade(config.portal_color, 20) + "60" }} />
-        <div className="absolute -bottom-32 -right-20 h-[420px] w-[420px] rounded-full blur-[140px]" style={{ background: shade(config.portal_color, -40) + "50" }} />
+        <div className="absolute inset-0 opacity-[0.07]" style={{ backgroundImage: "radial-gradient(circle at 25% 20%, white 1px, transparent 1px)", backgroundSize: "26px 26px" }} />
+        <div className="absolute -top-32 -left-20 h-[460px] w-[460px] rounded-full blur-[140px]" style={{ background: shade(config.portal_color, 25) + "55" }} />
+        <div className="absolute -bottom-40 -right-24 h-[480px] w-[480px] rounded-full blur-[160px]" style={{ background: shade(config.portal_color, -45) + "55" }} />
+        <div className="absolute top-1/3 left-1/2 h-[300px] w-[300px] rounded-full blur-[120px] opacity-60" style={{ background: shade(config.portal_color, 10) + "30" }} />
+
         <div className="relative">
-          <p className="text-[11px] uppercase tracking-[0.28em] text-white/60">{BRAND}</p>
-          <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight">{config.welcome_title}</h1>
-          <p className="mt-4 text-white/75 max-w-md leading-relaxed">{config.welcome_text}</p>
-          <ul className="mt-10 space-y-3 text-sm text-white/80">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur border border-white/15 text-white/90 text-[11px] font-semibold uppercase tracking-[0.18em]">
+            <Sparkles className="h-3 w-3" /> Portal exclusivo
+          </div>
+          <h1 className="mt-7 text-[2.5rem] font-semibold leading-[1.05] tracking-tight">{config.welcome_title}</h1>
+          <p className="mt-5 text-white/75 max-w-md leading-relaxed text-[15px]">{config.welcome_text}</p>
+          <ul className="mt-10 space-y-3.5 text-[14px] text-white/85">
             {[
               "Suas consultas em tempo real",
               "Histórico completo de tratamentos",
               "Faturas e pagamentos organizados",
               "Agendamento direto pelo portal",
             ].map((t) => (
-              <li key={t} className="flex items-center gap-3"><CheckCircle2 className="h-4 w-4 text-white/60" />{t}</li>
+              <li key={t} className="flex items-center gap-3">
+                <span className="h-6 w-6 rounded-full bg-white/15 grid place-items-center backdrop-blur">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />
+                </span>
+                {t}
+              </li>
             ))}
           </ul>
+
+          {/* Stat badges decorativos */}
+          <div className="mt-12 grid grid-cols-3 gap-3 max-w-md">
+            {[
+              { v: "100%", l: "Seguro" },
+              { v: "24/7", l: "Acesso" },
+              { v: "+10k", l: "Pacientes" },
+            ].map((s) => (
+              <div key={s.l} className="rounded-xl bg-white/5 backdrop-blur border border-white/10 px-3 py-3">
+                <p className="text-xl font-semibold tabular-nums">{s.v}</p>
+                <p className="text-[10px] uppercase tracking-wider text-white/60 mt-0.5">{s.l}</p>
+              </div>
+            ))}
+          </div>
         </div>
-        <p className="relative text-xs text-white/50">© {new Date().getFullYear()} {BRAND}</p>
+        <div className="relative flex items-center justify-between text-xs text-white/50">
+          <span>© {new Date().getFullYear()} {BRAND}</span>
+          <span className="inline-flex items-center gap-1.5"><span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Sistema online</span>
+        </div>
       </aside>
 
       {/* Form */}
-      <section className="flex items-center justify-center px-6 py-10 sm:py-16 bg-slate-50">
-        <div className="w-full max-w-sm">
+      <section className="flex items-center justify-center px-6 py-10 sm:py-16">
+        <div className="w-full max-w-[400px]">
           {/* Brand mobile */}
           <div className="lg:hidden text-center mb-10">
-            <div className="mx-auto h-14 w-14 rounded-2xl grid place-items-center text-white shadow-lg mb-4"
+            <div className="mx-auto h-16 w-16 rounded-2xl grid place-items-center text-white shadow-[0_8px_24px_-8px_rgba(15,23,42,0.4)] mb-4"
                  style={{ background: `linear-gradient(140deg, ${config.portal_color}, ${shade(config.portal_color, -25)})` }}>
-              <ShieldCheck className="h-7 w-7" />
+              <ShieldCheck className="h-8 w-8" />
             </div>
             <p className="text-[11px] uppercase tracking-[0.28em] text-slate-400">{BRAND}</p>
-            <h1 className="mt-2 text-2xl font-semibold text-slate-900 tracking-tight">Área do Cliente</h1>
+            <h1 className="mt-2 text-[28px] font-semibold text-slate-900 tracking-tight">Área do Cliente</h1>
+            <p className="text-sm text-slate-500 mt-1.5">Acesse sua conta para continuar</p>
           </div>
 
           <div className="hidden lg:block mb-8">
-            <h2 className="text-2xl font-semibold text-slate-900 tracking-tight">Bem-vindo de volta</h2>
-            <p className="text-sm text-slate-500 mt-1">Entre com seus dados de acesso.</p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-slate-400 font-semibold">Acesso seguro</p>
+            <h2 className="mt-2 text-3xl font-semibold text-slate-900 tracking-tight">Bem-vindo de volta</h2>
+            <p className="text-sm text-slate-500 mt-2">Entre com seus dados para acessar sua área exclusiva.</p>
           </div>
 
-          <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-[0_8px_30px_-12px_rgba(15,23,42,0.12)] p-6 sm:p-7">
-            <form onSubmit={submit} className="space-y-5">
-              <div>
-                <Label className="text-[12px] font-semibold text-slate-700">E-mail</Label>
-                <Input
-                  type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                  placeholder="seuemail@exemplo.com"
-                  className="mt-1.5 h-11 bg-slate-50/60 border-2 border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl"
-                />
-              </div>
-              <div>
-                <Label className="text-[12px] font-semibold text-slate-700">Senha</Label>
-                <div className="relative mt-1.5">
-                  <Input
-                    type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}
-                    placeholder="••••••••"
-                    className="h-11 bg-slate-50/60 border-2 border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 pr-10 rounded-xl"
-                  />
-                  <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                    {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
+          <div className="relative">
+            <div className="absolute -inset-px rounded-3xl bg-gradient-to-br from-slate-200 via-slate-100 to-slate-200 opacity-60" />
+            <div className="relative bg-white rounded-3xl border border-slate-200/80 shadow-[0_10px_40px_-12px_rgba(15,23,42,0.18),0_2px_8px_-2px_rgba(15,23,42,0.06)] p-7 sm:p-8">
+              <form onSubmit={submit} className="space-y-5">
+                <div>
+                  <Label className="text-[12px] font-semibold text-slate-700 tracking-wide">E-mail</Label>
+                  <div className="relative mt-2">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                      placeholder="seuemail@exemplo.com"
+                      className="h-12 pl-10 bg-slate-50/70 border-2 border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-[14px]"
+                    />
+                  </div>
                 </div>
+                <div>
+                  <Label className="text-[12px] font-semibold text-slate-700 tracking-wide">Senha</Label>
+                  <div className="relative mt-2">
+                    <ShieldCheck className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}
+                      placeholder="••••••••"
+                      className="h-12 pl-10 pr-11 bg-slate-50/70 border-2 border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-[14px]"
+                    />
+                    <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition">
+                      {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit" disabled={busy}
+                  className="w-full h-12 text-[15px] font-semibold shadow-[0_4px_14px_-2px_rgba(15,23,42,0.35)] hover:shadow-[0_6px_20px_-2px_rgba(15,23,42,0.45)] transition-all rounded-xl"
+                  style={{ background: `linear-gradient(135deg, ${config.portal_color}, ${shade(config.portal_color, -15)})` }}
+                >
+                  {busy ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Entrando…</> : <>Entrar na minha área <ChevronRight className="h-4 w-4 ml-1" /></>}
+                </Button>
+              </form>
+
+              <div className="mt-6 grid grid-cols-3 gap-2 pt-5 border-t border-slate-100">
+                {[
+                  { i: ShieldCheck, l: "Seguro" },
+                  { i: Clock, l: "24/7" },
+                  { i: CheckCircle2, l: "Verificado" },
+                ].map((b, i) => {
+                  const Ic = b.i;
+                  return (
+                    <div key={i} className="flex flex-col items-center gap-1 py-2 text-slate-500">
+                      <Ic className="h-3.5 w-3.5" />
+                      <span className="text-[10px] font-medium uppercase tracking-wider">{b.l}</span>
+                    </div>
+                  );
+                })}
               </div>
-
-              <Button
-                type="submit" disabled={busy}
-                className="w-full h-11 text-[15px] font-semibold shadow-md hover:shadow-lg transition-shadow rounded-xl"
-                style={{ background: config.portal_color }}
-              >
-                {busy ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Entrando…</> : "Entrar na minha área"}
-              </Button>
-            </form>
-
-            <div className="mt-5 flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-200/70 p-3">
-              <ShieldCheck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-              <p className="text-[11px] text-slate-600 leading-relaxed">Seus dados são protegidos com criptografia de ponta a ponta.</p>
             </div>
           </div>
 
-          <p className="mt-6 text-center text-xs text-slate-400">
+          <p className="mt-7 text-center text-xs text-slate-500 leading-relaxed">
             Acesso exclusivo para pacientes cadastrados. <br />
-            Solicite seu acesso à recepção da clínica.
+            <span className="text-slate-400">Solicite seu acesso à recepção da clínica.</span>
           </p>
         </div>
       </section>
