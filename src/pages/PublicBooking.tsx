@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   Calendar as CalIcon, Loader2, CheckCircle2, ArrowLeft, ArrowRight, Clock,
-  User as UserIcon, Stethoscope, Sparkles, Check
+  User as UserIcon, Stethoscope, Sparkles, Check, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
+import { ptBR } from "date-fns/locale";
 import SEO from "@/components/SEO";
 import { TREATMENTS, DENTISTS } from "@/data/clinic";
 import { cn } from "@/lib/utils";
+
+type DbProfessional = {
+  id: string;
+  slug: string;
+  name: string;
+  specialty: string | null;
+  photo_url: string | null;
+};
 
 const CLINIC_NAME = "Clínica Levii";
 
