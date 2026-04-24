@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import { UserCog, Plus, Pencil, Trash2, Eye, MessageCircle } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { UserCog, Plus, Pencil, Trash2, Eye, MessageCircle, Upload, Loader2 } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import EmptyState from "@/admin/components/EmptyState";
 import DataTable, { type Column } from "@/admin/components/DataTable";
-import EntityDrawer from "@/admin/components/EntityDrawer";
+import EntityModal from "@/admin/components/EntityModal";
 import ConfirmDialog from "@/admin/components/ConfirmDialog";
 import KpiCard from "@/admin/components/KpiCard";
 import StatusPill from "@/admin/components/StatusPill";
