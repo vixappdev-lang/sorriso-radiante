@@ -263,3 +263,102 @@ export default function AdminAvaliacoes() {
     </>
   );
 }
+
+/* ───────── Lista compacta full-width com paginação e tabs ───────── */
+const PAGE_SIZE = 8;
+
+function ReviewsList({ reviews, filterFor, openReply, setConfirmDel }: any) {
+  const [tab, setTab] = useState<"all" | "pending" | "google" | "manual">("all");
+  const [page, setPage] = useState(1);
+
+  const list: Review[] = filterFor(tab);
+  const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  const safePage = Math.min(page, pages);
+  const slice = list.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  function go(t: typeof tab) { setTab(t); setPage(1); }
+
+  return (
+    <div className="admin-card overflow-hidden">
+      <div className="px-4 sm:px-5 pt-4 pb-3 border-b border-[hsl(var(--admin-border))] flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="text-[15px] font-semibold">Avaliações recebidas</h3>
+          <p className="text-xs text-muted-foreground">{list.length} {list.length === 1 ? "avaliação" : "avaliações"} nesta categoria</p>
+        </div>
+        <Tabs value={tab} onValueChange={(v) => go(v as any)}>
+          <TabsList>
+            <TabsTrigger value="all">Todas</TabsTrigger>
+            <TabsTrigger value="pending">Pendentes</TabsTrigger>
+            <TabsTrigger value="google">Google</TabsTrigger>
+            <TabsTrigger value="manual">Manuais</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
+
+      {list.length === 0 ? (
+        <div className="p-6">
+          <EmptyState icon={Star} title="Sem avaliações" description="Quando houver avaliações nesta categoria, elas aparecerão aqui." />
+        </div>
+      ) : (
+        <>
+          <ul className="divide-y divide-[hsl(var(--admin-border))]">
+            {slice.map((r) => (
+              <li key={r.id} className="px-4 sm:px-5 py-4 hover:bg-muted/30 transition">
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-amber-100 to-amber-50 grid place-items-center text-amber-700 font-semibold text-sm flex-shrink-0 ring-2 ring-white shadow-sm">
+                    {r.patient_name.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-semibold text-sm">{r.patient_name}</p>
+                      <Badge variant="outline" className="text-[10px] capitalize">{r.source}</Badge>
+                      <span className="text-[11px] text-muted-foreground tabular-nums">
+                        {new Date(r.created_at).toLocaleDateString("pt-BR")}
+                      </span>
+                    </div>
+                    <div className="mt-1.5"><StarsRow value={r.rating} /></div>
+                    {r.comment && <p className="mt-2 text-sm text-muted-foreground leading-relaxed line-clamp-2">{r.comment}</p>}
+                    {r.reply && (
+                      <div className="mt-2.5 rounded-lg bg-blue-50/60 border border-blue-100 px-3 py-2">
+                        <p className="text-[10px] font-semibold text-blue-700 uppercase tracking-wider mb-0.5">Resposta da clínica</p>
+                        <p className="text-xs text-blue-900/80 leading-relaxed line-clamp-2">{r.reply}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <Button size="sm" variant="ghost" onClick={() => openReply(r)} title="Responder"><Reply className="h-4 w-4" /></Button>
+                    <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setConfirmDel(r.id)} title="Excluir"><Trash2 className="h-4 w-4" /></Button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {pages > 1 && (
+            <div className="px-4 sm:px-5 py-3 border-t border-[hsl(var(--admin-border))] flex items-center justify-between">
+              <p className="text-xs text-muted-foreground tabular-nums">
+                Página {safePage} de {pages} · {list.length} no total
+              </p>
+              <div className="flex items-center gap-1">
+                <Button size="sm" variant="outline" disabled={safePage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                {Array.from({ length: pages }).slice(0, 5).map((_, i) => {
+                  const n = i + 1;
+                  return (
+                    <Button key={n} size="sm" variant={n === safePage ? "default" : "outline"} className="h-8 w-8 p-0 tabular-nums" onClick={() => setPage(n)}>
+                      {n}
+                    </Button>
+                  );
+                })}
+                <Button size="sm" variant="outline" disabled={safePage === pages} onClick={() => setPage((p) => Math.min(pages, p + 1))}>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
