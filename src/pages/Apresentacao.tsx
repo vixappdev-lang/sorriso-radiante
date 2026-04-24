@@ -981,8 +981,19 @@ function Google() {
 
       <style>{`
         @media (min-width: 1024px) {
-          .pres-shell #google > .pres-container > div {
+          .pres-shell #google > .pres-container > div:first-child {
             grid-template-columns: 1fr 1fr;
+          }
+        }
+        .pres-shell .pres-google-compare {
+          display: grid;
+          gap: 28px;
+          grid-template-columns: 1fr;
+        }
+        @media (min-width: 860px) {
+          .pres-shell .pres-google-compare {
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
           }
         }
         .pres-shell .pres-caret {
