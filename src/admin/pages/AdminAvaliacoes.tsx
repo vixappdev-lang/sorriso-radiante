@@ -92,8 +92,15 @@ export default function AdminAvaliacoes() {
     <>
       <PageHeader
         title="Avaliações & Reputação"
-        description="Acompanhe avaliações, responda pacientes e monitore sua reputação."
-        actions={<Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Adicionar avaliação</Button>}
+        description="Acompanhe avaliações, responda pacientes e envie convites de avaliação."
+        actions={
+          <>
+            <Button variant="outline" onClick={() => setDrawer({ mode: "invite" })}>
+              <Send className="h-4 w-4 mr-2" /> Convidar para avaliar
+            </Button>
+            <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Adicionar avaliação</Button>
+          </>
+        }
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5 mb-4">
