@@ -970,6 +970,165 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_campaigns: {
+        Row: {
+          active: boolean
+          audience_filter: Json
+          created_at: string
+          id: string
+          last_run_at: string | null
+          name: string
+          schedule_cron: string | null
+          stats: Json
+          template: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          audience_filter?: Json
+          created_at?: string
+          id?: string
+          last_run_at?: string | null
+          name: string
+          schedule_cron?: string | null
+          stats?: Json
+          template: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          audience_filter?: Json
+          created_at?: string
+          id?: string
+          last_run_at?: string | null
+          name?: string
+          schedule_cron?: string | null
+          stats?: Json
+          template?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_event_settings: {
+        Row: {
+          delay_minutes: number
+          enabled: boolean
+          event_key: string
+          template: string
+          updated_at: string
+        }
+        Insert: {
+          delay_minutes?: number
+          enabled?: boolean
+          event_key: string
+          template?: string
+          updated_at?: string
+        }
+        Update: {
+          delay_minutes?: number
+          enabled?: boolean
+          event_key?: string
+          template?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_messages_log: {
+        Row: {
+          appointment_id: string | null
+          campaign_id: string | null
+          id: string
+          message: string | null
+          provider_id: string | null
+          provider_type: string
+          response: Json | null
+          sent_at: string
+          status: string
+          template_key: string | null
+          to_number: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          campaign_id?: string | null
+          id?: string
+          message?: string | null
+          provider_id?: string | null
+          provider_type: string
+          response?: Json | null
+          sent_at?: string
+          status?: string
+          template_key?: string | null
+          to_number: string
+        }
+        Update: {
+          appointment_id?: string | null
+          campaign_id?: string | null
+          id?: string
+          message?: string | null
+          provider_id?: string | null
+          provider_type?: string
+          response?: Json | null
+          sent_at?: string
+          status?: string
+          template_key?: string | null
+          to_number?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_messages_log_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_log_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "whatsapp_providers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_providers: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          is_active: boolean
+          label: string
+          last_seen_at: string | null
+          status: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label: string
+          last_seen_at?: string | null
+          status?: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          last_seen_at?: string | null
+          status?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
