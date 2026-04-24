@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 export type BookingLink = {
   id: string;
   slug: string;
+  access_token?: string | null;
   title: string;
   description: string | null;
   professional_slug: string | null;

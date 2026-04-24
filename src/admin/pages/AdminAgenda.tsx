@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, RefreshCw, Loader2, Calendar as CalIcon, MessageCircle, Lock } from "lucide-react";
+import { Plus, RefreshCw, Loader2, Calendar as CalIcon, MessageCircle, Lock, Link as LinkIcon } from "lucide-react";
 import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ import StatusPill from "@/admin/components/StatusPill";
 import EntityDrawer from "@/admin/components/EntityDrawer";
 import ConfirmDialog from "@/admin/components/ConfirmDialog";
 import { useAppointments } from "@/admin/hooks/useAppointments";
+import PublicLinkModal from "@/admin/components/PublicLinkModal";
+import { useBookingLinks } from "@/admin/hooks/useBookingLinks";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
@@ -48,6 +50,9 @@ export default function AdminAgenda() {
   const [drawer, setDrawer] = useState<any | null>(null);
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
+  const { data: bookingLinks = [] } = useBookingLinks();
+  const defaultLink = bookingLinks.find((l) => l.slug === "geral") || bookingLinks[0];
 
   const [form, setForm] = useState({ name: "", phone: "", email: "", treatment: TREATMENTS[0]?.name ?? "", professional: DENTISTS[0]?.name ?? "", date: iso(new Date()), time: "09:00", notes: "" });
   const [block, setBlock] = useState({ block_date: iso(new Date()), start_time: "12:00", end_time: "13:00", professional_slug: "", reason: "" });
@@ -115,6 +120,7 @@ export default function AdminAgenda() {
         description="Gerencie agendamentos, encaixes e bloqueios em uma visão profissional."
         actions={
           <>
+            <Button variant="outline" size="sm" onClick={() => setLinkModalOpen(true)}><LinkIcon className="h-4 w-4 mr-2" /> Link de agendamento</Button>
             <Button variant="outline" size="sm" onClick={() => refetch()}><RefreshCw className="h-4 w-4 mr-2" /> Atualizar</Button>
             <Button variant="outline" size="sm" onClick={() => setBlocking(true)}><Lock className="h-4 w-4 mr-2" /> Bloquear horário</Button>
             <Button size="sm" onClick={() => setCreating(true)}><Plus className="h-4 w-4 mr-2" /> Novo encaixe</Button>
@@ -258,6 +264,15 @@ export default function AdminAgenda() {
       <ConfirmDialog open={!!confirmCancel} onOpenChange={(v) => !v && setConfirmCancel(null)}
         title="Cancelar agendamento?" description="Essa ação não pode ser desfeita pelo painel." destructive confirmLabel="Sim, cancelar"
         onConfirm={async () => { if (confirmCancel) { await setStatus(confirmCancel, "cancelled"); setConfirmCancel(null); } }} />
+
+      <PublicLinkModal
+        open={linkModalOpen}
+        onOpenChange={setLinkModalOpen}
+        title="Link público de agendamento"
+        description="Compartilhe para receber agendamentos automáticos"
+        path={defaultLink ? `/agendar/${defaultLink.access_token || defaultLink.slug}` : "/agendar/geral"}
+        helper="Este link permite que qualquer pessoa agende uma consulta diretamente. Os horários ocupados (incluindo os sincronizados da Clinicorp) aparecem bloqueados automaticamente. Domínio captado da hospedagem atual."
+      />
     </>
   );
 }

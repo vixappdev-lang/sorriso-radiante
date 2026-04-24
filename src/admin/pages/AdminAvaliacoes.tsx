@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { Star, Plus, MessageCircle, Trash2, Reply } from "lucide-react";
+import { Star, Plus, MessageCircle, Trash2, Reply, Link as LinkIcon, Send } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
 import EmptyState from "@/admin/components/EmptyState";
 import EntityDrawer from "@/admin/components/EntityDrawer";
 import ConfirmDialog from "@/admin/components/ConfirmDialog";
+import PublicLinkModal from "@/admin/components/PublicLinkModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useReviews, useCreateReview, useReplyReview, useDeleteReview, type Review } from "@/admin/hooks/useReviews";
+import { useReviewInvites, useCreateReviewInvite, useDeleteReviewInvite } from "@/admin/hooks/useReviewInvites";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -28,11 +30,16 @@ function StarsRow({ value, size = 14 }: { value: number; size?: number }) {
 
 export default function AdminAvaliacoes() {
   const { data: reviews = [] } = useReviews();
+  const { data: invites = [] } = useReviewInvites();
+  const createInvite = useCreateReviewInvite();
+  const deleteInvite = useDeleteReviewInvite();
   const create = useCreateReview();
   const reply = useReplyReview();
   const del = useDeleteReview();
-  const [drawer, setDrawer] = useState<{ mode: "new" | "reply"; review?: Review } | null>(null);
+  const [drawer, setDrawer] = useState<{ mode: "new" | "reply" | "invite"; review?: Review } | null>(null);
   const [form, setForm] = useState<any>({ patient_name: "", rating: 5, comment: "", source: "manual" });
+  const [inviteForm, setInviteForm] = useState<any>({ patient_name: "", patient_phone: "", treatment: "", professional: "" });
+  const [linkModal, setLinkModal] = useState<{ token: string; name: string } | null>(null);
   const [replyText, setReplyText] = useState("");
   const [confirmDel, setConfirmDel] = useState<string | null>(null);
 
@@ -85,8 +92,15 @@ export default function AdminAvaliacoes() {
     <>
       <PageHeader
         title="Avaliações & Reputação"
-        description="Acompanhe avaliações, responda pacientes e monitore sua reputação."
-        actions={<Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Adicionar avaliação</Button>}
+        description="Acompanhe avaliações, responda pacientes e envie convites de avaliação."
+        actions={
+          <>
+            <Button variant="outline" onClick={() => setDrawer({ mode: "invite" })}>
+              <Send className="h-4 w-4 mr-2" /> Convidar para avaliar
+            </Button>
+            <Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Adicionar avaliação</Button>
+          </>
+        }
       />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5 mb-4">
@@ -191,10 +205,20 @@ export default function AdminAvaliacoes() {
       <EntityDrawer
         open={!!drawer}
         onOpenChange={(v) => !v && setDrawer(null)}
-        title={drawer?.mode === "new" ? "Nova avaliação" : "Responder avaliação"}
+        title={drawer?.mode === "new" ? "Nova avaliação" : drawer?.mode === "invite" ? "Convidar paciente para avaliar" : "Responder avaliação"}
         footer={
           drawer?.mode === "new"
             ? <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setDrawer(null)}>Cancelar</Button><Button onClick={save}>Salvar</Button></div>
+            : drawer?.mode === "invite"
+            ? <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setDrawer(null)}>Fechar</Button><Button disabled={!inviteForm.patient_name} onClick={async () => {
+                try {
+                  const inv = await createInvite.mutateAsync(inviteForm);
+                  setInviteForm({ patient_name: "", patient_phone: "", treatment: "", professional: "" });
+                  setDrawer(null);
+                  setLinkModal({ token: inv.token, name: inv.patient_name });
+                  toast({ title: "Convite criado" });
+                } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+              }}><LinkIcon className="h-4 w-4 mr-2" /> Gerar link</Button></div>
             : <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setDrawer(null)}>Cancelar</Button><Button onClick={sendReply}>Enviar resposta</Button></div>
         }
       >
@@ -218,6 +242,37 @@ export default function AdminAvaliacoes() {
             <div><Label className="text-xs">Comentário</Label><Textarea rows={4} value={form.comment} onChange={(e) => setForm({ ...form, comment: e.target.value })} /></div>
           </div>
         )}
+        {drawer?.mode === "invite" && (
+          <div className="space-y-4">
+            <p className="text-xs text-muted-foreground">Crie um link único para o paciente avaliar a clínica. O link é captado automaticamente do domínio atual.</p>
+            <div><Label className="text-xs">Nome do paciente*</Label><Input value={inviteForm.patient_name} onChange={(e) => setInviteForm({ ...inviteForm, patient_name: e.target.value })} /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-xs">Telefone</Label><Input value={inviteForm.patient_phone} onChange={(e) => setInviteForm({ ...inviteForm, patient_phone: e.target.value })} /></div>
+              <div><Label className="text-xs">Tratamento</Label><Input value={inviteForm.treatment} onChange={(e) => setInviteForm({ ...inviteForm, treatment: e.target.value })} /></div>
+            </div>
+            <div><Label className="text-xs">Profissional</Label><Input value={inviteForm.professional} onChange={(e) => setInviteForm({ ...inviteForm, professional: e.target.value })} /></div>
+
+            {invites.length > 0 && (
+              <div className="pt-3 border-t border-dashed">
+                <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Convites recentes</p>
+                <div className="space-y-1.5 max-h-56 overflow-y-auto">
+                  {invites.slice(0, 10).map((inv) => (
+                    <div key={inv.id} className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 px-3 py-2 text-xs">
+                      <div className="min-w-0">
+                        <p className="font-medium truncate">{inv.patient_name}</p>
+                        <p className="text-[10px] text-muted-foreground">{inv.used_at ? "Avaliado" : "Pendente"}</p>
+                      </div>
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="ghost" onClick={() => setLinkModal({ token: inv.token, name: inv.patient_name })}><LinkIcon className="h-3.5 w-3.5" /></Button>
+                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteInvite.mutate(inv.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         {drawer?.mode === "reply" && drawer.review && (
           <div className="space-y-3">
             <div className="rounded-lg bg-muted/40 p-3">
@@ -229,6 +284,15 @@ export default function AdminAvaliacoes() {
           </div>
         )}
       </EntityDrawer>
+
+      <PublicLinkModal
+        open={!!linkModal}
+        onOpenChange={(v) => !v && setLinkModal(null)}
+        title={`Link de avaliação${linkModal?.name ? ` — ${linkModal.name}` : ""}`}
+        description="Compartilhe com o paciente para coletar a avaliação"
+        path={linkModal ? `/avaliar/${linkModal.token}` : ""}
+        helper="Cada link é único e expira em 60 dias. Após o paciente enviar a avaliação, o link não pode ser reutilizado. Compartilhe via WhatsApp, e-mail ou QR code."
+      />
 
       <ConfirmDialog
         open={!!confirmDel} onOpenChange={(v) => !v && setConfirmDel(null)}
