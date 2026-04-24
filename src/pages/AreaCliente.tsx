@@ -56,10 +56,10 @@ export default function AreaCliente() {
   }
 
   return (
-    <>
+    <div className="app-shell">
       <SEO title={`Área do Cliente — ${BRAND}`} description="Acesse seus agendamentos, faturas e histórico." />
       {session ? <ClientApp session={session} config={config} /> : <LoginScreen config={config} />}
-    </>
+    </div>
   );
 }
 
