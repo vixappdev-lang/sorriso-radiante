@@ -1348,36 +1348,36 @@ function Google() {
   );
 }
 
-// ===== Anúncios & Marketing (NOVA SEÇÃO) =====
+// ===== Captação & gerenciamento de leads (NOVA SEÇÃO) =====
 function Anuncios() {
   const channels = [
-    { icon: Instagram, title: "Instagram & Reels", text: "Conteúdo de autoridade que constrói marca local e gera conversa direta no direct." },
-    { icon: Megaphone, title: "Meta Ads (Facebook + Instagram)", text: "Anúncios segmentados por bairro, idade e interesse no tratamento certo." },
-    { icon: Search, title: "Google Ads de intenção", text: "Captura quem está pesquisando “implante perto de mim” no exato momento da decisão." },
-    { icon: MapPin, title: "Mídia local e parcerias", text: "Influência de bairro, parcerias regionais e ativação de comunidade." },
+    { icon: Search, title: "Google e busca local", text: "Quem procura “dentista perto de mim” cai no seu site, agenda em poucos cliques e já entra no painel." },
+    { icon: Instagram, title: "Instagram da clínica", text: "Bio, stories e direct viram link de agendamento. Cada visitante interessado é registrado no CRM automaticamente." },
+    { icon: MessageCircle, title: "WhatsApp da recepção", text: "Toda conversa vira lead com nome, histórico e tratamento de interesse, sem depender de planilha ou caderno." },
+    { icon: Users, title: "Indicação e retorno", text: "Pacientes antigos e indicações entram no mesmo funil, com lembretes automáticos de retorno e manutenção." },
   ];
 
   const flow = [
-    { icon: Megaphone, title: "Anúncio criativo" },
-    { icon: Instagram, title: "Curtida, comentário, click" },
-    { icon: MessageCircle, title: "Mensagem no WhatsApp" },
-    { icon: HandCoins, title: "Atendimento humano que vende" },
-    { icon: Calendar, title: "Agendamento manual" },
-    { icon: Users, title: "Paciente confirmado" },
+    { icon: Globe, title: "Lead chega (site, Google, Insta, WhatsApp)" },
+    { icon: Target, title: "Cadastrado no CRM automaticamente" },
+    { icon: MessageCircle, title: "Recepção atende com histórico em mãos" },
+    { icon: Calendar, title: "Agendamento humano e qualificado" },
+    { icon: Bell, title: "Confirmações automáticas no WhatsApp" },
+    { icon: CheckCircle2, title: "Paciente sentado na cadeira" },
   ];
 
   return (
     <section className="pres-section" id="anuncios">
       <div className="pres-container">
         <div className="pres-reveal" style={{ maxWidth: 820 }}>
-          <span className="pres-eyebrow"><Megaphone size={12} /> Anúncios e captação ativa</span>
+          <span className="pres-eyebrow"><Target size={12} /> Captação e gerenciamento de leads</span>
           <h2 className="pres-h2" style={{ marginTop: 20 }}>
-            Quem cuida da imagem, do anúncio e do contato direto com o paciente.
+            Cada paciente interessado vira ficha no painel, sem nada cair no esquecimento.
           </h2>
           <p className="pres-lead" style={{ marginTop: 16 }}>
-            A LyneCloud não é só software. Cuidamos do Instagram da clínica, dos anúncios que rodam todo dia
-            e do fluxo que leva o paciente direto ao seu WhatsApp, onde sua equipe agenda manualmente,
-            mantendo o toque humano que fecha tratamento.
+            A LyneCloud não vende anúncio nem cuida do seu Instagram. O que a plataforma faz é receber, organizar
+            e automatizar todo lead que chega na clínica, independente do canal: site, Google, redes sociais,
+            WhatsApp ou indicação. Nada se perde, nada esfria, e sua recepção atende com histórico completo na tela.
           </p>
         </div>
 
