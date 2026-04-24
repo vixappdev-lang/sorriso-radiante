@@ -50,6 +50,9 @@ export default function AdminAgenda() {
   const [drawer, setDrawer] = useState<any | null>(null);
   const [confirmCancel, setConfirmCancel] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [linkModalOpen, setLinkModalOpen] = useState(false);
+  const { data: bookingLinks = [] } = useBookingLinks();
+  const defaultLink = bookingLinks.find((l) => l.slug === "geral") || bookingLinks[0];
 
   const [form, setForm] = useState({ name: "", phone: "", email: "", treatment: TREATMENTS[0]?.name ?? "", professional: DENTISTS[0]?.name ?? "", date: iso(new Date()), time: "09:00", notes: "" });
   const [block, setBlock] = useState({ block_date: iso(new Date()), start_time: "12:00", end_time: "13:00", professional_slug: "", reason: "" });
@@ -117,6 +120,7 @@ export default function AdminAgenda() {
         description="Gerencie agendamentos, encaixes e bloqueios em uma visão profissional."
         actions={
           <>
+            <Button variant="outline" size="sm" onClick={() => setLinkModalOpen(true)}><LinkIcon className="h-4 w-4 mr-2" /> Link de agendamento</Button>
             <Button variant="outline" size="sm" onClick={() => refetch()}><RefreshCw className="h-4 w-4 mr-2" /> Atualizar</Button>
             <Button variant="outline" size="sm" onClick={() => setBlocking(true)}><Lock className="h-4 w-4 mr-2" /> Bloquear horário</Button>
             <Button size="sm" onClick={() => setCreating(true)}><Plus className="h-4 w-4 mr-2" /> Novo encaixe</Button>
