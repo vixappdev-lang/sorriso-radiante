@@ -123,8 +123,8 @@ export type Dentist = {
 
 export const DENTISTS: Dentist[] = [
   {
-    slug: "dra-camila-lynecloud",
-    name: "Dra. Camila LyneCloud",
+    slug: "dra-camila-andrade",
+    name: "Dra. Camila Andrade",
     cro: "CRO/ES 5.421",
     specialty: "Implantodontia & Estética",
     bio: "Diretora clínica, com mais de 15 anos dedicados à reabilitação oral e estética avançada. Mestre em Implantodontia.",
