@@ -329,35 +329,46 @@ function StepTreatment({ value, onChange }: any) {
   );
 }
 
-function StepProfessional({ value, onChange }: any) {
+function StepProfessional({ value, onChange, dbPros }: any) {
+  // Mescla profissionais do DB (com fotos) com fallback do data/clinic
+  const list: { slug: string; name: string; specialty?: string | null; photo_url?: string | null }[] =
+    (dbPros && dbPros.length > 0)
+      ? dbPros
+      : DENTISTS.map((d: any) => ({ slug: d.slug, name: d.name, specialty: d.specialty, photo_url: null }));
+
   return (
     <div>
       <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Escolha seu profissional</h2>
       <p className="text-sm text-slate-500 mt-1.5">Selecione com quem você gostaria de ser atendido.</p>
       <div className="mt-6 grid sm:grid-cols-2 gap-3">
-        {DENTISTS.map((d) => {
+        {list.map((d) => {
           const selected = value === d.name;
-          const initials = d.name.split(" ").map((s) => s[0]).slice(0, 2).join("");
+          const initials = d.name.split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
           return (
             <button
               key={d.slug}
               onClick={() => onChange(d.name)}
               className={cn(
-                "flex items-center gap-3 p-4 rounded-2xl border-2 text-left transition-all duration-200",
+                "flex items-center gap-3.5 p-4 rounded-2xl border-2 text-left transition-all duration-200",
                 selected
-                  ? "border-slate-900 bg-slate-50 shadow-[0_2px_12px_-4px_rgba(15,23,42,0.2)]"
-                  : "border-slate-200 hover:border-slate-300 hover:bg-slate-50/50"
+                  ? "border-slate-900 bg-slate-50 shadow-[0_4px_16px_-4px_rgba(15,23,42,0.22)]"
+                  : "border-slate-200 hover:border-slate-400 hover:bg-slate-50/50 hover:shadow-[0_2px_10px_-4px_rgba(15,23,42,0.10)]"
               )}
             >
-              <div className={cn(
-                "h-12 w-12 rounded-full grid place-items-center text-white font-semibold text-sm flex-shrink-0",
-                "bg-gradient-to-br from-blue-500 to-blue-700"
-              )}>
-                {initials}
-              </div>
+              {d.photo_url ? (
+                <img
+                  src={d.photo_url}
+                  alt={d.name}
+                  className="h-14 w-14 rounded-full object-cover flex-shrink-0 ring-2 ring-white shadow-sm"
+                />
+              ) : (
+                <div className="h-14 w-14 rounded-full grid place-items-center text-white font-semibold text-base flex-shrink-0 bg-gradient-to-br from-blue-500 to-blue-700 ring-2 ring-white shadow-sm">
+                  {initials}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-slate-900 text-[15px] truncate">{d.name}</p>
-                {(d as any).specialty && <p className="text-xs text-slate-500 mt-0.5 truncate">{(d as any).specialty}</p>}
+                {d.specialty && <p className="text-xs text-slate-500 mt-0.5 truncate">{d.specialty}</p>}
               </div>
               <div className={cn(
                 "h-5 w-5 rounded-full border-2 grid place-items-center flex-shrink-0",
@@ -374,40 +385,84 @@ function StepProfessional({ value, onChange }: any) {
 }
 
 function StepDateTime({ date, setDate, time, setTime, takenTimes }: any) {
+  const morning = HOURS.filter((h) => parseInt(h.slice(0, 2), 10) < 12);
+  const afternoon = HOURS.filter((h) => { const x = parseInt(h.slice(0, 2), 10); return x >= 12 && x < 18; });
+  const evening = HOURS.filter((h) => parseInt(h.slice(0, 2), 10) >= 18);
+
+  const slotBtn = (h: string) => {
+    const taken = takenTimes.has(h);
+    const selected = time === h;
+    return (
+      <button
+        key={h} type="button" disabled={taken} onClick={() => setTime(h)}
+        className={cn(
+          "text-xs rounded-lg py-2.5 font-semibold transition-all tabular-nums border",
+          taken ? "bg-slate-50 border-slate-200/70 text-slate-300 cursor-not-allowed line-through" :
+          selected ? "bg-slate-900 text-white border-slate-900 shadow-[0_4px_12px_-2px_rgba(15,23,42,0.45)] scale-[1.04]" :
+          "bg-white border-slate-300 text-slate-800 hover:border-blue-500 hover:bg-blue-50/40 hover:text-blue-700"
+        )}
+      >{h}</button>
+    );
+  };
+
   return (
     <div>
       <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Quando você quer ser atendido?</h2>
       <p className="text-sm text-slate-500 mt-1.5">Escolha o melhor dia e horário para você.</p>
 
-      <div className="mt-6 grid md:grid-cols-[auto_1fr] gap-6">
-        <div className="rounded-2xl border border-slate-200 bg-slate-50/40 p-2 mx-auto md:mx-0">
+      <div className="mt-6 grid lg:grid-cols-[auto_1fr] gap-5">
+        {/* Calendário em surface elevada */}
+        <div className="rounded-2xl border-2 border-slate-200 bg-gradient-to-b from-slate-50 to-white p-3 mx-auto lg:mx-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_2px_8px_-4px_rgba(15,23,42,0.08)]">
+          <div className="flex items-center justify-between px-2 pb-2">
+            <p className="text-[11px] uppercase tracking-wider font-bold text-slate-700 flex items-center gap-1.5">
+              <CalIcon className="h-3.5 w-3.5 text-blue-600" /> Data
+            </p>
+            <p className="text-[11px] text-slate-500 font-medium capitalize">
+              {date.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" })}
+            </p>
+          </div>
           <Calendar
             mode="single"
             selected={date}
             onSelect={(d) => d && setDate(d)}
             disabled={(d) => d < new Date(new Date().toDateString())}
+            locale={ptBR}
+            className="pointer-events-auto"
           />
         </div>
-        <div>
-          <p className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-3 flex items-center gap-1.5">
-            <Clock className="h-3 w-3" /> Horários disponíveis
-          </p>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5 max-h-72 overflow-y-auto pr-1">
-            {HOURS.map((h: string) => {
-              const taken = takenTimes.has(h);
-              const selected = time === h;
-              return (
-                <button
-                  key={h} type="button" disabled={taken} onClick={() => setTime(h)}
-                  className={cn(
-                    "text-xs rounded-xl py-2.5 font-semibold transition-all tabular-nums border-2",
-                    taken ? "bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed line-through" :
-                    selected ? "bg-slate-900 text-white border-slate-900 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.4)] scale-105" :
-                    "bg-white border-slate-200 text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                  )}
-                >{h}</button>
-              );
-            })}
+
+        {/* Horários agrupados por turno */}
+        <div className="rounded-2xl border-2 border-slate-200 bg-gradient-to-b from-slate-50/60 to-white p-4 sm:p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_2px_8px_-4px_rgba(15,23,42,0.08)]">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[11px] uppercase tracking-wider font-bold text-slate-700 flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5 text-blue-600" /> Horários
+            </p>
+            {time && (
+              <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-200">
+                {time} selecionado
+              </span>
+            )}
+          </div>
+
+          <div className="space-y-4 max-h-[340px] overflow-y-auto pr-1 -mr-1">
+            {morning.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500 font-bold mb-2">Manhã</p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">{morning.map(slotBtn)}</div>
+              </div>
+            )}
+            {afternoon.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500 font-bold mb-2">Tarde</p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">{afternoon.map(slotBtn)}</div>
+              </div>
+            )}
+            {evening.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500 font-bold mb-2">Noite</p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">{evening.map(slotBtn)}</div>
+              </div>
+            )}
           </div>
         </div>
       </div>
