@@ -139,10 +139,11 @@ export default function AdminProfissionais() {
       )}
 
       {/* Drawer create/edit/view */}
-      <EntityDrawer
+      <EntityModal
         open={!!drawer} onOpenChange={(v) => !v && setDrawer(null)}
         title={drawer?.mode === "create" ? "Novo profissional" : drawer?.mode === "edit" ? "Editar profissional" : form.name || "Profissional"}
         description={drawer?.mode === "view" ? "Detalhes, agenda e desempenho" : undefined}
+        size="lg"
         footer={drawer?.mode !== "view" ? (
           <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setDrawer(null)}>Cancelar</Button><Button onClick={save}>Salvar</Button></div>
         ) : undefined}
@@ -169,7 +170,7 @@ export default function AdminProfissionais() {
                 <div><Label className="text-xs">Telefone</Label><Input value={form.phone || ""} disabled={drawer.mode === "view"} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
                 <div><Label className="text-xs">E-mail</Label><Input type="email" value={form.email || ""} disabled={drawer.mode === "view"} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
               </div>
-              <div><Label className="text-xs">URL da foto</Label><Input value={form.photo_url || ""} disabled={drawer.mode === "view"} onChange={(e) => setForm({ ...form, photo_url: e.target.value })} /></div>
+              <PhotoUploader value={form.photo_url} onChange={(url) => setForm({ ...form, photo_url: url })} disabled={drawer.mode === "view"} name={form.name || "P"} />
               <div className="grid grid-cols-2 gap-3 items-end">
                 <div><Label className="text-xs">Carga horária semanal</Label><Input type="number" value={form.weekly_hours ?? 40} disabled={drawer.mode === "view"} onChange={(e) => setForm({ ...form, weekly_hours: parseInt(e.target.value || "0") })} /></div>
                 <div className="flex items-center gap-2"><Switch checked={form.status === "active"} disabled={drawer.mode === "view"} onCheckedChange={(v) => setForm({ ...form, status: v ? "active" : "inactive" })} /><span className="text-sm">Ativo</span></div>
@@ -241,7 +242,7 @@ export default function AdminProfissionais() {
             </TabsContent>
           </Tabs>
         )}
-      </EntityDrawer>
+      </EntityModal>
 
       <ConfirmDialog
         open={!!confirmDel} onOpenChange={(v) => !v && setConfirmDel(null)}
