@@ -517,9 +517,9 @@ function ClinicaReal() {
               }}
             >
               {[
-                { icon: ShieldCheck, t: "Sua marca, sua vitrine", d: "Domínio e identidade da clínica — nada da LyneCloud aparece pro paciente." },
+                { icon: ShieldCheck, t: "Sua marca, sua vitrine", d: "Domínio e identidade da clínica. Nada da LyneCloud aparece pro paciente." },
                 { icon: Workflow, t: "Estrutura nos bastidores", d: "Agenda, leads, financeiro e WhatsApp girando 24h, sem você operar." },
-                { icon: Crown, t: "Posicionamento premium", d: "Site, presença no Google e fluxo digital de uma rede grande — para a sua clínica." },
+                { icon: Crown, t: "Posicionamento premium", d: "Site, presença no Google e fluxo digital de uma rede grande, dentro da sua clínica." },
               ].map((b) => (
                 <div key={b.t} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                   <span
