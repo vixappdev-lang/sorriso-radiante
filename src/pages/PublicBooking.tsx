@@ -480,7 +480,7 @@ function StepDetails({ form, setForm, summary, error }: any) {
         <div>
           <Label className="text-[12px] font-semibold text-slate-700">Nome completo *</Label>
           <Input
-            className="mt-1.5 h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl"
+            className="mt-1.5 h-12 bg-white border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-[15px] shadow-sm"
             value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
             placeholder="Como devemos te chamar?"
           />
@@ -489,7 +489,7 @@ function StepDetails({ form, setForm, summary, error }: any) {
           <div>
             <Label className="text-[12px] font-semibold text-slate-700">WhatsApp *</Label>
             <Input
-              className="mt-1.5 h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl"
+              className="mt-1.5 h-12 bg-white border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-[15px] shadow-sm"
               value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="(00) 00000-0000"
             />
@@ -497,7 +497,7 @@ function StepDetails({ form, setForm, summary, error }: any) {
           <div>
             <Label className="text-[12px] font-semibold text-slate-700">E-mail</Label>
             <Input
-              className="mt-1.5 h-11 bg-slate-50 border-slate-200 focus:bg-white rounded-xl"
+              className="mt-1.5 h-12 bg-white border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl text-[15px] shadow-sm"
               type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </div>
@@ -505,7 +505,7 @@ function StepDetails({ form, setForm, summary, error }: any) {
         <div>
           <Label className="text-[12px] font-semibold text-slate-700">Observação</Label>
           <Textarea
-            className="mt-1.5 bg-slate-50 border-slate-200 focus:bg-white resize-none rounded-xl"
+            className="mt-1.5 bg-white border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 resize-none rounded-xl text-[15px] shadow-sm"
             rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })}
             placeholder="Algo que devemos saber? (opcional)"
           />
