@@ -332,7 +332,7 @@ function Solucao() {
 }
 
 // ===== Showcase com prints reais =====
-const SHOT_V = "v=3"; // cache-bust dos prints atualizados
+const SHOT_V = "v=4"; // cache-bust dos prints atualizados (LyneCloud rebrand)
 const SHOTS = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, file: `/apresentacao/dashboard.png?${SHOT_V}`, url: "lynecloud.com.br/admin/dashboard",
     title: "Visão completa em tempo real", desc: "KPIs operacionais, faturamento estimado, agendamentos do dia, taxa de confirmação e gráficos de performance, tudo em uma única tela." },
