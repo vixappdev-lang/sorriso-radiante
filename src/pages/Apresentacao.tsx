@@ -2950,6 +2950,7 @@ export default function Apresentacao() {
       <Trafego />
       <SemMensalidade />
       <LiveOps />
+      <Objecoes />
       <ProximosPassos />
       <CTAFinal />
       <PremiumFooter />
