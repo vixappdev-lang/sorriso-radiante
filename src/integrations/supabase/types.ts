@@ -197,6 +197,78 @@ export type Database = {
         }
         Relationships: []
       }
+      clinicorp_busy_slots: {
+        Row: {
+          busy_date: string
+          end_time: string
+          external_id: string
+          id: string
+          patient_name: string | null
+          professional_external_id: string | null
+          professional_slug: string | null
+          raw: Json | null
+          start_time: string
+          status: string
+          synced_at: string
+          treatment: string | null
+        }
+        Insert: {
+          busy_date: string
+          end_time: string
+          external_id: string
+          id?: string
+          patient_name?: string | null
+          professional_external_id?: string | null
+          professional_slug?: string | null
+          raw?: Json | null
+          start_time: string
+          status?: string
+          synced_at?: string
+          treatment?: string | null
+        }
+        Update: {
+          busy_date?: string
+          end_time?: string
+          external_id?: string
+          id?: string
+          patient_name?: string | null
+          professional_external_id?: string | null
+          professional_slug?: string | null
+          raw?: Json | null
+          start_time?: string
+          status?: string
+          synced_at?: string
+          treatment?: string | null
+        }
+        Relationships: []
+      }
+      clinicorp_sync_log: {
+        Row: {
+          created_at: string
+          duration_ms: number | null
+          id: string
+          message: string | null
+          slots_synced: number | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          message?: string | null
+          slots_synced?: number | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number | null
+          id?: string
+          message?: string | null
+          slots_synced?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
       external_integrations: {
         Row: {
           config: Json
@@ -347,6 +419,51 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_accounts: {
+        Row: {
+          address: Json | null
+          avatar_url: string | null
+          birth_date: string | null
+          cpf: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          notes: string | null
+          phone: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          address?: Json | null
+          avatar_url?: string | null
+          birth_date?: string | null
+          cpf?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          notes?: string | null
+          phone: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          address?: Json | null
+          avatar_url?: string | null
+          birth_date?: string | null
+          cpf?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          notes?: string | null
+          phone?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       patient_notes: {
         Row: {
           created_at: string
@@ -373,6 +490,8 @@ export type Database = {
       }
       professional_schedules: {
         Row: {
+          break_end: string | null
+          break_start: string | null
           end_time: string
           id: string
           professional_id: string
@@ -380,6 +499,8 @@ export type Database = {
           weekday: number
         }
         Insert: {
+          break_end?: string | null
+          break_start?: string | null
           end_time: string
           id?: string
           professional_id: string
@@ -387,6 +508,8 @@ export type Database = {
           weekday: number
         }
         Update: {
+          break_end?: string | null
+          break_start?: string | null
           end_time?: string
           id?: string
           professional_id?: string
@@ -405,6 +528,8 @@ export type Database = {
       }
       professionals: {
         Row: {
+          bio: string | null
+          color: string | null
           created_at: string
           cro: string | null
           email: string | null
@@ -413,6 +538,8 @@ export type Database = {
           notes_internal: string | null
           phone: string | null
           photo_url: string | null
+          services: string[] | null
+          slot_minutes: number | null
           slug: string
           specialty: string | null
           status: string
@@ -420,6 +547,8 @@ export type Database = {
           weekly_hours: number | null
         }
         Insert: {
+          bio?: string | null
+          color?: string | null
           created_at?: string
           cro?: string | null
           email?: string | null
@@ -428,6 +557,8 @@ export type Database = {
           notes_internal?: string | null
           phone?: string | null
           photo_url?: string | null
+          services?: string[] | null
+          slot_minutes?: number | null
           slug: string
           specialty?: string | null
           status?: string
@@ -435,6 +566,8 @@ export type Database = {
           weekly_hours?: number | null
         }
         Update: {
+          bio?: string | null
+          color?: string | null
           created_at?: string
           cro?: string | null
           email?: string | null
@@ -443,11 +576,85 @@ export type Database = {
           notes_internal?: string | null
           phone?: string | null
           photo_url?: string | null
+          services?: string[] | null
+          slot_minutes?: number | null
           slug?: string
           specialty?: string | null
           status?: string
           updated_at?: string
           weekly_hours?: number | null
+        }
+        Relationships: []
+      }
+      public_booking_links: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          professional_slug: string | null
+          slug: string
+          title: string
+          treatment_slug: string | null
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          professional_slug?: string | null
+          slug: string
+          title: string
+          treatment_slug?: string | null
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          professional_slug?: string | null
+          slug?: string
+          title?: string
+          treatment_slug?: string | null
+        }
+        Relationships: []
+      }
+      review_invites: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          patient_name: string
+          patient_phone: string | null
+          professional: string | null
+          review_id: string | null
+          token: string
+          treatment: string | null
+          used_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          patient_name: string
+          patient_phone?: string | null
+          professional?: string | null
+          review_id?: string | null
+          token?: string
+          treatment?: string | null
+          used_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          patient_name?: string
+          patient_phone?: string | null
+          professional?: string | null
+          review_id?: string | null
+          token?: string
+          treatment?: string | null
+          used_at?: string | null
         }
         Relationships: []
       }
@@ -571,6 +778,42 @@ export type Database = {
         }
         Relationships: []
       }
+      staff_profiles: {
+        Row: {
+          active: boolean
+          avatar_url: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          job_title: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          job_title?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          job_title?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       treatments_overrides: {
         Row: {
           active: boolean
@@ -607,6 +850,36 @@ export type Database = {
           professional_slug?: string | null
           slug?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      user_permissions: {
+        Row: {
+          can_delete: boolean
+          can_edit: boolean
+          can_view: boolean
+          created_at: string
+          id: string
+          module: string
+          user_id: string
+        }
+        Insert: {
+          can_delete?: boolean
+          can_edit?: boolean
+          can_view?: boolean
+          created_at?: string
+          id?: string
+          module: string
+          user_id: string
+        }
+        Update: {
+          can_delete?: boolean
+          can_edit?: boolean
+          can_view?: boolean
+          created_at?: string
+          id?: string
+          module?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -663,12 +936,20 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_permission: {
+        Args: { _action?: string; _module: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      submit_review_with_token: {
+        Args: { _comment: string; _rating: number; _token: string }
+        Returns: string
       }
     }
     Enums: {

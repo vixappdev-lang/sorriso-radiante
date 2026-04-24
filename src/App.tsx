@@ -15,6 +15,8 @@ import Servicos from "./pages/Servicos.tsx";
 import Localizacao from "./pages/Localizacao.tsx";
 import Contato from "./pages/Contato.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import PublicReview from "./pages/PublicReview.tsx";
+import PublicBooking from "./pages/PublicBooking.tsx";
 
 // Painel admin
 import RequireAdmin from "@/admin/layout/RequireAdmin";
@@ -52,6 +54,8 @@ const App = () => (
             <Route path="/servicos" element={<Servicos />} />
             <Route path="/localizacao" element={<Localizacao />} />
             <Route path="/contato" element={<Contato />} />
+            <Route path="/avaliar/:token" element={<PublicReview />} />
+            <Route path="/agendar/:slug" element={<PublicBooking />} />
 
             {/* Painel admin */}
             <Route path="/admin/login" element={<AdminLogin />} />
