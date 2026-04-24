@@ -357,6 +357,226 @@ const SHOTS = [
     title: "Configuração total da operação", desc: "Dados da clínica, horários, integrações, área do cliente, branding, usuários, webhooks e API." },
 ];
 
+// ===== Seção visual: Clínica real + estrutura invisível atrás =====
+function ClinicaReal() {
+  return (
+    <section className="pres-section" id="clinica-real" style={{ background: "hsl(var(--pres-dark))", color: "white", position: "relative", overflow: "hidden" }}>
+      {/* glow ambient */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", inset: 0,
+          background:
+            "radial-gradient(60% 50% at 15% 20%, hsl(215 90% 55% / 0.22), transparent 60%), radial-gradient(45% 40% at 85% 80%, hsl(38 80% 55% / 0.10), transparent 60%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div className="pres-container" style={{ position: "relative", zIndex: 2 }}>
+        <div className="pres-reveal" style={{ maxWidth: 820, marginBottom: 56 }}>
+          <span className="pres-eyebrow" style={{ color: "hsl(38 80% 70%)", background: "hsl(0 0% 100% / 0.06)", borderColor: "hsl(0 0% 100% / 0.14)" }}>
+            <Building2 size={12} /> Sua clínica · Sua autoridade
+          </span>
+          <h2 className="pres-h2" style={{ marginTop: 18, color: "white" }}>
+            A clínica que o paciente vê.<br />
+            <span style={{ color: "hsl(38 80% 70%)" }}>A estrutura que ele nem percebe.</span>
+          </h2>
+          <p className="pres-lead" style={{ marginTop: 18, color: "hsl(0 0% 100% / 0.72)" }}>
+            Você continua dono do ambiente, da equipe e do atendimento. A LyneCloud entra invisível por trás —
+            organizando agenda, lembretes, leads, financeiro e reputação enquanto você atende.
+          </p>
+        </div>
+
+        <div
+          className="pres-reveal pres-clinica-grid"
+          style={{ display: "grid", gap: 24, alignItems: "stretch" }}
+        >
+          {/* Coluna principal — foto grande */}
+          <div className="pres-clinica-main">
+            <div
+              style={{
+                position: "relative",
+                borderRadius: 22,
+                overflow: "hidden",
+                border: "1px solid hsl(0 0% 100% / 0.10)",
+                boxShadow: "0 30px 80px -30px hsl(220 60% 4% / 0.8), 0 60px 120px -40px hsl(215 70% 10% / 0.5)",
+                aspectRatio: "16 / 10",
+              }}
+            >
+              <img
+                src="/apresentacao/clinica-real.jpg"
+                alt="Ambiente clínico premium operando com a estrutura LyneCloud"
+                loading="lazy"
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+              {/* gradient overlay para legibilidade dos selos */}
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute", inset: 0,
+                  background:
+                    "linear-gradient(180deg, hsl(220 40% 6% / 0) 40%, hsl(220 40% 6% / 0.55) 80%, hsl(220 40% 6% / 0.85) 100%)",
+                }}
+              />
+              {/* Selo flutuante topo-esquerda */}
+              <div
+                style={{
+                  position: "absolute", top: 18, left: 18,
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "8px 14px",
+                  borderRadius: 999,
+                  background: "hsl(0 0% 100% / 0.92)",
+                  color: "hsl(var(--pres-text))",
+                  fontSize: 12, fontWeight: 600,
+                  backdropFilter: "blur(10px)",
+                  boxShadow: "0 8px 24px -8px hsl(220 40% 6% / 0.4)",
+                }}
+              >
+                <span style={{ width: 8, height: 8, borderRadius: 999, background: "hsl(152 70% 45%)", boxShadow: "0 0 0 4px hsl(152 70% 45% / 0.25)" }} />
+                Painel ativo · operação em tempo real
+              </div>
+              {/* Card flutuante inferior — estatística viva */}
+              <div
+                style={{
+                  position: "absolute", left: 22, right: 22, bottom: 22,
+                  display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", justifyContent: "space-between",
+                  padding: "16px 20px",
+                  borderRadius: 16,
+                  background: "hsl(0 0% 100% / 0.10)",
+                  border: "1px solid hsl(0 0% 100% / 0.18)",
+                  backdropFilter: "blur(14px)",
+                  WebkitBackdropFilter: "blur(14px)",
+                }}
+              >
+                <div>
+                  <div style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "hsl(0 0% 100% / 0.6)", fontWeight: 600 }}>
+                    Enquanto você atende
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: "white", marginTop: 4 }}>
+                    A LyneCloud confirma agendamentos, qualifica leads e cobra inadimplentes.
+                  </div>
+                </div>
+                <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: "white" }}>92%</div>
+                    <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.6)", letterSpacing: "0.1em", textTransform: "uppercase" }}>confirmados</div>
+                  </div>
+                  <div style={{ width: 1, height: 32, background: "hsl(0 0% 100% / 0.18)" }} />
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ fontSize: 22, fontWeight: 700, color: "white" }}>24/7</div>
+                    <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.6)", letterSpacing: "0.1em", textTransform: "uppercase" }}>operando</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Coluna lateral — recepção + bullets */}
+          <div className="pres-clinica-side" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <div
+              style={{
+                position: "relative",
+                borderRadius: 18,
+                overflow: "hidden",
+                border: "1px solid hsl(0 0% 100% / 0.10)",
+                boxShadow: "0 20px 50px -20px hsl(220 60% 4% / 0.7)",
+                aspectRatio: "16 / 11",
+              }}
+            >
+              <img
+                src="/apresentacao/clinica-recepcao.jpg"
+                alt="Recepção atendendo com agenda e CRM da LyneCloud"
+                loading="lazy"
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              />
+              <div
+                aria-hidden
+                style={{
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(180deg, hsl(220 40% 6% / 0) 50%, hsl(220 40% 6% / 0.75) 100%)",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute", left: 16, right: 16, bottom: 14,
+                  fontSize: 13, color: "white", fontWeight: 500,
+                  textShadow: "0 2px 8px hsl(220 40% 6% / 0.6)",
+                }}
+              >
+                Sua recepção atendendo com a agenda já organizada — sem caderno, sem retrabalho.
+              </div>
+            </div>
+
+            <div
+              style={{
+                padding: "22px 22px",
+                borderRadius: 18,
+                background: "hsl(0 0% 100% / 0.04)",
+                border: "1px solid hsl(0 0% 100% / 0.10)",
+                display: "grid",
+                gap: 14,
+              }}
+            >
+              {[
+                { icon: ShieldCheck, t: "Sua marca, sua vitrine", d: "Domínio e identidade da clínica — nada da LyneCloud aparece pro paciente." },
+                { icon: Workflow, t: "Estrutura nos bastidores", d: "Agenda, leads, financeiro e WhatsApp girando 24h, sem você operar." },
+                { icon: Crown, t: "Posicionamento premium", d: "Site, presença no Google e fluxo digital de uma rede grande — para a sua clínica." },
+              ].map((b) => (
+                <div key={b.t} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                  <span
+                    style={{
+                      flexShrink: 0,
+                      width: 36, height: 36, borderRadius: 10,
+                      background: "hsl(215 80% 55% / 0.18)",
+                      border: "1px solid hsl(215 80% 60% / 0.30)",
+                      color: "hsl(215 90% 75%)",
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >
+                    <b.icon size={17} />
+                  </span>
+                  <div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "white" }}>{b.t}</div>
+                    <div style={{ fontSize: 13, color: "hsl(0 0% 100% / 0.65)", marginTop: 3, lineHeight: 1.5 }}>{b.d}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Faixa de assinatura final */}
+        <div
+          className="pres-reveal"
+          style={{
+            marginTop: 40,
+            padding: "20px 24px",
+            borderRadius: 14,
+            border: "1px solid hsl(0 0% 100% / 0.10)",
+            background: "hsl(0 0% 100% / 0.03)",
+            display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", justifyContent: "space-between",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12, color: "hsl(0 0% 100% / 0.78)", fontSize: 14 }}>
+            <Sparkles size={16} style={{ color: "hsl(38 80% 70%)" }} />
+            A clínica continua sua. A operação fica nossa.
+          </div>
+          <a href={WPP_LINK} target="_blank" rel="noopener noreferrer" className="pres-btn pres-btn-primary" style={{ padding: "12px 18px", fontSize: 14 }}>
+            Quero essa estrutura na minha clínica <ArrowRight size={16} />
+          </a>
+        </div>
+      </div>
+
+      {/* Responsividade isolada da seção */}
+      <style>{`
+        .pres-shell .pres-clinica-grid { grid-template-columns: 1fr; }
+        @media (min-width: 960px) {
+          .pres-shell .pres-clinica-grid { grid-template-columns: 1.55fr 1fr; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
 function Showcase() {
   const [active, setActive] = useState(SHOTS[0].id);
   const current = SHOTS.find((s) => s.id === active) ?? SHOTS[0];
@@ -2093,6 +2313,7 @@ export default function Apresentacao() {
       <Hero />
       <Problema />
       <Solucao />
+      <ClinicaReal />
       <Showcase />
       <Anuncios />
       <RoiCalculator />
