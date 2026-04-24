@@ -1712,7 +1712,7 @@ function RoiCalculator() {
               </div>
               <div style={{ marginTop: 16, fontSize: 12.5, opacity: 0.9, lineHeight: 1.5 }}>
                 Cálculo conservador. Considera ganho médio de conversão de leads, redução de no-show
-                com confirmações automáticas e captação contínua via Google, Instagram e WhatsApp.
+                com confirmações automáticas e melhor aproveitamento dos contatos que já chegam na clínica.
               </div>
             </div>
           </div>
