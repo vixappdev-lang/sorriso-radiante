@@ -332,30 +332,31 @@ function Solucao() {
 }
 
 // ===== Showcase com prints reais =====
+const SHOT_V = "v=3"; // cache-bust dos prints atualizados
 const SHOTS = [
-  { id: "dashboard", label: "Dashboard", icon: BarChart3, file: "/apresentacao/dashboard.png", url: "lynecloud.com.br/admin/dashboard",
+  { id: "dashboard", label: "Dashboard", icon: BarChart3, file: `/apresentacao/dashboard.png?${SHOT_V}`, url: "lynecloud.com.br/admin/dashboard",
     title: "Visão completa em tempo real", desc: "KPIs operacionais, faturamento estimado, agendamentos do dia, taxa de confirmação e gráficos de performance, tudo em uma única tela." },
-  { id: "agenda", label: "Agenda", icon: Calendar, file: "/apresentacao/agenda.png", url: "lynecloud.com.br/admin/agenda",
+  { id: "agenda", label: "Agenda", icon: Calendar, file: `/apresentacao/agenda.png?${SHOT_V}`, url: "lynecloud.com.br/admin/agenda",
     title: "Agenda profissional sem conflitos", desc: "Visão por dia, semana ou mês, status colorido, encaixes, bloqueios e link público para o paciente agendar sozinho." },
-  { id: "pacientes", label: "Pacientes", icon: Users, file: "/apresentacao/pacientes.png", url: "lynecloud.com.br/admin/pacientes",
+  { id: "pacientes", label: "Pacientes", icon: Users, file: `/apresentacao/pacientes.png?${SHOT_V}`, url: "lynecloud.com.br/admin/pacientes",
     title: "Base de pacientes ativa e organizada", desc: "Histórico de visitas, tratamentos realizados, observações clínicas e ações rápidas de contato direto." },
-  { id: "tratamentos", label: "Tratamentos", icon: Stethoscope, file: "/apresentacao/tratamentos.png", url: "lynecloud.com.br/admin/tratamentos",
+  { id: "tratamentos", label: "Tratamentos", icon: Stethoscope, file: `/apresentacao/tratamentos.png?${SHOT_V}`, url: "lynecloud.com.br/admin/tratamentos",
     title: "Catálogo controlado de procedimentos", desc: "Valores, duração, profissional responsável, status e ranking dos mais procurados." },
-  { id: "profissionais", label: "Profissionais", icon: Users, file: "/apresentacao/profissionais.png", url: "lynecloud.com.br/admin/profissionais",
+  { id: "profissionais", label: "Profissionais", icon: Users, file: `/apresentacao/profissionais.png?${SHOT_V}`, url: "lynecloud.com.br/admin/profissionais",
     title: "Equipe gerenciada de ponta a ponta", desc: "CRO, especialidades, agenda individual e produtividade por profissional." },
-  { id: "financeiro", label: "Financeiro", icon: Wallet, file: "/apresentacao/financeiro.png", url: "lynecloud.com.br/admin/financeiro",
+  { id: "financeiro", label: "Financeiro", icon: Wallet, file: `/apresentacao/financeiro.png?${SHOT_V}`, url: "lynecloud.com.br/admin/financeiro",
     title: "Controle financeiro real, não planilha", desc: "A receber, recebido no mês, atrasados, ticket médio e crescimento mês contra mês." },
-  { id: "leads", label: "Leads & Captação", icon: Target, file: "/apresentacao/leads.png", url: "lynecloud.com.br/admin/leads",
+  { id: "leads", label: "Leads & Captação", icon: Target, file: `/apresentacao/leads.png?${SHOT_V}`, url: "lynecloud.com.br/admin/leads",
     title: "Funil comercial estilo CRM", desc: "Kanban de leads do primeiro contato ao fechamento, com pipeline e taxa de conversão." },
-  { id: "whatsapp", label: "WhatsApp", icon: MessageCircle, file: "/apresentacao/whatsapp.png", url: "lynecloud.com.br/admin/whatsapp",
+  { id: "whatsapp", label: "WhatsApp", icon: MessageCircle, file: `/apresentacao/whatsapp.png?${SHOT_V}`, url: "lynecloud.com.br/admin/whatsapp",
     title: "Automação de comunicação", desc: "Disparos automáticos de confirmação, lembrete 24h, pós-consulta e campanhas em massa via VPS própria ou ChatPro." },
-  { id: "avaliacoes", label: "Avaliações", icon: Star, file: "/apresentacao/avaliacoes.png", url: "lynecloud.com.br/admin/avaliacoes",
+  { id: "avaliacoes", label: "Avaliações", icon: Star, file: `/apresentacao/avaliacoes.png?${SHOT_V}`, url: "lynecloud.com.br/admin/avaliacoes",
     title: "Reputação que vende sozinha", desc: "Convites automáticos, NPS, distribuição de notas e gestão de respostas para Google e site." },
-  { id: "site", label: "Site & Landing", icon: Globe, file: "/apresentacao/site.png", url: "lynecloud.com.br/admin/site",
+  { id: "site", label: "Site & Landing", icon: Globe, file: `/apresentacao/site.png?${SHOT_V}`, url: "lynecloud.com.br/admin/site",
     title: "Site editável sem programador", desc: "Hero, sobre, contato, rodapé e promoções, tudo gerenciado em blocos pelo painel." },
-  { id: "relatorios", label: "Relatórios", icon: ChartLine, file: "/apresentacao/relatorios.png", url: "lynecloud.com.br/admin/relatorios",
+  { id: "relatorios", label: "Relatórios", icon: ChartLine, file: `/apresentacao/relatorios.png?${SHOT_V}`, url: "lynecloud.com.br/admin/relatorios",
     title: "Decisões baseadas em dados", desc: "Performance mensal, exportação CSV e métricas operacionais e comerciais auditáveis." },
-  { id: "configuracoes", label: "Configurações", icon: Settings, file: "/apresentacao/configuracoes.png", url: "lynecloud.com.br/admin/configuracoes",
+  { id: "configuracoes", label: "Configurações", icon: Settings, file: `/apresentacao/configuracoes.png?${SHOT_V}`, url: "lynecloud.com.br/admin/configuracoes",
     title: "Configuração total da operação", desc: "Dados da clínica, horários, integrações, área do cliente, branding, usuários, webhooks e API." },
 ];
 
