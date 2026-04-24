@@ -2242,6 +2242,272 @@ function LiveOps() {
   );
 }
 
+// ===== Objeções e dúvidas (FAQ persuasivo) =====
+const OBJECOES: { icon: typeof HelpCircle; q: string; a: string; tag: string }[] = [
+  {
+    icon: DollarSign,
+    tag: "Investimento",
+    q: "E se eu investir e não der retorno? O custo vai pesar no caixa?",
+    a: "Essa preocupação é justa, é o que toda clínica séria pensa antes de decidir. Por isso a LyneCloud não trabalha com mensalidade. Você paga uma vez pela estrutura e o painel passa a ser da clínica, definitivamente. O retorno acontece quando a agenda começa a encher de paciente novo vindo do Google e dos anúncios, com confirmação automática reduzindo as faltas. Em média, basta recuperar de 2 a 4 consultas no mês para o investimento já se pagar. O risco real é continuar perdendo paciente para o concorrente que já está usando esse tipo de estrutura.",
+  },
+  {
+    icon: CalendarX,
+    tag: "Agendamento",
+    q: "Meu paciente não vai querer agendar pela internet, ele prefere ligar.",
+    a: "Quem ainda prefere ligar continua ligando, isso não muda. O agendamento online não substitui o telefone, ele captura o paciente que hoje você está perdendo, aquele que pesquisa às 22h, no domingo, no intervalo do almoço, e que não vai ligar no dia seguinte porque já agendou em outro lugar. Mais de 60% das pesquisas por dentista acontecem fora do horário comercial. Sem agendamento online, esse paciente simplesmente vai para o concorrente que oferece. Com a LyneCloud, ele agenda no instante em que pensou em você.",
+  },
+  {
+    icon: BellOff,
+    tag: "Faltas",
+    q: "Já tentei lembrete por WhatsApp e o paciente continua faltando. O que muda?",
+    a: "Lembrete manual, na correria da recepção, sai tarde, sai sem padrão e às vezes nem sai. A LyneCloud automatiza confirmação 24h antes, lembrete no dia, pós-consulta e reativação de paciente sumido, com mensagem personalizada com nome, horário e profissional. Clínicas que ativam essa rotina relatam queda de 40 a 60% nas faltas em 30 dias. A diferença não é o WhatsApp, é o processo rodar sozinho, sem depender da memória da equipe.",
+  },
+  {
+    icon: Smartphone,
+    tag: "Equipe",
+    q: "Minha equipe não é de tecnologia. Vão demorar para aprender e vai virar bagunça.",
+    a: "O painel foi desenhado para clínica, não para programador. As telas seguem o fluxo natural do dia a dia: agenda, paciente, financeiro, tudo no lugar que faz sentido. A implantação inclui treinamento ao vivo com a sua equipe, materiais em vídeo e suporte direto durante a transição. A maioria das recepções está operando sozinha em menos de uma semana. E como o sistema centraliza o que hoje está em planilha, papel e WhatsApp pessoal, a operação fica menos bagunçada, não mais.",
+  },
+  {
+    icon: Search,
+    tag: "Google",
+    q: "Já tentei Google Ads e queimei dinheiro sem resultado. Por que dessa vez seria diferente?",
+    a: "Anúncio sem estrutura é dinheiro no lixo, e isso é mais comum do que parece. O paciente clica, cai num site lento, sem agendamento, sem prova social, e vai embora. A LyneCloud entrega o ecossistema completo: anúncio segmentado por bairro e tratamento, landing page de alta conversão, agenda integrada e CRM de leads. Você acompanha custo por lead e custo por agendamento direto no painel, com rastreio real. Não é mais achismo, é decisão com dado.",
+  },
+  {
+    icon: RefreshCw,
+    tag: "Migração",
+    q: "Já uso outro sistema. Vou perder meus dados e atrapalhar a operação?",
+    a: "Migração é uma das partes mais sensíveis e por isso é tratada com cuidado cirúrgico. A equipe técnica importa pacientes, histórico, agenda e financeiro do seu sistema atual sem interromper o atendimento. A virada é planejada para um momento de menor movimento, com plano de contingência e suporte ativo. A clínica continua operando normalmente durante todo o processo. Em 14 dias, no máximo, você está rodando 100% no novo painel.",
+  },
+  {
+    icon: Lock,
+    tag: "Dados e LGPD",
+    q: "E os dados da clínica e dos meus pacientes? Estão seguros?",
+    a: "O banco de dados, o domínio e as contas ficam todos sob o nome da clínica, não da agência. A infraestrutura usa criptografia em trânsito e em repouso, backup automático diário e servidores em conformidade com a LGPD. Você tem acesso administrativo total e pode exportar tudo a qualquer momento. Não existe refém de plataforma: se um dia quiser sair, leva os dados junto. Essa é a diferença entre ser dono e ser inquilino.",
+  },
+  {
+    icon: HandCoins,
+    tag: "Sem mensalidade",
+    q: "Sem mensalidade parece bom demais. Onde está a pegadinha?",
+    a: "Não há pegadinha, há modelo de negócio diferente. A LyneCloud cobra pela construção e implantação da estrutura, uma única vez. Hospedagem otimizada vai inclusa no pacote inicial e os custos de infraestrutura são transparentes. Não existe upsell forçado, taxa de paciente cadastrado, taxa por consulta agendada ou módulo bloqueado pedindo upgrade. O painel é seu, para sempre. Esse modelo só funciona porque a estrutura é entregue pronta e estável, não vendida em assinatura eterna.",
+  },
+  {
+    icon: Headphones,
+    tag: "Suporte",
+    q: "E se der problema depois? Vou ficar na mão sem suporte?",
+    a: "Suporte direto com a equipe técnica via WhatsApp, sem fila de atendimento e sem robô. Atualizações do sistema são contínuas e não geram custo extra. Para clínicas que querem evolução constante, existe o plano opcional de manutenção e novas features, mas o painel funciona perfeitamente sem ele. Você nunca fica refém: o que foi entregue, continua rodando. A relação é de parceria de longo prazo, não de venda e some.",
+  },
+  {
+    icon: Clock,
+    tag: "Tempo de implantação",
+    q: "Não tenho tempo para parar a clínica para implantar isso agora.",
+    a: "A implantação acontece em paralelo à operação, sem parar atendimento. A equipe LyneCloud cuida da configuração técnica, da integração com Google, do treinamento e da migração de dados. O envolvimento da clínica é mínimo: alguns pontos de validação, escolhas de identidade visual e definição dos tratamentos. Em 14 dias, no máximo, o sistema está no ar. Adiar é o que custa caro, cada mês sem essa estrutura é faturamento indo para o concorrente.",
+  },
+];
+
+function Objecoes() {
+  const [open, setOpen] = useState<number | null>(0);
+  return (
+    <section className="pres-section" id="faq">
+      <div className="pres-container">
+        <div className="pres-reveal" style={{ maxWidth: 820 }}>
+          <span className="pres-eyebrow"><HelpCircle size={12} /> Dúvidas reais de clínicas reais</span>
+          <h2 className="pres-h2" style={{ marginTop: 20 }}>
+            Toda clínica que cresceu com a LyneCloud passou pelas mesmas dúvidas que você está sentindo agora.
+          </h2>
+          <p className="pres-lead" style={{ marginTop: 16 }}>
+            Antes de decidir, é normal pesar custo, tempo, equipe e segurança. Abaixo estão as
+            objeções mais comuns ouvidas em mais de 100 conversas com donos de clínica e como
+            cada uma é resolvida na prática.
+          </p>
+        </div>
+
+        <div className="pres-reveal pres-faq-list" style={{ marginTop: 48 }}>
+          {OBJECOES.map((item, i) => {
+            const Icon = item.icon;
+            const isOpen = open === i;
+            return (
+              <div
+                key={item.q}
+                className={`pres-faq-item ${isOpen ? "is-open" : ""}`}
+              >
+                <button
+                  type="button"
+                  className="pres-faq-q"
+                  aria-expanded={isOpen}
+                  onClick={() => setOpen(isOpen ? null : i)}
+                >
+                  <span className="pres-faq-q-icon">
+                    <Icon size={18} />
+                  </span>
+                  <span className="pres-faq-q-content">
+                    <span className="pres-faq-tag">{item.tag}</span>
+                    <span className="pres-faq-q-text">{item.q}</span>
+                  </span>
+                  <span className="pres-faq-chev" aria-hidden="true">
+                    <ChevronDown size={20} />
+                  </span>
+                </button>
+                <div className="pres-faq-a-wrap">
+                  <div className="pres-faq-a">
+                    {item.a}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div
+          className="pres-reveal"
+          style={{
+            marginTop: 48,
+            padding: "32px 28px",
+            borderRadius: 20,
+            background: "linear-gradient(135deg, hsl(var(--pres-dark)) 0%, hsl(220 50% 12%) 100%)",
+            color: "white",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 20,
+            boxShadow: "0 30px 60px -30px hsl(var(--pres-primary) / 0.45)",
+          }}
+        >
+          <div style={{ flex: "1 1 320px", minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "hsl(38 80% 70%)" }}>
+              Ainda tem alguma dúvida específica?
+            </div>
+            <div style={{ marginTop: 10, fontSize: 20, fontWeight: 600, lineHeight: 1.35, color: "white" }}>
+              Conversa direta, sem script de venda. Em 15 minutos você sai com clareza total sobre o que a estrutura entrega para a sua clínica.
+            </div>
+          </div>
+          <a
+            href={WPP_LINK}
+            target="_blank"
+            rel="noreferrer"
+            className="pres-btn pres-btn-primary"
+            style={{ flexShrink: 0 }}
+          >
+            <Phone size={16} /> Tirar dúvidas no WhatsApp <ArrowRight size={14} />
+          </a>
+        </div>
+      </div>
+
+      <style>{`
+        .pres-shell .pres-faq-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .pres-shell .pres-faq-item {
+          background: white;
+          border: 1px solid hsl(var(--pres-border, 220 15% 88%));
+          border-radius: 16px;
+          overflow: hidden;
+          transition: border-color .25s, box-shadow .25s, transform .25s;
+        }
+        .pres-shell .pres-faq-item.is-open {
+          border-color: hsl(var(--pres-primary) / 0.45);
+          box-shadow: 0 18px 40px -22px hsl(var(--pres-primary) / 0.35);
+        }
+        .pres-shell .pres-faq-q {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 20px 22px;
+          background: transparent;
+          border: 0;
+          text-align: left;
+          cursor: pointer;
+          color: hsl(var(--pres-text-1, 220 25% 12%));
+        }
+        .pres-shell .pres-faq-q-icon {
+          width: 40px;
+          height: 40px;
+          flex-shrink: 0;
+          border-radius: 12px;
+          background: hsl(var(--pres-primary) / 0.10);
+          color: hsl(var(--pres-primary));
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .pres-shell .pres-faq-q-content {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .pres-shell .pres-faq-tag {
+          font-size: 10.5px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: hsl(var(--pres-primary));
+        }
+        .pres-shell .pres-faq-q-text {
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 1.4;
+          letter-spacing: -0.01em;
+        }
+        .pres-shell .pres-faq-chev {
+          flex-shrink: 0;
+          width: 32px;
+          height: 32px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 999px;
+          background: hsl(220 15% 95%);
+          color: hsl(var(--pres-text-2, 220 15% 40%));
+          transition: transform .3s, background .25s, color .25s;
+        }
+        .pres-shell .pres-faq-item.is-open .pres-faq-chev {
+          transform: rotate(180deg);
+          background: hsl(var(--pres-primary) / 0.12);
+          color: hsl(var(--pres-primary));
+        }
+        .pres-shell .pres-faq-a-wrap {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows .35s ease;
+        }
+        .pres-shell .pres-faq-item.is-open .pres-faq-a-wrap {
+          grid-template-rows: 1fr;
+        }
+        .pres-shell .pres-faq-a {
+          overflow: hidden;
+          font-size: 15px;
+          line-height: 1.7;
+          color: hsl(var(--pres-text-2, 220 15% 35%));
+          padding: 0 22px;
+        }
+        .pres-shell .pres-faq-item.is-open .pres-faq-a {
+          padding: 0 22px 22px 78px;
+        }
+
+        @media (max-width: 640px) {
+          .pres-shell .pres-faq-q { padding: 16px 16px; gap: 12px; }
+          .pres-shell .pres-faq-q-icon { width: 36px; height: 36px; border-radius: 10px; }
+          .pres-shell .pres-faq-q-text { font-size: 15px; }
+          .pres-shell .pres-faq-tag { font-size: 9.5px; letter-spacing: 0.16em; }
+          .pres-shell .pres-faq-chev { width: 28px; height: 28px; }
+          .pres-shell .pres-faq-item.is-open .pres-faq-a {
+            padding: 0 16px 18px 16px;
+            font-size: 14.5px;
+            line-height: 1.65;
+          }
+        }
+      `}</style>
+    </section>
+  );
+}
+
 // ===== Próximos passos com timeline animada =====
 const STEPS = [
   { icon: Search, title: "Análise", text: "Diagnóstico da clínica e do mercado local." },
