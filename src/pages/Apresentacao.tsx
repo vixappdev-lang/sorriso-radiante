@@ -1167,67 +1167,287 @@ function Trafego() {
   );
 }
 
-// ===== Benefícios =====
-const BENEFITS = [
-  { icon: Users, label: "Mais pacientes" },
-  { icon: TrendingUp, label: "Mais conversão" },
-  { icon: CheckCircle2, label: "Menos faltas" },
-  { icon: Workflow, label: "Mais organização" },
-  { icon: Crown, label: "Mais autoridade" },
-  { icon: Star, label: "Mais avaliações" },
-  { icon: Wallet, label: "Mais faturamento" },
-  { icon: Target, label: "Menos oportunidades perdidas" },
-  { icon: ChartLine, label: "Crescimento previsível" },
-];
+// ===== Live Ops (substitui Benefícios — animação realista) =====
+function LiveOps() {
+  const [tick, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 2200);
+    return () => clearInterval(id);
+  }, []);
 
-function Beneficios() {
+  // métricas que sobem suavemente
+  const base = useMemo(() => ({
+    pacientes: 1287,
+    receita: 184500,
+    confirmacoes: 96,
+    leads: 312,
+    avaliacoes: 4.9,
+    noShow: 6,
+  }), []);
+
+  const live = useMemo(() => {
+    const drift = Math.sin(tick * 0.7) * 0.5 + 0.5;
+    return {
+      pacientes: base.pacientes + tick * 1,
+      receita: base.receita + Math.round(tick * 240 + drift * 800),
+      confirmacoes: Math.min(99, base.confirmacoes + Math.round(drift * 2)),
+      leads: base.leads + Math.round(tick * 0.4),
+      avaliacoes: base.avaliacoes,
+      noShow: Math.max(3, base.noShow - Math.round(drift * 1)),
+    };
+  }, [tick, base]);
+
+  // feed de eventos
+  const events = [
+    { icon: Calendar, color: "hsl(215 85% 55%)", text: "Novo agendamento — Camila R.", time: "agora" },
+    { icon: CheckCircle2, color: "hsl(152 60% 45%)", text: "Confirmação automática enviada", time: "12s" },
+    { icon: MessageCircle, color: "hsl(152 60% 45%)", text: "Lead respondeu no WhatsApp", time: "38s" },
+    { icon: Star, color: "hsl(38 80% 55%)", text: "Avaliação 5★ recebida no Google", time: "1m" },
+    { icon: Wallet, color: "hsl(215 85% 55%)", text: "Pagamento recebido — R$ 1.200", time: "2m" },
+    { icon: Users, color: "hsl(215 85% 55%)", text: "Novo paciente cadastrado", time: "3m" },
+    { icon: Target, color: "hsl(38 80% 55%)", text: "Lead avançou no funil → Fechamento", time: "4m" },
+  ];
+
+  // barras animadas
+  const bars = [22, 38, 31, 52, 47, 64, 58, 72, 68, 85, 79, 91];
+
   return (
-    <section className="pres-section" id="beneficios">
+    <section className="pres-section" id="live-ops">
       <div className="pres-container">
-        <div className="pres-reveal" style={{ maxWidth: 760 }}>
-          <span className="pres-eyebrow"><Sparkles size={12} /> Benefícios reais</span>
+        <div className="pres-reveal" style={{ maxWidth: 820 }}>
+          <span className="pres-eyebrow"><Activity size={12} /> Operação em tempo real</span>
           <h2 className="pres-h2" style={{ marginTop: 20 }}>
-            O que muda na sua clínica nos primeiros 60 dias.
+            Sua clínica respira em tempo real, e você enxerga tudo acontecendo.
           </h2>
+          <p className="pres-lead" style={{ marginTop: 16 }}>
+            Cada agendamento, confirmação, pagamento e avaliação aparece no painel no instante em que acontece.
+            Pare de operar no escuro, comece a tomar decisão com dado vivo.
+          </p>
         </div>
 
+        <div className="pres-reveal pres-card" style={{ marginTop: 48, padding: 0, overflow: "hidden" }}>
+          {/* Header do "painel" */}
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            padding: "16px 22px",
+            borderBottom: "1px solid hsl(var(--pres-border))",
+            background: "linear-gradient(180deg, hsl(var(--pres-surface)) 0%, white 100%)",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ position: "relative", display: "inline-flex" }}>
+                <span className="pres-pulse-dot" />
+                <span className="pres-pulse-ring" />
+              </span>
+              <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", color: "hsl(var(--pres-success))", textTransform: "uppercase" }}>
+                AO VIVO
+              </span>
+            </div>
+            <div style={{ fontSize: 12, color: "hsl(var(--pres-text-3))", fontFamily: "'SF Mono', monospace" }}>
+              lynecloud.com.br/admin
+            </div>
+          </div>
+
+          <div className="pres-live-grid" style={{ padding: 22 }}>
+            {/* KPIs */}
+            <div className="pres-live-kpis">
+              {[
+                { label: "Pacientes ativos", value: live.pacientes, prefix: "" },
+                { label: "Faturamento do mês", value: live.receita, prefix: "R$ " },
+                { label: "Taxa confirmação", value: live.confirmacoes, suffix: "%" },
+                { label: "Leads no funil", value: live.leads, prefix: "" },
+              ].map((k) => (
+                <div key={k.label} className="pres-live-kpi">
+                  <div style={{ fontSize: 11, color: "hsl(var(--pres-text-3))", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
+                    {k.label}
+                  </div>
+                  <div style={{ marginTop: 8, fontSize: 26, fontWeight: 700, letterSpacing: "-0.03em", color: "hsl(var(--pres-text))" }}>
+                    <AnimatedNumber value={k.value} prefix={k.prefix} suffix={k.suffix} duration={600} />
+                  </div>
+                  <div style={{ marginTop: 6, display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, color: "hsl(var(--pres-success))", fontWeight: 600 }}>
+                    <TrendingUp size={11} /> em alta
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Gráfico animado */}
+            <div className="pres-live-chart">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 14 }}>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: "hsl(var(--pres-text))" }}>Agendamentos por dia</div>
+                  <div style={{ fontSize: 11, color: "hsl(var(--pres-text-3))", marginTop: 2 }}>Últimos 12 dias</div>
+                </div>
+                <div style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 600, color: "hsl(var(--pres-success))" }}>
+                  <ChartLine size={12} /> +24% vs anterior
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 8, height: 140 }}>
+                {bars.map((b, i) => (
+                  <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                    <div
+                      className="pres-bar"
+                      style={{
+                        width: "100%",
+                        height: `${b}%`,
+                        background: i === bars.length - 1
+                          ? "linear-gradient(180deg, hsl(var(--pres-primary-2)), hsl(var(--pres-primary)))"
+                          : "linear-gradient(180deg, hsl(var(--pres-primary) / 0.4), hsl(var(--pres-primary) / 0.18))",
+                        borderRadius: 6,
+                        animation: `pres-bar-grow .9s cubic-bezier(.2,.8,.2,1) ${i * 0.05}s both`,
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Feed de eventos */}
+            <div className="pres-live-feed">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                <div style={{ fontSize: 13, fontWeight: 600 }}>Atividade ao vivo</div>
+                <div style={{ fontSize: 11, color: "hsl(var(--pres-text-3))" }}>Atualizando…</div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, maxHeight: 280, overflow: "hidden" }}>
+                {events.map((ev, i) => {
+                  const Icon = ev.icon;
+                  return (
+                    <div
+                      key={i}
+                      className="pres-event"
+                      style={{
+                        display: "flex", alignItems: "center", gap: 12,
+                        padding: "10px 12px",
+                        borderRadius: 10,
+                        background: "hsl(var(--pres-surface))",
+                        border: "1px solid hsl(var(--pres-border))",
+                        animation: `pres-event-in .5s ease ${i * 0.08}s both`,
+                      }}
+                    >
+                      <div style={{
+                        width: 32, height: 32, borderRadius: 8,
+                        background: `${ev.color.replace(")", " / 0.12)")}`,
+                        color: ev.color,
+                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+                      }}>
+                        <Icon size={15} />
+                      </div>
+                      <div style={{ flex: 1, fontSize: 13, color: "hsl(var(--pres-text))", lineHeight: 1.3 }}>
+                        {ev.text}
+                      </div>
+                      <div style={{ fontSize: 11, color: "hsl(var(--pres-text-3))", fontFamily: "'SF Mono', monospace" }}>
+                        {ev.time}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Linha de transformação */}
         <div
           className="pres-reveal"
           style={{
-            marginTop: 48,
+            marginTop: 32,
             display: "grid",
             gap: 16,
             gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
           }}
         >
-          {BENEFITS.map(({ icon: Icon, label }) => (
-            <div
-              key={label}
-              className="pres-card pres-card-hover"
-              style={{ padding: 24, display: "flex", alignItems: "center", gap: 14 }}
-            >
-              <div
-                className="pres-icon-box"
-                style={{
-                  background: "linear-gradient(135deg, hsl(var(--pres-primary) / 0.12), hsl(var(--pres-primary) / 0.04))",
-                  color: "hsl(var(--pres-primary))",
-                  width: 42,
-                  height: 42,
-                  flexShrink: 0,
-                }}
-              >
+          {[
+            { icon: TrendingUp, label: "Mais conversão", v: "+62%" },
+            { icon: CheckCircle2, label: "Menos faltas", v: "-38%" },
+            { icon: Wallet, label: "Mais faturamento", v: "+R$28k/mês" },
+            { icon: Star, label: "Reputação online", v: "4.9 ★" },
+          ].map(({ icon: Icon, label, v }) => (
+            <div key={label} className="pres-card pres-card-hover" style={{ padding: 20, display: "flex", alignItems: "center", gap: 14 }}>
+              <div className="pres-icon-box" style={{
+                background: "linear-gradient(135deg, hsl(var(--pres-primary) / 0.12), hsl(var(--pres-primary) / 0.04))",
+                color: "hsl(var(--pres-primary))",
+                width: 44, height: 44, flexShrink: 0,
+              }}>
                 <Icon size={20} />
               </div>
-              <div style={{ fontWeight: 600, fontSize: 15, lineHeight: 1.3 }}>{label}</div>
+              <div>
+                <div style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.02em", color: "hsl(var(--pres-text))" }}>{v}</div>
+                <div style={{ fontSize: 12, color: "hsl(var(--pres-text-2))", marginTop: 2 }}>{label}</div>
+              </div>
             </div>
           ))}
         </div>
       </div>
+
+      <style>{`
+        .pres-shell .pres-pulse-dot {
+          width: 10px; height: 10px; border-radius: 50%;
+          background: hsl(var(--pres-success));
+          box-shadow: 0 0 0 0 hsl(var(--pres-success) / 0.6);
+          animation: pres-pulse 1.6s ease-out infinite;
+          z-index: 2;
+        }
+        .pres-shell .pres-pulse-ring {
+          position: absolute; inset: -4px;
+          border-radius: 50%;
+          border: 2px solid hsl(var(--pres-success) / 0.45);
+          animation: pres-ring 1.6s ease-out infinite;
+        }
+        @keyframes pres-pulse {
+          0% { box-shadow: 0 0 0 0 hsl(var(--pres-success) / 0.55); }
+          70% { box-shadow: 0 0 0 12px hsl(var(--pres-success) / 0); }
+          100% { box-shadow: 0 0 0 0 hsl(var(--pres-success) / 0); }
+        }
+        @keyframes pres-ring {
+          0% { transform: scale(.6); opacity: 0.9; }
+          100% { transform: scale(1.6); opacity: 0; }
+        }
+        @keyframes pres-bar-grow {
+          0% { height: 0% !important; opacity: 0; }
+          100% { opacity: 1; }
+        }
+        @keyframes pres-event-in {
+          0% { transform: translateY(8px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
+        }
+        .pres-shell .pres-live-grid {
+          display: grid;
+          gap: 18px;
+          grid-template-columns: 1fr;
+        }
+        .pres-shell .pres-live-kpis {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .pres-shell .pres-live-kpi {
+          padding: 16px;
+          border-radius: 12px;
+          background: hsl(var(--pres-surface));
+          border: 1px solid hsl(var(--pres-border));
+        }
+        .pres-shell .pres-live-chart,
+        .pres-shell .pres-live-feed {
+          padding: 18px;
+          border-radius: 12px;
+          background: white;
+          border: 1px solid hsl(var(--pres-border));
+        }
+        @media (min-width: 980px) {
+          .pres-shell .pres-live-grid {
+            grid-template-columns: 1.1fr 1.3fr 1fr;
+            align-items: stretch;
+          }
+          .pres-shell .pres-live-kpis {
+            grid-template-columns: 1fr 1fr;
+            align-content: start;
+          }
+        }
+      `}</style>
     </section>
   );
 }
 
-// ===== Próximos passos =====
+// ===== Próximos passos com timeline animada =====
 const STEPS = [
   { icon: Search, title: "Análise", text: "Diagnóstico da clínica e do mercado local." },
   { icon: Building2, title: "Estrutura", text: "Personalização de site, painel e fluxos." },
