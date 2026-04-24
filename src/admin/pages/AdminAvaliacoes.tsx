@@ -30,11 +30,16 @@ function StarsRow({ value, size = 14 }: { value: number; size?: number }) {
 
 export default function AdminAvaliacoes() {
   const { data: reviews = [] } = useReviews();
+  const { data: invites = [] } = useReviewInvites();
+  const createInvite = useCreateReviewInvite();
+  const deleteInvite = useDeleteReviewInvite();
   const create = useCreateReview();
   const reply = useReplyReview();
   const del = useDeleteReview();
-  const [drawer, setDrawer] = useState<{ mode: "new" | "reply"; review?: Review } | null>(null);
+  const [drawer, setDrawer] = useState<{ mode: "new" | "reply" | "invite"; review?: Review } | null>(null);
   const [form, setForm] = useState<any>({ patient_name: "", rating: 5, comment: "", source: "manual" });
+  const [inviteForm, setInviteForm] = useState<any>({ patient_name: "", patient_phone: "", treatment: "", professional: "" });
+  const [linkModal, setLinkModal] = useState<{ token: string; name: string } | null>(null);
   const [replyText, setReplyText] = useState("");
   const [confirmDel, setConfirmDel] = useState<string | null>(null);
 
