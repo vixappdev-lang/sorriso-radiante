@@ -9,7 +9,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SEO from "@/components/SEO";
-import { TREATMENTS, DENTISTS, CLINIC_NAME } from "@/data/clinic";
+import { TREATMENTS, DENTISTS } from "@/data/clinic";
+const CLINIC_NAME = "Clínica Levii";
 import { cn } from "@/lib/utils";
 
 type Link = {

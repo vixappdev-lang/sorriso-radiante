@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import SEO from "@/components/SEO";
 import { cn } from "@/lib/utils";
-import { CLINIC_NAME } from "@/data/clinic";
+const CLINIC_NAME = "Clínica Levii";
 
 type Invite = {
   id: string;
