@@ -1854,23 +1854,30 @@ function TopBar() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "12px 24px",
+          padding: "8px 24px",
+          minHeight: 64,
         }}
       >
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 16, color: "white", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, color: "white", textDecoration: "none" }}>
           <img
             src="/apresentacao/lynecloud-icon.png"
             alt="LyneCloud"
-            style={{ width: 78, height: 78, objectFit: "contain", filter: "drop-shadow(0 8px 22px hsl(215 90% 50% / 0.55))" }}
+            style={{
+              width: 72,
+              height: 72,
+              objectFit: "contain",
+              filter: "drop-shadow(0 8px 22px hsl(215 90% 50% / 0.55))",
+              margin: "-8px 0",
+            }}
           />
-          <div>
-            <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.025em" }}>{BRAND}</div>
-            <div style={{ fontSize: 10.5, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 5 }}>
+          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+            <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em" }}>{BRAND}</div>
+            <div style={{ fontSize: 9.5, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 4 }}>
               Dossiê comercial
             </div>
           </div>
         </Link>
-        <a href={WPP_LINK} target="_blank" rel="noreferrer" className="pres-btn pres-btn-primary" style={{ padding: "10px 16px", fontSize: 13 }}>
+        <a href={WPP_LINK} target="_blank" rel="noreferrer" className="pres-btn pres-btn-primary" style={{ padding: "9px 16px", fontSize: 13 }}>
           Solicitar demo <ArrowRight size={14} />
         </a>
       </div>
