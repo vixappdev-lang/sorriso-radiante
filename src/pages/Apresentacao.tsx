@@ -2360,38 +2360,65 @@ function TopBar() {
       }}
     >
       <div
-        className="pres-container"
+        className="pres-container pres-topbar"
         style={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "8px 24px",
-          minHeight: 64,
+          gap: 12,
         }}
       >
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, color: "white", textDecoration: "none" }}>
+        <Link to="/" className="pres-topbar-brand" style={{ display: "flex", alignItems: "center", color: "white", textDecoration: "none", minWidth: 0 }}>
           <img
             src="/apresentacao/lynecloud-icon.png"
             alt="LyneCloud"
+            className="pres-topbar-logo"
             style={{
-              width: 72,
-              height: 72,
               objectFit: "contain",
               filter: "drop-shadow(0 8px 22px hsl(215 90% 50% / 0.55))",
-              margin: "-8px 0",
+              flexShrink: 0,
             }}
           />
-          <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div style={{ fontSize: 17, fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em" }}>{BRAND}</div>
-            <div style={{ fontSize: 9.5, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 4 }}>
+          <div className="pres-topbar-text" style={{ display: "flex", flexDirection: "column", justifyContent: "center", minWidth: 0 }}>
+            <div className="pres-topbar-title" style={{ fontWeight: 700, lineHeight: 1, letterSpacing: "-0.02em", whiteSpace: "nowrap" }}>{BRAND}</div>
+            <div className="pres-topbar-sub" style={{ color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 4, whiteSpace: "nowrap" }}>
               Dossiê comercial
             </div>
           </div>
         </Link>
-        <a href={WPP_LINK} target="_blank" rel="noreferrer" className="pres-btn pres-btn-primary" style={{ padding: "9px 16px", fontSize: 13 }}>
-          Solicitar demo <ArrowRight size={14} />
+        <a href={WPP_LINK} target="_blank" rel="noreferrer" className="pres-btn pres-btn-primary pres-topbar-cta" style={{ flexShrink: 0 }}>
+          <span className="pres-topbar-cta-label">Solicitar demo</span>
+          <span className="pres-topbar-cta-short">Demo</span>
+          <ArrowRight size={14} />
         </a>
       </div>
+      <style>{`
+        .pres-shell .pres-topbar { padding: 10px 20px; min-height: 64px; }
+        .pres-shell .pres-topbar-brand { gap: 12px; }
+        .pres-shell .pres-topbar-logo { width: 64px; height: 64px; margin: -6px 0; }
+        .pres-shell .pres-topbar-title { font-size: 17px; }
+        .pres-shell .pres-topbar-sub { font-size: 9.5px; }
+        .pres-shell .pres-topbar-cta { padding: 9px 16px; font-size: 13px; gap: 8px; }
+        .pres-shell .pres-topbar-cta-short { display: none; }
+
+        @media (max-width: 720px) {
+          .pres-shell .pres-topbar { padding: 10px 16px; min-height: 60px; gap: 10px; }
+          .pres-shell .pres-topbar-brand { gap: 8px; }
+          .pres-shell .pres-topbar-logo { width: 48px; height: 48px; margin: -4px 0; }
+          .pres-shell .pres-topbar-title { font-size: 15px; letter-spacing: -0.01em; }
+          .pres-shell .pres-topbar-sub { font-size: 8.5px; letter-spacing: 0.16em; margin-top: 3px; }
+          .pres-shell .pres-topbar-cta { padding: 8px 12px; font-size: 12.5px; gap: 6px; border-radius: 10px; }
+          .pres-shell .pres-topbar-cta-label { display: none; }
+          .pres-shell .pres-topbar-cta-short { display: inline; }
+        }
+
+        @media (max-width: 380px) {
+          .pres-shell .pres-topbar { padding: 9px 14px; }
+          .pres-shell .pres-topbar-logo { width: 42px; height: 42px; }
+          .pres-shell .pres-topbar-title { font-size: 14px; }
+          .pres-shell .pres-topbar-sub { display: none; }
+        }
+      `}</style>
     </div>
   );
 }
