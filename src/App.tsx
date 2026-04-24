@@ -56,7 +56,8 @@ const App = () => (
             <Route path="/localizacao" element={<Localizacao />} />
             <Route path="/contato" element={<Contato />} />
             <Route path="/avaliar/:token" element={<PublicReview />} />
-            <Route path="/agendar/:slug" element={<PublicBooking />} />
+            <Route path="/agendar/:token" element={<PublicBooking />} />
+            <Route path="/agendar/slug/:slug" element={<PublicBooking />} />
             <Route path="/area-cliente" element={<AreaCliente />} />
 
             {/* Painel admin */}
