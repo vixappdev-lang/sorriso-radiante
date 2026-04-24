@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
-import { UserCog, Plus, Pencil, Trash2, Eye, MessageCircle } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { UserCog, Plus, Pencil, Trash2, Eye, MessageCircle, Upload, Loader2 } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import EmptyState from "@/admin/components/EmptyState";
 import DataTable, { type Column } from "@/admin/components/DataTable";
-import EntityDrawer from "@/admin/components/EntityDrawer";
+import EntityModal from "@/admin/components/EntityModal";
 import ConfirmDialog from "@/admin/components/ConfirmDialog";
 import KpiCard from "@/admin/components/KpiCard";
 import StatusPill from "@/admin/components/StatusPill";
@@ -139,10 +139,11 @@ export default function AdminProfissionais() {
       )}
 
       {/* Drawer create/edit/view */}
-      <EntityDrawer
+      <EntityModal
         open={!!drawer} onOpenChange={(v) => !v && setDrawer(null)}
         title={drawer?.mode === "create" ? "Novo profissional" : drawer?.mode === "edit" ? "Editar profissional" : form.name || "Profissional"}
         description={drawer?.mode === "view" ? "Detalhes, agenda e desempenho" : undefined}
+        size="lg"
         footer={drawer?.mode !== "view" ? (
           <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setDrawer(null)}>Cancelar</Button><Button onClick={save}>Salvar</Button></div>
         ) : undefined}
@@ -169,7 +170,7 @@ export default function AdminProfissionais() {
                 <div><Label className="text-xs">Telefone</Label><Input value={form.phone || ""} disabled={drawer.mode === "view"} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
                 <div><Label className="text-xs">E-mail</Label><Input type="email" value={form.email || ""} disabled={drawer.mode === "view"} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
               </div>
-              <div><Label className="text-xs">URL da foto</Label><Input value={form.photo_url || ""} disabled={drawer.mode === "view"} onChange={(e) => setForm({ ...form, photo_url: e.target.value })} /></div>
+              <PhotoUploader value={form.photo_url} onChange={(url) => setForm({ ...form, photo_url: url })} disabled={drawer.mode === "view"} name={form.name || "P"} />
               <div className="grid grid-cols-2 gap-3 items-end">
                 <div><Label className="text-xs">Carga horária semanal</Label><Input type="number" value={form.weekly_hours ?? 40} disabled={drawer.mode === "view"} onChange={(e) => setForm({ ...form, weekly_hours: parseInt(e.target.value || "0") })} /></div>
                 <div className="flex items-center gap-2"><Switch checked={form.status === "active"} disabled={drawer.mode === "view"} onCheckedChange={(v) => setForm({ ...form, status: v ? "active" : "inactive" })} /><span className="text-sm">Ativo</span></div>
@@ -241,7 +242,7 @@ export default function AdminProfissionais() {
             </TabsContent>
           </Tabs>
         )}
-      </EntityDrawer>
+      </EntityModal>
 
       <ConfirmDialog
         open={!!confirmDel} onOpenChange={(v) => !v && setConfirmDel(null)}
@@ -250,5 +251,50 @@ export default function AdminProfissionais() {
         onConfirm={async () => { if (confirmDel) { await del.mutateAsync(confirmDel); toast({ title: "Removido" }); setConfirmDel(null); } }}
       />
     </>
+  );
+}
+
+function PhotoUploader({ value, onChange, disabled, name }: { value?: string; onChange: (url: string) => void; disabled?: boolean; name: string }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast({ title: "Imagem deve ter menos de 5MB", variant: "destructive" }); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("professional-photos").upload(path, file, { upsert: false, contentType: file.type });
+      if (error) throw error;
+      const { data } = supabase.storage.from("professional-photos").getPublicUrl(path);
+      onChange(data.publicUrl);
+      toast({ title: "Foto enviada" });
+    } catch (e: any) { toast({ title: "Erro no upload", description: e.message, variant: "destructive" }); }
+    finally { setUploading(false); if (inputRef.current) inputRef.current.value = ""; }
+  }
+  return (
+    <div>
+      <Label className="text-xs">Foto do profissional</Label>
+      <div className="flex items-center gap-3 mt-1">
+        <Avatar className="h-16 w-16 border border-[hsl(var(--admin-border))]">
+          {value && <AvatarImage src={value} alt={name} />}
+          <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">{name.split(" ").map(n => n[0]).slice(0,2).join("").toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1 space-y-2">
+          <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleFile} disabled={disabled || uploading} />
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="sm" disabled={disabled || uploading} onClick={() => inputRef.current?.click()}>
+              {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
+              {uploading ? "Enviando…" : "Enviar foto"}
+            </Button>
+            {value && !disabled && (
+              <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={() => onChange("")}>Remover</Button>
+            )}
+          </div>
+          <Input value={value || ""} disabled={disabled} onChange={(e) => onChange(e.target.value)} placeholder="ou cole uma URL externa" className="h-8 text-xs" />
+        </div>
+      </div>
+    </div>
   );
 }
