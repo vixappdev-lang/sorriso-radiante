@@ -65,11 +65,20 @@ export default function PublicBooking() {
   const [professional, setProfessional] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [dbPros, setDbPros] = useState<DbProfessional[]>([]);
 
   const step = STEPS[stepIdx].key;
 
   useEffect(() => {
     (async () => {
+      // Carrega profissionais reais do DB com fotos
+      const { data: pros } = await supabase
+        .from("professionals")
+        .select("id, slug, name, specialty, photo_url")
+        .eq("status", "active")
+        .order("name", { ascending: true });
+      setDbPros((pros as DbProfessional[]) ?? []);
+
       let row: any = null;
       const byToken = await supabase.from("public_booking_links").select("*").eq("access_token", accessor).eq("active", true).maybeSingle();
       if (byToken.data) row = byToken.data;
@@ -81,10 +90,11 @@ export default function PublicBooking() {
       setLink(row as LinkRow);
       const t = TREATMENTS.find((x) => x.slug === row.treatment_slug);
       if (t) { setTreatment(t.name); }
-      const p = DENTISTS.find((d) => d.slug === row.professional_slug);
-      if (p) { setProfessional(p.name); }
+      const proRow = (pros as DbProfessional[] | null)?.find((d) => d.slug === row.professional_slug)
+        ?? DENTISTS.find((d) => d.slug === row.professional_slug);
+      if (proRow) { setProfessional(proRow.name); }
       // Se link já fixou tratamento/profissional, pula etapas
-      const initialStep = (t && p) ? 2 : t ? 1 : 0;
+      const initialStep = (t && proRow) ? 2 : t ? 1 : 0;
       setStepIdx(initialStep);
       setLoading(false);
     })();
