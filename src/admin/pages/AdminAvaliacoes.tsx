@@ -156,51 +156,12 @@ export default function AdminAvaliacoes() {
         </div>
       </div>
 
-      <Tabs defaultValue="all">
-        <TabsList>
-          <TabsTrigger value="all">Todas</TabsTrigger>
-          <TabsTrigger value="pending">Pendentes</TabsTrigger>
-          <TabsTrigger value="google">Google</TabsTrigger>
-          <TabsTrigger value="manual">Manuais</TabsTrigger>
-        </TabsList>
-        {(["all", "pending", "google", "manual"] as const).map((tab) => (
-          <TabsContent key={tab} value={tab} className="mt-4">
-            {filterFor(tab).length === 0 ? (
-              <EmptyState icon={Star} title="Sem avaliações" description="Quando houver avaliações nesta categoria, elas aparecerão aqui." />
-            ) : (
-              <div className="grid gap-3 grid-cols-1 lg:grid-cols-2">
-                {filterFor(tab).map((r) => (
-                  <article key={r.id} className="admin-card p-5">
-                    <header className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold">{r.patient_name}</p>
-                          <Badge variant="outline" className="text-[10px] capitalize">{r.source}</Badge>
-                        </div>
-                        <div className="flex items-center gap-2 mt-1.5">
-                          <StarsRow value={r.rating} />
-                          <span className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString("pt-BR")}</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button size="sm" variant="ghost" onClick={() => openReply(r)}><Reply className="h-4 w-4" /></Button>
-                        <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setConfirmDel(r.id)}><Trash2 className="h-4 w-4" /></Button>
-                      </div>
-                    </header>
-                    {r.comment && <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{r.comment}</p>}
-                    {r.reply && (
-                      <div className="mt-3 rounded-lg bg-blue-50/50 border border-blue-100 p-3">
-                        <p className="text-[11px] font-semibold text-blue-700 uppercase tracking-wider mb-1">Resposta da clínica</p>
-                        <p className="text-sm text-blue-900/80 leading-relaxed">{r.reply}</p>
-                      </div>
-                    )}
-                  </article>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        ))}
-      </Tabs>
+      <ReviewsList
+        reviews={reviews}
+        filterFor={filterFor}
+        openReply={openReply}
+        setConfirmDel={setConfirmDel}
+      />
 
       <EntityDrawer
         open={!!drawer}

@@ -439,7 +439,7 @@ function InvoicesView({ items }: any) {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Faturas</h2>
-      <div className="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">
+      <div className="bg-white rounded-2xl border-2 border-slate-200 divide-y divide-slate-100 overflow-hidden shadow-[0_1px_3px_rgba(15,23,42,0.04),0_4px_12px_-6px_rgba(15,23,42,0.08)]">
         {items.map((i: any) => {
           const paid = i.status === "paid";
           return (
