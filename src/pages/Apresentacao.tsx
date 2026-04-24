@@ -2312,9 +2312,9 @@ function Objecoes() {
     <section className="pres-section" id="faq">
       <div className="pres-container">
         <div className="pres-reveal" style={{ maxWidth: 820 }}>
-          <span className="pres-eyebrow"><HelpCircle size={12} /> Dúvidas reais de clínicas reais</span>
+          <span className="pres-eyebrow"><HelpCircle size={12} /> Perguntas que toda clínica faz antes de decidir</span>
           <h2 className="pres-h2" style={{ marginTop: 20 }}>
-            Toda clínica que cresceu com a LyneCloud passou pelas mesmas dúvidas que você está sentindo agora.
+            As mesmas dúvidas que você está sentindo agora, já foram respondidas por dezenas de clínicas que hoje operam com a LyneCloud.
           </h2>
           <p className="pres-lead" style={{ marginTop: 16 }}>
             Antes de decidir, é normal pesar custo, tempo, equipe e segurança. Abaixo estão as
