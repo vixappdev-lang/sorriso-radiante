@@ -2348,8 +2348,38 @@ function CTAFinal() {
   );
 }
 
-// ===== Top Bar minimalista =====
+// ===== Top Bar com navegação =====
+const NAV_LINKS = [
+  { label: "Solução", href: "#solucao" },
+  { label: "Painel", href: "#showcase" },
+  { label: "Google", href: "#google" },
+  { label: "ROI", href: "#roi" },
+  { label: "Dúvidas", href: "#faq" },
+  { label: "Próximos passos", href: "#proximos-passos" },
+];
+
 function TopBar() {
+  const [open, setOpen] = useState(false);
+
+  // Fecha o drawer ao navegar / redimensionar para desktop
+  useEffect(() => {
+    if (!open) return;
+    const onResize = () => {
+      if (window.innerWidth > 900) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
     <div
       style={{
@@ -2388,20 +2418,226 @@ function TopBar() {
             </div>
           </div>
         </Link>
-        <a href={WPP_LINK} target="_blank" rel="noreferrer" className="pres-btn pres-btn-primary pres-topbar-cta" style={{ flexShrink: 0 }}>
-          <span className="pres-topbar-cta-label">Solicitar demo</span>
-          <span className="pres-topbar-cta-short">Demo</span>
+
+        {/* Navegação desktop */}
+        <nav className="pres-topbar-nav" aria-label="Seções do dossiê">
+          {NAV_LINKS.map((l) => (
+            <a key={l.href} href={l.href} className="pres-topbar-link">
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* CTA desktop */}
+        <a
+          href={WPP_LINK}
+          target="_blank"
+          rel="noreferrer"
+          className="pres-btn pres-btn-primary pres-topbar-cta"
+          style={{ flexShrink: 0 }}
+        >
+          <Phone size={14} />
+          <span>Falar agora</span>
           <ArrowRight size={14} />
         </a>
+
+        {/* Botão hamburger mobile */}
+        <button
+          type="button"
+          className="pres-topbar-burger"
+          aria-label={open ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? <XIcon size={22} /> : <MenuIcon size={22} />}
+        </button>
       </div>
+
+      {/* Drawer mobile */}
+      <div
+        className={`pres-mobile-drawer ${open ? "is-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!open}
+      >
+        <div className="pres-mobile-drawer-inner">
+          <div className="pres-mobile-drawer-head">
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "hsl(0 0% 100% / 0.55)" }}>
+              Navegação
+            </span>
+          </div>
+          <nav className="pres-mobile-nav">
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="pres-mobile-link"
+                onClick={() => setOpen(false)}
+              >
+                {l.label}
+                <ArrowRight size={16} />
+              </a>
+            ))}
+          </nav>
+          <a
+            href={WPP_LINK}
+            target="_blank"
+            rel="noreferrer"
+            className="pres-btn pres-btn-primary"
+            style={{ width: "100%", justifyContent: "center", marginTop: 8 }}
+            onClick={() => setOpen(false)}
+          >
+            <Phone size={16} /> Falar com a LyneCloud <ArrowRight size={14} />
+          </a>
+          <div style={{ marginTop: 16, fontSize: 12, color: "hsl(0 0% 100% / 0.55)", textAlign: "center" }}>
+            (27) 98112-0322 · Atendimento Seg a Sex
+          </div>
+        </div>
+      </div>
+
+      {/* Backdrop */}
+      <button
+        type="button"
+        aria-hidden="true"
+        tabIndex={-1}
+        className={`pres-mobile-backdrop ${open ? "is-open" : ""}`}
+        onClick={() => setOpen(false)}
+      />
+
       <style>{`
         .pres-shell .pres-topbar { padding: 10px 20px; min-height: 64px; }
         .pres-shell .pres-topbar-brand { gap: 12px; }
         .pres-shell .pres-topbar-logo { width: 64px; height: 64px; margin: -6px 0; }
         .pres-shell .pres-topbar-title { font-size: 17px; }
         .pres-shell .pres-topbar-sub { font-size: 9.5px; }
-        .pres-shell .pres-topbar-cta { padding: 9px 16px; font-size: 13px; gap: 8px; }
-        .pres-shell .pres-topbar-cta-short { display: none; }
+
+        /* Nav desktop */
+        .pres-shell .pres-topbar-nav {
+          display: none;
+          align-items: center;
+          gap: 4px;
+          margin-left: auto;
+          margin-right: 8px;
+        }
+        .pres-shell .pres-topbar-link {
+          position: relative;
+          padding: 8px 12px;
+          font-size: 13.5px;
+          font-weight: 500;
+          color: hsl(0 0% 100% / 0.72);
+          text-decoration: none;
+          border-radius: 8px;
+          transition: color .2s, background .2s;
+          white-space: nowrap;
+        }
+        .pres-shell .pres-topbar-link:hover {
+          color: white;
+          background: hsl(0 0% 100% / 0.06);
+        }
+
+        .pres-shell .pres-topbar-cta {
+          padding: 9px 16px;
+          font-size: 13px;
+          gap: 8px;
+        }
+
+        /* Hamburger */
+        .pres-shell .pres-topbar-burger {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 42px;
+          height: 42px;
+          border-radius: 10px;
+          background: hsl(0 0% 100% / 0.06);
+          border: 1px solid hsl(0 0% 100% / 0.12);
+          color: white;
+          cursor: pointer;
+          transition: background .2s, border-color .2s;
+          flex-shrink: 0;
+        }
+        .pres-shell .pres-topbar-burger:hover {
+          background: hsl(0 0% 100% / 0.10);
+          border-color: hsl(0 0% 100% / 0.2);
+        }
+
+        /* Drawer mobile */
+        .pres-shell .pres-mobile-drawer {
+          position: fixed;
+          top: 64px;
+          right: 0;
+          width: min(340px, 92vw);
+          max-height: calc(100dvh - 64px);
+          overflow-y: auto;
+          background: hsl(var(--pres-dark) / 0.98);
+          backdrop-filter: blur(18px);
+          border-left: 1px solid hsl(0 0% 100% / 0.10);
+          border-bottom: 1px solid hsl(0 0% 100% / 0.10);
+          border-bottom-left-radius: 16px;
+          transform: translateX(105%);
+          transition: transform .3s cubic-bezier(.4,0,.2,1);
+          z-index: 60;
+          box-shadow: -20px 30px 60px -20px hsl(220 60% 4% / 0.6);
+        }
+        .pres-shell .pres-mobile-drawer.is-open { transform: translateX(0); }
+        .pres-shell .pres-mobile-drawer-inner { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .pres-shell .pres-mobile-drawer-head { padding: 4px 4px 8px; border-bottom: 1px solid hsl(0 0% 100% / 0.08); }
+        .pres-shell .pres-mobile-nav { display: flex; flex-direction: column; gap: 4px; }
+        .pres-shell .pres-mobile-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 14px;
+          font-size: 15px;
+          font-weight: 500;
+          color: hsl(0 0% 100% / 0.86);
+          text-decoration: none;
+          border-radius: 12px;
+          background: hsl(0 0% 100% / 0.03);
+          border: 1px solid hsl(0 0% 100% / 0.06);
+          transition: background .2s, color .2s, transform .2s;
+        }
+        .pres-shell .pres-mobile-link:active { transform: scale(0.98); }
+        .pres-shell .pres-mobile-link:hover {
+          color: white;
+          background: hsl(0 0% 100% / 0.07);
+        }
+
+        .pres-shell .pres-mobile-backdrop {
+          position: fixed;
+          inset: 64px 0 0 0;
+          background: hsl(220 50% 4% / 0.55);
+          backdrop-filter: blur(2px);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity .3s;
+          z-index: 55;
+          border: 0;
+          padding: 0;
+          cursor: default;
+        }
+        .pres-shell .pres-mobile-backdrop.is-open {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        /* >= 901px desktop: mostra nav, esconde hamburger */
+        @media (min-width: 901px) {
+          .pres-shell .pres-topbar-nav { display: flex; }
+          .pres-shell .pres-topbar-burger { display: none; }
+          .pres-shell .pres-mobile-drawer { display: none; }
+          .pres-shell .pres-mobile-backdrop { display: none; }
+        }
+
+        /* Tablet: esconde alguns links menos críticos */
+        @media (min-width: 901px) and (max-width: 1100px) {
+          .pres-shell .pres-topbar-link[href="#proximos-passos"] { display: none; }
+        }
+
+        /* Mobile <= 900px */
+        @media (max-width: 900px) {
+          .pres-shell .pres-topbar-cta { display: none; }
+        }
 
         @media (max-width: 720px) {
           .pres-shell .pres-topbar { padding: 10px 16px; min-height: 60px; gap: 10px; }
@@ -2409,9 +2645,8 @@ function TopBar() {
           .pres-shell .pres-topbar-logo { width: 48px; height: 48px; margin: -4px 0; }
           .pres-shell .pres-topbar-title { font-size: 15px; letter-spacing: -0.01em; }
           .pres-shell .pres-topbar-sub { font-size: 8.5px; letter-spacing: 0.16em; margin-top: 3px; }
-          .pres-shell .pres-topbar-cta { padding: 8px 12px; font-size: 12.5px; gap: 6px; border-radius: 10px; }
-          .pres-shell .pres-topbar-cta-label { display: none; }
-          .pres-shell .pres-topbar-cta-short { display: inline; }
+          .pres-shell .pres-mobile-drawer { top: 60px; max-height: calc(100dvh - 60px); }
+          .pres-shell .pres-mobile-backdrop { inset: 60px 0 0 0; }
         }
 
         @media (max-width: 380px) {
