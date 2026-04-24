@@ -2967,6 +2967,7 @@ function PremiumFooter() {
     { label: "Anúncios", href: "#anuncios" },
     { label: "ROI", href: "#roi" },
     { label: "Operação ao vivo", href: "#live-ops" },
+    { label: "Dúvidas frequentes", href: "#faq" },
     { label: "Próximos passos", href: "#proximos-passos" },
   ];
   return (
