@@ -2313,6 +2313,7 @@ export default function Apresentacao() {
       <Hero />
       <Problema />
       <Solucao />
+      <ClinicaReal />
       <Showcase />
       <Anuncios />
       <RoiCalculator />
