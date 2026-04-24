@@ -2966,7 +2966,7 @@ function PremiumFooter() {
   const links = [
     { label: "Solução", href: "#solucao" },
     { label: "Demonstração", href: "#showcase" },
-    { label: "Anúncios", href: "#anuncios" },
+    { label: "Captação", href: "#anuncios" },
     { label: "ROI", href: "#roi" },
     { label: "Operação ao vivo", href: "#live-ops" },
     { label: "Dúvidas frequentes", href: "#faq" },
