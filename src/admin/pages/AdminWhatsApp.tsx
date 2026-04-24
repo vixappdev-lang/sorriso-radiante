@@ -92,7 +92,7 @@ function Panel({ password }: { password: string }) {
     const { data } = await supabase.from("whatsapp_providers").select("*").order("created_at");
     setProviders(data ?? []);
     const active = (data ?? []).find((p: any) => p.is_active);
-    if (active) setActiveProvider(active.type);
+    if (active) setActiveProvider(active.type as "chatpro" | "vps");
   };
 
   useEffect(() => { checkStatus(); loadProviders(); }, []); // eslint-disable-line
