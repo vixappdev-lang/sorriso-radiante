@@ -380,8 +380,8 @@ function ClinicaReal() {
             A clínica que o paciente vê.<br />
             <span style={{ color: "hsl(38 80% 70%)" }}>A estrutura que ele nem percebe.</span>
           </h2>
-          <p className="pres-lead" style={{ marginTop: 18, color: "hsl(0 0% 100% / 0.72)" }}>
-            Você continua dono do ambiente, da equipe e do atendimento. A LyneCloud entra invisível por trás —
+          <p className="pres-lead" style={{ marginTop: 18, color: "hsl(0 0% 100% / 0.82)" }}>
+            Você continua dono do ambiente, da equipe e do atendimento. A LyneCloud entra invisível por trás,
             organizando agenda, lembretes, leads, financeiro e reputação enquanto você atende.
           </p>
         </div>
