@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import SEO from "@/components/SEO";
 import { cn } from "@/lib/utils";
 
-const CLINIC_NAME = "Clínica Levii";
+const CLINIC_NAME = "LyneCloud";
 
 type Invite = {
   id: string;

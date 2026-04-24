@@ -14,7 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
 import { cn } from "@/lib/utils";
 
-const BRAND = "Clínica Levii";
+const BRAND = "LyneCloud";
 
 type Section = "home" | "appointments" | "history" | "invoices" | "profile";
 

@@ -1,4 +1,4 @@
-// Edge function — API pública usando chaves Levii (levii_xxxx)
+// Edge function — API pública usando chaves LyneCloud (lyne_xxxx)
 // Endpoints: GET /appointments, POST /leads, GET /reviews
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -16,7 +16,7 @@ Deno.serve(async (req: Request) => {
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
 
     const apiKey = req.headers.get("x-api-key") ?? req.headers.get("authorization")?.replace("Bearer ", "");
-    if (!apiKey?.startsWith("levii_")) return json({ error: "API key inválida" }, 401);
+    if (!apiKey?.startsWith("lyne_")) return json({ error: "API key inválida" }, 401);
 
     const hashBuf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(apiKey));
     const hashHex = Array.from(new Uint8Array(hashBuf)).map((b) => b.toString(16).padStart(2, "0")).join("");

@@ -53,7 +53,7 @@ export default function Header() {
       )}
     >
       <div className="container-edge flex h-16 items-center justify-between sm:h-20">
-        <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="Clínica Levii — início">
+        <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="LyneCloud — início">
           <Logo light={transparent} />
         </Link>
 
@@ -83,14 +83,14 @@ export default function Header() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <a
-            href="tel:+552732560000"
+            href="tel:+5527981120322"
             className={cn(
               "hidden md:inline-flex items-center gap-2 text-sm font-medium transition-colors duration-300",
               transparent ? "text-white/90 hover:text-white" : "text-foreground/80 hover:text-primary"
             )}
           >
             <Phone className="h-4 w-4" />
-            (27) 3256-0000
+            (27) 98112-0322
           </a>
           <Button
             onClick={() => openSchedule()}
@@ -180,17 +180,17 @@ export default function Header() {
                 {/* Contato direto */}
                 <div className="px-5 pb-6 border-t border-border/60 pt-5 space-y-2.5">
                   <a
-                    href="tel:+552732560000"
+                    href="tel:+5527981120322"
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/60 hover:bg-secondary transition-colors"
                   >
                     <span className="grid place-items-center h-9 w-9 rounded-lg bg-primary-soft text-primary"><Phone className="h-4 w-4" /></span>
                     <div className="min-w-0">
                       <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Telefone</p>
-                      <p className="text-sm font-semibold text-foreground">(27) 3256-0000</p>
+                      <p className="text-sm font-semibold text-foreground">(27) 98112-0322</p>
                     </div>
                   </a>
                   <a
-                    href="https://wa.me/5527999990000"
+                    href="https://wa.me/5527981120322"
                     target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/60 hover:bg-secondary transition-colors"
                   >
@@ -199,7 +199,7 @@ export default function Header() {
                     </span>
                     <div className="min-w-0">
                       <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">WhatsApp</p>
-                      <p className="text-sm font-semibold text-foreground">(27) 99999-0000</p>
+                      <p className="text-sm font-semibold text-foreground">(27) 98112-0322</p>
                     </div>
                   </a>
                   <div className="flex items-start gap-3 px-3 pt-1">
@@ -234,7 +234,7 @@ function Logo({ light = false }: { light?: boolean }) {
           "font-display text-lg font-semibold tracking-tight transition-colors duration-300",
           light ? "text-white" : "text-foreground"
         )}>
-          Clínica Levii
+          LyneCloud
         </span>
         <span className={cn(
           "text-[10px] uppercase tracking-[0.22em] font-semibold transition-colors duration-300",

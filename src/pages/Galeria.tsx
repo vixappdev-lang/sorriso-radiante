@@ -35,12 +35,12 @@ export default function Galeria() {
   return (
     <SiteLayout>
       <SEO
-        title="Galeria — Clínica Levii"
-        description="Conheça por dentro a Clínica Levii: ambiente moderno, equipamentos de ponta, resultados reais e a equipe que cuida do seu sorriso."
+        title="Galeria — LyneCloud"
+        description="Conheça por dentro a LyneCloud: ambiente moderno, equipamentos de ponta, resultados reais e a equipe que cuida do seu sorriso."
       />
       <PageHero
         eyebrow="Galeria"
-        title="Por dentro da Clínica Levii."
+        title="Por dentro da LyneCloud."
         subtitle="Ambiente acolhedor, tecnologia de ponta e resultados que falam por si. Veja com seus próprios olhos por que somos referência em Aracruz/ES."
       />
 

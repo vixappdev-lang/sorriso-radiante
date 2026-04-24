@@ -39,7 +39,7 @@ const SECTIONS = [
     icon: FileText,
     description: "Conte sua história e diferenciais. Texto rico, sem clichês.",
     fields: [
-      { k: "title", t: "Título da seção", placeholder: "Sobre a Clínica Levii" },
+      { k: "title", t: "Título da seção", placeholder: "Sobre a LyneCloud" },
       { k: "subtitle", t: "Subtítulo", placeholder: "Excelência em odontologia desde 2010" },
       { k: "body", t: "Texto principal", multiline: true, rows: 6, placeholder: "Há mais de uma década oferecendo…" },
       { k: "stats_label_1", t: "Estatística 1 — rótulo", placeholder: "Pacientes atendidos" },
@@ -54,9 +54,9 @@ const SECTIONS = [
     fields: [
       { k: "phone", t: "Telefone principal", placeholder: "(11) 99999-9999" },
       { k: "whatsapp", t: "WhatsApp", placeholder: "5511999999999" },
-      { k: "email", t: "E-mail", placeholder: "contato@clinicalevii.com" },
+      { k: "email", t: "E-mail", placeholder: "contato@lynecloud.com.br" },
       { k: "address", t: "Endereço completo", multiline: true, placeholder: "Rua Exemplo, 123 — Jardins, São Paulo / SP" },
-      { k: "instagram", t: "Instagram", placeholder: "@clinicalevii" },
+      { k: "instagram", t: "Instagram", placeholder: "@lynecloud" },
     ],
   },
   {
@@ -66,7 +66,7 @@ const SECTIONS = [
     description: "Texto institucional e links no rodapé do site.",
     fields: [
       { k: "tagline", t: "Frase do rodapé", placeholder: "Cuidado odontológico que você merece." },
-      { k: "copyright", t: "Texto de copyright", placeholder: "© 2026 Clínica Levii. Todos os direitos reservados." },
+      { k: "copyright", t: "Texto de copyright", placeholder: "© 2026 LyneCloud. Todos os direitos reservados." },
     ],
   },
 ] as const;

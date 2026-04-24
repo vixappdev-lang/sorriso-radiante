@@ -22,7 +22,7 @@ const phoneRegex = /^\(?\d{2}\)?\s?9?\s?\d{4}-?\d{4}$/;
 
 const schema = z.object({
   name: z.string().trim().min(2, "Informe seu nome completo").max(100),
-  phone: z.string().trim().regex(phoneRegex, "Telefone inválido. Ex.: (27) 99999-0000"),
+  phone: z.string().trim().regex(phoneRegex, "Telefone inválido. Ex.: (27) 98112-0322"),
   email: z.string().trim().email("E-mail inválido").max(255).optional().or(z.literal("")),
   treatment: z.string().min(1, "Selecione um tratamento"),
   professional: z.string().optional(),
@@ -259,7 +259,7 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
                       <Input
                         className="h-11"
                         inputMode="tel"
-                        placeholder="(27) 99999-0000"
+                        placeholder="(27) 98112-0322"
                         autoComplete="tel"
                         value={form.watch("phone")}
                         onChange={(e) => form.setValue("phone", maskPhone(e.target.value), { shouldValidate: true })}
@@ -291,7 +291,7 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
                   </div>
 
                   <p className="text-[11px] text-muted-foreground text-center sm:text-left">
-                    Ao enviar, você concorda em ser contatado(a) pela Clínica Levii.
+                    Ao enviar, você concorda em ser contatado(a) pela LyneCloud.
                   </p>
                 </>
               )}
@@ -348,7 +348,7 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
                 className="sm:flex-[2] bg-[#25D366] hover:bg-[#1FBA5A] text-white shadow-soft"
               >
                 <a
-                  href={`https://wa.me/5527999990000?text=${encodeURIComponent(`Olá! Acabei de agendar uma consulta de ${treatmentName(submitted.treatment)} para ${submitted.date} às ${submitted.time}. Meu nome é ${submitted.name}.`)}`}
+                  href={`https://wa.me/5527981120322?text=${encodeURIComponent(`Olá! Acabei de agendar uma consulta de ${treatmentName(submitted.treatment)} para ${submitted.date} às ${submitted.time}. Meu nome é ${submitted.name}.`)}`}
                   target="_blank" rel="noopener noreferrer"
                 >
                   <MessageCircle className="h-4 w-4 mr-2" /> Abrir WhatsApp

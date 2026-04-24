@@ -132,7 +132,7 @@ Deno.serve(async (req) => {
         const buttonPayload = {
           number,
           message,
-          title: "Clínica Levii",
+          title: "LyneCloud",
           footer: "Toque em uma opção abaixo",
           buttons: [
             { id: "1", text: "Confirmar presença" },

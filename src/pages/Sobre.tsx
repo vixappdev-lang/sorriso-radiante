@@ -11,8 +11,8 @@ export default function Sobre() {
   return (
     <SiteLayout>
       <SEO
-        title="Sobre — Clínica Levii"
-        description="Conheça a história, missão e valores da Clínica Levii. Mais de 15 anos transformando sorrisos com excelência clínica e atendimento humano."
+        title="Sobre — LyneCloud"
+        description="Conheça a história, missão e valores da LyneCloud. Mais de 15 anos transformando sorrisos com excelência clínica e atendimento humano."
       />
       <PageHero
         eyebrow="Sobre nós"
@@ -33,7 +33,7 @@ export default function Sobre() {
               Uma clínica feita por pessoas, para pessoas.
             </h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
-              A Clínica Levii nasceu do sonho da Dra. Camila Levii em criar um espaço onde o paciente não fosse só
+              A LyneCloud nasceu do sonho da Dra. Camila LyneCloud em criar um espaço onde o paciente não fosse só
               mais um número. Aqui, cada sorriso tem uma história, e cada plano de tratamento é desenhado para você.
             </p>
             <p className="mt-3 text-muted-foreground leading-relaxed">
@@ -47,7 +47,7 @@ export default function Sobre() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: "easeOut" }}
             src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
-            alt="Ambiente acolhedor da Clínica Levii"
+            alt="Ambiente acolhedor da LyneCloud"
             className="rounded-3xl shadow-elegant w-full aspect-[4/3] object-cover"
             loading="lazy"
           />

@@ -11,9 +11,9 @@ const corsHeaders = {
 };
 
 const PACKAGE_JSON = `{
-  "name": "levii-whatsapp-vps",
+  "name": "lynecloud-whatsapp-vps",
   "version": "1.0.0",
-  "description": "Levii WhatsApp VPS — Baileys + Express",
+  "description": "LyneCloud WhatsApp VPS — Baileys + Express",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -32,7 +32,7 @@ const PACKAGE_JSON = `{
 `;
 
 const SERVER_JS = `/**
- * Levii WhatsApp VPS — Baileys
+ * LyneCloud WhatsApp VPS — Baileys
  * API HTTP autenticada via Bearer token
  * Reconexão automática exponencial, sessão persistida em auth/
  */
@@ -79,7 +79,7 @@ async function connect() {
     connState = "connecting";
     sock = makeWASocket({
       version, auth: state, logger,
-      browser: Browsers.macOS("Levii"),
+      browser: Browsers.macOS("LyneCloud"),
       printQRInTerminal: false,
       syncFullHistory: false,
       markOnlineOnConnect: true,
@@ -187,7 +187,7 @@ app.post("/logout", async (_, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`[http] Levii WA escutando em :\${PORT}\`);
+  console.log(\`[http] LyneCloud WA escutando em :\${PORT}\`);
   connect();
 });
 
@@ -197,7 +197,7 @@ process.on("SIGINT",  () => { try { sock?.end?.(undefined); } catch {} process.e
 
 const ECOSYSTEM_CONFIG = `module.exports = {
   apps: [{
-    name: "levii-wa",
+    name: "lynecloud-wa",
     script: "./server.js",
     instances: 1,
     autorestart: true,
@@ -212,7 +212,7 @@ const ECOSYSTEM_CONFIG = `module.exports = {
 `;
 
 const INSTALL_SH = `#!/bin/bash
-# Levii WhatsApp VPS — Instalador automatizado para Ubuntu 22.04+
+# LyneCloud WhatsApp VPS — Instalador automatizado para Ubuntu 22.04+
 # Execute como root: sudo bash install.sh
 
 set -e
@@ -223,7 +223,7 @@ YELLOW='\\033[1;33m'
 NC='\\033[0m'
 
 echo -e "\${BLUE}═══════════════════════════════════════════════════\${NC}"
-echo -e "\${BLUE}  Levii WhatsApp VPS — Instalação automatizada\${NC}"
+echo -e "\${BLUE}  LyneCloud WhatsApp VPS — Instalação automatizada\${NC}"
 echo -e "\${BLUE}═══════════════════════════════════════════════════\${NC}"
 
 # 1. Atualizar sistema
@@ -248,7 +248,7 @@ fi
 if [ -z "\$LEVII_TOKEN" ]; then
   LEVII_TOKEN=\$(openssl rand -hex 32)
   echo -e "\${GREEN}» Token gerado:\${NC} \$LEVII_TOKEN"
-  echo -e "\${YELLOW}  ⚠ COPIE ESTE TOKEN AGORA! Cole no painel admin Levii.\${NC}"
+  echo -e "\${YELLOW}  ⚠ COPIE ESTE TOKEN AGORA! Cole no painel admin LyneCloud.\${NC}"
 fi
 
 # 5. Instalar deps
@@ -266,7 +266,7 @@ cat > ecosystem.config.js <<'EOF'
 require("dotenv").config();
 module.exports = {
   apps: [{
-    name: "levii-wa",
+    name: "lynecloud-wa",
     script: "./server.js",
     instances: 1,
     autorestart: true,
@@ -284,7 +284,7 @@ npm install dotenv --silent
 
 # 8. Iniciar via PM2
 echo -e "\${YELLOW}» Iniciando serviço via PM2...\${NC}"
-pm2 delete levii-wa 2>/dev/null || true
+pm2 delete lynecloud-wa 2>/dev/null || true
 pm2 start ecosystem.config.js
 pm2 save
 pm2 startup systemd -u root --hp /root | tail -1 | bash || true
@@ -310,11 +310,11 @@ echo ""
 echo -e "Para HTTPS (recomendado): aponte um subdomínio para este IP"
 echo -e "e rode: \${BLUE}apt install nginx certbot python3-certbot-nginx -y\${NC}"
 echo ""
-echo -e "Logs em tempo real: \${BLUE}pm2 logs levii-wa\${NC}"
+echo -e "Logs em tempo real: \${BLUE}pm2 logs lynecloud-wa\${NC}"
 echo -e "Status do serviço:  \${BLUE}pm2 status\${NC}"
 `;
 
-const README_MD = `# Levii WhatsApp VPS
+const README_MD = `# LyneCloud WhatsApp VPS
 
 Servidor próprio de WhatsApp usando **Baileys** — gratuito, ilimitado, sem dependência de SaaS.
 
@@ -330,9 +330,9 @@ Servidor próprio de WhatsApp usando **Baileys** — gratuito, ilimitado, sem de
 ssh root@SEU_IP
 
 # 2. Crie pasta e extraia o ZIP enviado pelo painel
-mkdir -p /opt/levii-wa && cd /opt/levii-wa
-# (faça upload do levii-whatsapp-vps.zip aqui via scp ou unzip)
-unzip levii-whatsapp-vps.zip
+mkdir -p /opt/lynecloud-wa && cd /opt/lynecloud-wa
+# (faça upload do lynecloud-whatsapp-vps.zip aqui via scp ou unzip)
+unzip lynecloud-whatsapp-vps.zip
 
 # 3. Execute o instalador
 chmod +x install.sh
@@ -356,9 +356,9 @@ O painel exibirá um QR Code — escaneie com o WhatsApp do celular da clínica.
 
 \`\`\`bash
 pm2 status             # ver status
-pm2 logs levii-wa      # ver logs em tempo real
-pm2 restart levii-wa   # reiniciar
-pm2 stop levii-wa      # parar
+pm2 logs lynecloud-wa      # ver logs em tempo real
+pm2 restart lynecloud-wa   # reiniciar
+pm2 stop lynecloud-wa      # parar
 \`\`\`
 
 ## HTTPS (opcional, mas recomendado)
@@ -383,8 +383,8 @@ server {
 \`\`\`
 
 ## Suporte
-- Problemas? Veja \`pm2 logs levii-wa\`
-- Sessão travada? \`pm2 restart levii-wa\` ou clique em "Reiniciar" no painel
+- Problemas? Veja \`pm2 logs lynecloud-wa\`
+- Sessão travada? \`pm2 restart lynecloud-wa\` ou clique em "Reiniciar" no painel
 - Precisa trocar o número? Clique em "Desconectar" no painel e escaneie novo QR
 `;
 
@@ -447,7 +447,7 @@ Deno.serve(async (req) => {
       headers: {
         ...corsHeaders,
         "Content-Type": "application/zip",
-        "Content-Disposition": 'attachment; filename="levii-whatsapp-vps.zip"',
+        "Content-Disposition": 'attachment; filename="lynecloud-whatsapp-vps.zip"',
         "Content-Length": String(buffer.byteLength),
       },
     });

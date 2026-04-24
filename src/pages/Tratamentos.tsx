@@ -12,7 +12,7 @@ export default function Tratamentos() {
   return (
     <SiteLayout>
       <SEO
-        title="Tratamentos — Clínica Levii"
+        title="Tratamentos — LyneCloud"
         description="Implantes, ortodontia, lentes, clareamento, harmonização e mais. Tratamentos odontológicos completos com tecnologia de ponta."
       />
       <PageHero
