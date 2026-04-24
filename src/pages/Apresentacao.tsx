@@ -1353,22 +1353,18 @@ function TopBar() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "14px 24px",
+          padding: "12px 24px",
         }}
       >
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 10, color: "white", textDecoration: "none" }}>
-          <div
-            style={{
-              width: 32, height: 32, borderRadius: 8,
-              background: "linear-gradient(135deg, hsl(var(--pres-primary)), hsl(var(--pres-primary-2)))",
-              display: "flex", alignItems: "center", justifyContent: "center",
-            }}
-          >
-            <Sparkles size={16} color="white" />
-          </div>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, color: "white", textDecoration: "none" }}>
+          <img
+            src="/apresentacao/lynecloud-icon.png"
+            alt="LyneCloud"
+            style={{ width: 38, height: 38, objectFit: "contain", filter: "drop-shadow(0 4px 12px hsl(215 90% 50% / 0.4))" }}
+          />
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.01em" }}>{BRAND}</div>
-            <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.18em", textTransform: "uppercase" }}>
+            <div style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.015em" }}>{BRAND}</div>
+            <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: 2 }}>
               Dossiê comercial
             </div>
           </div>
