@@ -1,0 +1,348 @@
+/* =========================================================
+   /apresentacao — Dossiê Comercial Premium
+   Namespace .pres-shell — totalmente isolado.
+   Não vaza estilo para o resto do projeto.
+   ========================================================= */
+
+.pres-shell {
+  --pres-bg: 220 28% 99%;
+  --pres-surface: 220 30% 97%;
+  --pres-surface-2: 220 22% 95%;
+  --pres-dark: 222 38% 6%;
+  --pres-dark-2: 222 32% 10%;
+  --pres-text: 222 32% 10%;
+  --pres-text-2: 222 14% 38%;
+  --pres-text-3: 222 10% 52%;
+  --pres-border: 220 16% 88%;
+  --pres-border-strong: 220 16% 80%;
+  --pres-primary: 215 80% 42%;
+  --pres-primary-2: 215 85% 55%;
+  --pres-gold: 38 70% 55%;
+  --pres-danger: 0 70% 55%;
+  --pres-success: 152 60% 42%;
+
+  background: hsl(var(--pres-bg));
+  color: hsl(var(--pres-text));
+  font-family: 'Inter Tight', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-feature-settings: 'cv11','ss01','ss03','tnum';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+  min-height: 100vh;
+}
+
+.pres-shell * { box-sizing: border-box; }
+
+.pres-shell h1, .pres-shell h2, .pres-shell h3, .pres-shell h4 {
+  font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  color: hsl(var(--pres-text));
+}
+
+.pres-shell .pres-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--pres-primary));
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: hsl(var(--pres-primary) / 0.08);
+  border: 1px solid hsl(var(--pres-primary) / 0.15);
+}
+
+.pres-shell .pres-h1 {
+  font-size: clamp(2.5rem, 5.5vw, 4.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+}
+.pres-shell .pres-h2 {
+  font-size: clamp(1.875rem, 3.6vw, 3rem);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  font-weight: 600;
+}
+.pres-shell .pres-h3 {
+  font-size: clamp(1.25rem, 1.6vw, 1.5rem);
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+.pres-shell .pres-lead {
+  font-size: clamp(1.05rem, 1.3vw, 1.25rem);
+  line-height: 1.55;
+  color: hsl(var(--pres-text-2));
+}
+
+.pres-shell .pres-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+@media (min-width: 768px) {
+  .pres-shell .pres-container { padding-left: 40px; padding-right: 40px; }
+}
+
+.pres-shell .pres-section {
+  padding: 96px 0;
+  position: relative;
+}
+@media (max-width: 768px) {
+  .pres-shell .pres-section { padding: 64px 0; }
+}
+
+.pres-shell .pres-card {
+  background: white;
+  border: 1px solid hsl(var(--pres-border));
+  border-radius: 18px;
+  box-shadow:
+    0 1px 0 hsl(220 25% 12% / 0.02),
+    0 2px 6px -2px hsl(220 25% 12% / 0.04),
+    0 8px 24px -16px hsl(220 25% 12% / 0.10);
+  transition: box-shadow .25s ease, border-color .25s ease, transform .25s ease;
+}
+.pres-shell .pres-card-hover:hover {
+  border-color: hsl(var(--pres-border-strong));
+  box-shadow:
+    0 1px 0 hsl(220 25% 12% / 0.03),
+    0 12px 28px -12px hsl(220 25% 12% / 0.18),
+    0 24px 48px -24px hsl(215 75% 25% / 0.20);
+  transform: translateY(-2px);
+}
+
+/* ===== Hero dark ===== */
+.pres-shell .pres-hero {
+  position: relative;
+  background: hsl(var(--pres-dark));
+  color: white;
+  overflow: hidden;
+  padding: 140px 0 120px;
+}
+.pres-shell .pres-hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(60% 50% at 18% 20%, hsl(215 90% 55% / 0.30), transparent 60%),
+    radial-gradient(50% 40% at 82% 78%, hsl(215 80% 40% / 0.28), transparent 60%),
+    radial-gradient(40% 30% at 60% 30%, hsl(38 80% 55% / 0.10), transparent 60%);
+  pointer-events: none;
+}
+.pres-shell .pres-hero::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: linear-gradient(hsl(0 0% 100% / 0.025) 1px, transparent 1px),
+                    linear-gradient(90deg, hsl(0 0% 100% / 0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  pointer-events: none;
+}
+.pres-shell .pres-hero > * { position: relative; z-index: 2; }
+.pres-shell .pres-hero h1 { color: white; }
+.pres-shell .pres-hero .pres-eyebrow {
+  color: hsl(38 80% 70%);
+  background: hsl(0 0% 100% / 0.06);
+  border-color: hsl(0 0% 100% / 0.12);
+}
+
+/* ===== Buttons ===== */
+.pres-shell .pres-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.011em;
+  cursor: pointer;
+  transition: all .18s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.pres-shell .pres-btn-primary {
+  background: linear-gradient(135deg, hsl(var(--pres-primary)), hsl(var(--pres-primary-2)));
+  color: white;
+  box-shadow: 0 8px 24px -8px hsl(var(--pres-primary) / 0.5);
+}
+.pres-shell .pres-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px -10px hsl(var(--pres-primary) / 0.6);
+}
+.pres-shell .pres-btn-ghost {
+  background: hsl(0 0% 100% / 0.06);
+  border-color: hsl(0 0% 100% / 0.18);
+  color: white;
+  backdrop-filter: blur(10px);
+}
+.pres-shell .pres-btn-ghost:hover {
+  background: hsl(0 0% 100% / 0.12);
+  border-color: hsl(0 0% 100% / 0.30);
+}
+.pres-shell .pres-btn-light {
+  background: white;
+  color: hsl(var(--pres-text));
+  border-color: hsl(var(--pres-border));
+}
+.pres-shell .pres-btn-light:hover {
+  border-color: hsl(var(--pres-primary));
+  color: hsl(var(--pres-primary));
+}
+
+/* ===== Mockup browser (macOS chrome) ===== */
+.pres-shell .pres-mockup {
+  border-radius: 14px;
+  overflow: hidden;
+  background: hsl(220 16% 96%);
+  border: 1px solid hsl(220 16% 86%);
+  box-shadow:
+    0 1px 0 hsl(220 25% 12% / 0.04),
+    0 30px 60px -30px hsl(220 30% 12% / 0.30),
+    0 60px 100px -40px hsl(215 60% 25% / 0.18);
+}
+.pres-shell .pres-mockup-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: hsl(220 14% 94%);
+  border-bottom: 1px solid hsl(220 16% 86%);
+}
+.pres-shell .pres-mockup-dot {
+  width: 11px; height: 11px; border-radius: 50%;
+  display: inline-block;
+}
+.pres-shell .pres-mockup-url {
+  flex: 1;
+  margin-left: 14px;
+  background: white;
+  border: 1px solid hsl(220 16% 88%);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: hsl(var(--pres-text-3));
+  font-family: 'SF Mono', ui-monospace, monospace;
+  text-align: center;
+  letter-spacing: 0;
+}
+.pres-shell .pres-mockup img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ===== Reveal on scroll ===== */
+.pres-shell .pres-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1);
+}
+.pres-shell .pres-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Tabs ===== */
+.pres-shell .pres-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px;
+  background: hsl(var(--pres-surface-2));
+  border: 1px solid hsl(var(--pres-border));
+  border-radius: 14px;
+}
+.pres-shell .pres-tab {
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: hsl(var(--pres-text-2));
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all .15s ease;
+  white-space: nowrap;
+}
+.pres-shell .pres-tab:hover { color: hsl(var(--pres-text)); background: white; }
+.pres-shell .pres-tab.is-active {
+  background: white;
+  color: hsl(var(--pres-primary));
+  border-color: hsl(var(--pres-border));
+  box-shadow: 0 1px 2px hsl(220 25% 12% / 0.06);
+}
+
+/* ===== Pillars / problem cards ===== */
+.pres-shell .pres-icon-box {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== Final CTA ===== */
+.pres-shell .pres-cta-final {
+  background: linear-gradient(135deg, hsl(var(--pres-dark)), hsl(222 35% 14%));
+  color: white;
+  border-radius: 24px;
+  padding: 64px 48px;
+  position: relative;
+  overflow: hidden;
+}
+.pres-shell .pres-cta-final::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(60% 80% at 80% 20%, hsl(215 90% 55% / 0.35), transparent 60%);
+  pointer-events: none;
+}
+.pres-shell .pres-cta-final > * { position: relative; z-index: 2; }
+@media (max-width: 640px) {
+  .pres-shell .pres-cta-final { padding: 40px 24px; border-radius: 20px; }
+}
+
+/* ===== Timeline ===== */
+.pres-shell .pres-timeline {
+  position: relative;
+  display: grid;
+  gap: 24px;
+}
+@media (min-width: 1024px) {
+  .pres-shell .pres-timeline {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .pres-shell .pres-timeline::before {
+    content: "";
+    position: absolute;
+    top: 28px;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, hsl(var(--pres-border-strong)), transparent);
+  }
+}
+
+/* ===== Utilities ===== */
+.pres-shell .pres-grid-bg {
+  background-image:
+    linear-gradient(hsl(220 16% 88% / 0.4) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(220 16% 88% / 0.4) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.pres-shell .pres-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, hsl(var(--pres-border-strong)), transparent);
+}
+
+.pres-shell .pres-tabular { font-variant-numeric: tabular-nums; }
+
+/* Smooth scrolling within page */
+.pres-shell { scroll-behavior: smooth; }
