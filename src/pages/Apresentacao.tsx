@@ -795,6 +795,188 @@ function Google() {
             <GoogleSearchSim />
           </div>
         </div>
+
+        {/* ====== Bloco persuasivo: a diferença real entre estar fora e estar no topo ====== */}
+        <div className="pres-reveal" style={{ marginTop: 64 }}>
+          <div style={{ textAlign: "center", maxWidth: 760, margin: "0 auto 36px" }}>
+            <span className="pres-eyebrow" style={{ background: "hsl(var(--pres-primary) / 0.08)", color: "hsl(var(--pres-primary))", borderColor: "hsl(var(--pres-primary) / 0.2)" }}>
+              <TrendingUp size={12} /> A diferença que decide o faturamento
+            </span>
+            <h3 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.02em", marginTop: 18, lineHeight: 1.2, color: "hsl(var(--pres-text))" }}>
+              Sem site, sua clínica é uma opção. Com site, ela é <span style={{ color: "hsl(var(--pres-primary))" }}>a escolha óbvia.</span>
+            </h3>
+            <p style={{ fontSize: 15, color: "hsl(var(--pres-text-2))", marginTop: 12, lineHeight: 1.6 }}>
+              O paciente decide em segundos. Compare o que ele vê de cada cenário antes mesmo de clicar.
+            </p>
+          </div>
+
+          <div className="pres-google-compare">
+            {/* SEM SITE */}
+            <div
+              style={{
+                position: "relative",
+                padding: 28,
+                borderRadius: 18,
+                background: "linear-gradient(180deg, hsl(0 80% 98%), white)",
+                border: "1px solid hsl(0 70% 90%)",
+                boxShadow: "0 8px 28px hsl(0 50% 50% / 0.06)",
+              }}
+            >
+              <div style={{
+                position: "absolute", top: -12, left: 24,
+                background: "white",
+                padding: "4px 12px",
+                borderRadius: 999,
+                border: "1px solid hsl(0 70% 88%)",
+                fontSize: 11, fontWeight: 700, letterSpacing: "0.12em",
+                color: "hsl(0 70% 45%)", textTransform: "uppercase",
+              }}>
+                Sem site próprio
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 10,
+                  background: "hsl(0 70% 50% / 0.08)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <EyeOff size={18} color="hsl(0 70% 50%)" />
+                </div>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "hsl(var(--pres-text))" }}>Aparece no fim. Some na decisão.</div>
+                  <div style={{ fontSize: 12, color: "hsl(var(--pres-text-3))", marginTop: 2 }}>O paciente nem chega até você.</div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {[
+                  { icon: Search, text: "4ª, 5ª ou 6ª posição no Google", sub: "Quase ninguém rola até lá." },
+                  { icon: PhoneOff, text: "Sem agendamento online", sub: "Paciente desiste se não atender de imediato." },
+                  { icon: ThumbsDown, text: "Avaliações antigas e poucas", sub: "Quebra confiança em segundos." },
+                  { icon: FileX, text: "Sem prova de profissionalismo", sub: "Página de Facebook não vende serviço caro." },
+                  { icon: AlertTriangle, text: "Concorrente leva o paciente", sub: "Quem tem estrutura recebe o clique." },
+                ].map(({ icon: Icon, text, sub }) => (
+                  <div key={text} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: "hsl(0 70% 50% / 0.08)",
+                      color: "hsl(0 70% 50%)",
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2,
+                    }}>
+                      <Icon size={14} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: "hsl(var(--pres-text))" }}>{text}</div>
+                      <div style={{ fontSize: 12.5, color: "hsl(var(--pres-text-2))", marginTop: 2, lineHeight: 1.4 }}>{sub}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{
+                marginTop: 22, padding: "12px 14px",
+                background: "hsl(0 70% 50% / 0.06)",
+                borderLeft: "3px solid hsl(0 70% 50%)",
+                borderRadius: 8,
+                fontSize: 13, color: "hsl(0 70% 35%)", fontWeight: 600,
+              }}>
+                Resultado: a cada 10 pacientes em potencial, 9 vão para o concorrente.
+              </div>
+            </div>
+
+            {/* COM SITE */}
+            <div
+              style={{
+                position: "relative",
+                padding: 28,
+                borderRadius: 18,
+                background: "linear-gradient(180deg, hsl(215 85% 98%), white)",
+                border: "1.5px solid hsl(215 85% 70%)",
+                boxShadow: "0 16px 44px hsl(215 85% 40% / 0.16)",
+              }}
+            >
+              <div style={{
+                position: "absolute", top: -12, left: 24,
+                background: "linear-gradient(135deg, hsl(var(--pres-primary)), hsl(var(--pres-primary-2)))",
+                padding: "4px 12px",
+                borderRadius: 999,
+                fontSize: 11, fontWeight: 700, letterSpacing: "0.12em",
+                color: "white", textTransform: "uppercase",
+                boxShadow: "0 6px 18px hsl(var(--pres-primary) / 0.4)",
+              }}>
+                Com a estrutura LyneCloud
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
+                <div style={{
+                  width: 38, height: 38, borderRadius: 10,
+                  background: "hsl(var(--pres-primary) / 0.1)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}>
+                  <Crown size={18} color="hsl(var(--pres-primary))" />
+                </div>
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "hsl(var(--pres-text))" }}>1º lugar. A escolha óbvia.</div>
+                  <div style={{ fontSize: 12, color: "hsl(var(--pres-text-3))", marginTop: 2 }}>O paciente já chega convertido.</div>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {[
+                  { icon: Crown, text: "Topo do Google na sua cidade", sub: "Capta 87% dos cliques locais." },
+                  { icon: Calendar, text: "Agendamento online 24 horas", sub: "Paciente marca direto, sem fricção." },
+                  { icon: Star, text: "Avaliações 5 estrelas em destaque", sub: "Prova social que vende sozinha." },
+                  { icon: ShieldCheck, text: "Site profissional próprio", sub: "Autoridade visível antes do clique." },
+                  { icon: Rocket, text: "Pacientes vêm até você", sub: "Estrutura trabalha 24/7 captando." },
+                ].map(({ icon: Icon, text, sub }) => (
+                  <div key={text} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8,
+                      background: "linear-gradient(135deg, hsl(var(--pres-primary) / 0.18), hsl(var(--pres-primary) / 0.06))",
+                      color: "hsl(var(--pres-primary))",
+                      display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2,
+                    }}>
+                      <Icon size={14} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: 13.5, fontWeight: 600, color: "hsl(var(--pres-text))" }}>{text}</div>
+                      <div style={{ fontSize: 12.5, color: "hsl(var(--pres-text-2))", marginTop: 2, lineHeight: 1.4 }}>{sub}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{
+                marginTop: 22, padding: "12px 14px",
+                background: "linear-gradient(90deg, hsl(var(--pres-primary) / 0.08), hsl(var(--pres-primary) / 0.02))",
+                borderLeft: "3px solid hsl(var(--pres-primary))",
+                borderRadius: 8,
+                fontSize: 13, color: "hsl(var(--pres-primary))", fontWeight: 600,
+              }}>
+                Resultado: a cada 10 pacientes em potencial, até 7 viram agendamento.
+              </div>
+            </div>
+          </div>
+
+          {/* Linha de impacto final */}
+          <div style={{
+            marginTop: 32, padding: "24px 28px",
+            borderRadius: 16,
+            background: "linear-gradient(135deg, hsl(var(--pres-dark)) 0%, hsl(220 60% 14%) 100%)",
+            color: "white",
+            display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 20,
+          }}>
+            <div style={{ flex: "1 1 320px" }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", color: "hsl(38 80% 70%)", textTransform: "uppercase" }}>
+                A conta que ninguém te mostra
+              </div>
+              <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8, lineHeight: 1.3, letterSpacing: "-0.015em" }}>
+                Cada mês sem site no topo é faturamento indo direto para a clínica do lado.
+              </div>
+            </div>
+            <a href={WPP_LINK} target="_blank" rel="noreferrer" className="pres-btn pres-btn-primary" style={{ flexShrink: 0 }}>
+              Quero estar no topo <ArrowRight size={16} />
+            </a>
+          </div>
+        </div>
       </div>
 
       <style>{`
