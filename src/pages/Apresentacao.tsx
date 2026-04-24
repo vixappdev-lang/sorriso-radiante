@@ -8,7 +8,7 @@ import {
   CheckCircle2, ChartLine, Layers, Phone, Crown, Workflow, Award, Building2,
   Instagram, Lock, Infinity as InfinityIcon, KeyRound, Server, HandCoins, Rocket,
   Menu as MenuIcon, X as XIcon, HelpCircle, ChevronDown, DollarSign, Headphones,
-  RefreshCw, Database,
+  RefreshCw, Database, Bell,
 } from "lucide-react";
 import SEO from "@/components/SEO";
 import "./apresentacao/pres-styles.css";
@@ -1348,36 +1348,36 @@ function Google() {
   );
 }
 
-// ===== Anúncios & Marketing (NOVA SEÇÃO) =====
+// ===== Captação & gerenciamento de leads (NOVA SEÇÃO) =====
 function Anuncios() {
   const channels = [
-    { icon: Instagram, title: "Instagram & Reels", text: "Conteúdo de autoridade que constrói marca local e gera conversa direta no direct." },
-    { icon: Megaphone, title: "Meta Ads (Facebook + Instagram)", text: "Anúncios segmentados por bairro, idade e interesse no tratamento certo." },
-    { icon: Search, title: "Google Ads de intenção", text: "Captura quem está pesquisando “implante perto de mim” no exato momento da decisão." },
-    { icon: MapPin, title: "Mídia local e parcerias", text: "Influência de bairro, parcerias regionais e ativação de comunidade." },
+    { icon: Search, title: "Google e busca local", text: "Quem procura “dentista perto de mim” cai no seu site, agenda em poucos cliques e já entra no painel." },
+    { icon: Instagram, title: "Instagram da clínica", text: "Bio, stories e direct viram link de agendamento. Cada visitante interessado é registrado no CRM automaticamente." },
+    { icon: MessageCircle, title: "WhatsApp da recepção", text: "Toda conversa vira lead com nome, histórico e tratamento de interesse, sem depender de planilha ou caderno." },
+    { icon: Users, title: "Indicação e retorno", text: "Pacientes antigos e indicações entram no mesmo funil, com lembretes automáticos de retorno e manutenção." },
   ];
 
   const flow = [
-    { icon: Megaphone, title: "Anúncio criativo" },
-    { icon: Instagram, title: "Curtida, comentário, click" },
-    { icon: MessageCircle, title: "Mensagem no WhatsApp" },
-    { icon: HandCoins, title: "Atendimento humano que vende" },
-    { icon: Calendar, title: "Agendamento manual" },
-    { icon: Users, title: "Paciente confirmado" },
+    { icon: Globe, title: "Lead chega (site, Google, Insta, WhatsApp)" },
+    { icon: Target, title: "Cadastrado no CRM automaticamente" },
+    { icon: MessageCircle, title: "Recepção atende com histórico em mãos" },
+    { icon: Calendar, title: "Agendamento humano e qualificado" },
+    { icon: Bell, title: "Confirmações automáticas no WhatsApp" },
+    { icon: CheckCircle2, title: "Paciente sentado na cadeira" },
   ];
 
   return (
     <section className="pres-section" id="anuncios">
       <div className="pres-container">
         <div className="pres-reveal" style={{ maxWidth: 820 }}>
-          <span className="pres-eyebrow"><Megaphone size={12} /> Anúncios e captação ativa</span>
+          <span className="pres-eyebrow"><Target size={12} /> Captação e gerenciamento de leads</span>
           <h2 className="pres-h2" style={{ marginTop: 20 }}>
-            Quem cuida da imagem, do anúncio e do contato direto com o paciente.
+            Cada paciente interessado vira ficha no painel, sem nada cair no esquecimento.
           </h2>
           <p className="pres-lead" style={{ marginTop: 16 }}>
-            A LyneCloud não é só software. Cuidamos do Instagram da clínica, dos anúncios que rodam todo dia
-            e do fluxo que leva o paciente direto ao seu WhatsApp, onde sua equipe agenda manualmente,
-            mantendo o toque humano que fecha tratamento.
+            A LyneCloud não vende anúncio nem cuida do seu Instagram. O que a plataforma faz é receber, organizar
+            e automatizar todo lead que chega na clínica, independente do canal: site, Google, redes sociais,
+            WhatsApp ou indicação. Nada se perde, nada esfria, e sua recepção atende com histórico completo na tela.
           </p>
         </div>
 
@@ -1419,10 +1419,10 @@ function Anuncios() {
             }}
           >
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.18em", color: "hsl(var(--pres-primary))", textTransform: "uppercase" }}>
-              Fluxo completo de aquisição
+              Fluxo automatizado do lead até a cadeira
             </div>
             <div style={{ fontWeight: 600, fontSize: 18, marginTop: 8, color: "hsl(var(--pres-text))" }}>
-              Do anúncio no Instagram até o paciente confirmado na cadeira.
+              Da primeira mensagem até o paciente confirmado, sem cair em planilha ou caderno.
             </div>
 
             <div className="pres-flow" style={{ marginTop: 24 }}>
@@ -1442,9 +1442,10 @@ function Anuncios() {
             <div style={{ marginTop: 24, padding: 16, borderRadius: 12, background: "hsl(var(--pres-surface-2))", display: "flex", gap: 12, alignItems: "flex-start" }}>
               <ShieldCheck size={20} color="hsl(var(--pres-success))" style={{ flexShrink: 0, marginTop: 2 }} />
               <div style={{ fontSize: 13.5, color: "hsl(var(--pres-text))", lineHeight: 1.5 }}>
-                <strong>Agendamento manual e humano:</strong> seu paciente entra em contato direto pelo WhatsApp
-                da clínica. Sua equipe atende, qualifica, encanta e marca. O sistema apenas registra,
-                organiza e dispara confirmações. Tecnologia a serviço da relação, nunca no lugar dela.
+                <strong>Atendimento humano, organização automática:</strong> sua equipe continua atendendo
+                pelo WhatsApp, qualificando e marcando como sempre fez. O painel só registra cada conversa,
+                organiza no CRM, dispara confirmações e lembretes e mostra para você o caminho de cada lead.
+                Tecnologia a serviço da relação, nunca no lugar dela.
               </div>
             </div>
           </div>
@@ -1711,7 +1712,7 @@ function RoiCalculator() {
               </div>
               <div style={{ marginTop: 16, fontSize: 12.5, opacity: 0.9, lineHeight: 1.5 }}>
                 Cálculo conservador. Considera ganho médio de conversão de leads, redução de no-show
-                com confirmações automáticas e captação contínua via Google, Instagram e WhatsApp.
+                com confirmações automáticas e melhor aproveitamento dos contatos que já chegam na clínica.
               </div>
             </div>
           </div>
@@ -1865,14 +1866,14 @@ function SemMensalidade() {
   );
 }
 
-// ===== Tráfego pago local =====
+// ===== Funil de conversão (estrutura entregue pela plataforma) =====
 function Trafego() {
   const steps = [
-    { icon: Megaphone, title: "Anúncio local", text: "Google Ads e Meta segmentados por bairro e intenção." },
-    { icon: MousePointerClick, title: "Landing page", text: "Página otimizada para o tratamento anunciado." },
-    { icon: Calendar, title: "Agendamento", text: "Quiz que qualifica e marca em poucos cliques." },
-    { icon: Users, title: "Paciente ativo", text: "Confirmação e lembrete automático até a consulta." },
-    { icon: TrendingUp, title: "ROI mensurável", text: "Cada real investido rastreado até o caixa." },
+    { icon: Globe, title: "Site e landing prontos", text: "Página de alta conversão para cada tratamento, com agendamento direto." },
+    { icon: MousePointerClick, title: "Lead qualificado", text: "Quiz curto entende a necessidade antes de cair na recepção." },
+    { icon: Calendar, title: "Agenda integrada", text: "Horário marcado vira evento na agenda da clínica em tempo real." },
+    { icon: Bell, title: "Confirmação automática", text: "Lembretes no WhatsApp 48h, 24h e 2h antes, sem ninguém digitar." },
+    { icon: TrendingUp, title: "Resultado mensurável", text: "Origem, conversão, no-show e ticket por canal direto no painel." },
   ];
 
   return (
@@ -1888,14 +1889,15 @@ function Trafego() {
       <div className="pres-container" style={{ position: "relative" }}>
         <div className="pres-reveal" style={{ maxWidth: 820 }}>
           <span className="pres-eyebrow" style={{ color: "hsl(38 80% 70%)", background: "hsl(0 0% 100% / 0.06)", borderColor: "hsl(0 0% 100% / 0.12)" }}>
-            <Zap size={12} /> Tráfego pago local
+            <Zap size={12} /> Estrutura de conversão entregue pronta
           </span>
           <h2 className="pres-h2" style={{ marginTop: 20, color: "white" }}>
-            Anúncio sem estrutura é dinheiro queimando todo dia.
+            Lead chegando é só metade. O resto é estrutura que converte.
           </h2>
           <p className="pres-lead" style={{ marginTop: 16, color: "hsl(0 0% 100% / 0.75)" }}>
-            Clínicas que investem em anúncios sem landing page, rastreamento e funil completo
-            perdem entre 60% e 80% do potencial. A estrutura abaixo recupera cada lead.
+            A LyneCloud não roda anúncio para você, e nem precisa. O que ela entrega é o que decide
+            se o lead vira paciente: site rápido, agendamento direto, CRM, automação no WhatsApp e
+            relatório real. Se você (ou sua agência) já investe em mídia, tudo desemboca aqui dentro.
           </p>
         </div>
 
@@ -1958,7 +1960,7 @@ function Trafego() {
         >
           <ShieldCheck size={22} color="hsl(152 70% 60%)" />
           <div style={{ fontSize: 14, color: "hsl(0 0% 100% / 0.85)", flex: 1, minWidth: 240 }}>
-            <strong style={{ color: "white" }}>Integração nativa:</strong> a estrutura entregue já conecta anúncio, landing, agenda e CRM. Você acompanha custo por lead, custo por agendamento e ROI real direto no painel.
+            <strong style={{ color: "white" }}>Tudo conectado em um lugar:</strong> site, agenda, CRM, WhatsApp e relatórios trabalham juntos. Você acompanha origem do lead, custo por agendamento (se houver mídia paga) e ticket por canal direto no painel, sem planilha externa.
           </div>
         </div>
       </div>
@@ -2271,8 +2273,8 @@ const OBJECOES: { icon: typeof HelpCircle; q: string; a: string; tag: string }[]
   {
     icon: Search,
     tag: "Google",
-    q: "Já tentei Google Ads e queimei dinheiro sem resultado. Por que dessa vez seria diferente?",
-    a: "Anúncio sem estrutura é dinheiro no lixo, e isso é mais comum do que parece. O paciente clica, cai num site lento, sem agendamento, sem prova social, e vai embora. A LyneCloud entrega o ecossistema completo: anúncio segmentado por bairro e tratamento, landing page de alta conversão, agenda integrada e CRM de leads. Você acompanha custo por lead e custo por agendamento direto no painel, com rastreio real. Não é mais achismo, é decisão com dado.",
+    q: "Já tentei Google Ads e queimei dinheiro sem ver resultado. Como a LyneCloud muda isso?",
+    a: "A LyneCloud não roda os anúncios para você, mas é exatamente o que faltava para o seu investimento dar retorno. Anúncio sem estrutura é dinheiro no lixo: o paciente clica, cai num site lento, sem agendamento direto, sem prova social, e vai embora. O que a plataforma entrega é o ecossistema que recebe esse lead: landing page de alta conversão, agendamento online, CRM com origem do contato, confirmação automática no WhatsApp e relatório de custo por lead e por agendamento. Se você ou sua agência fazem mídia, o resultado fica visível e mensurável. Se ainda não fazem, a captação orgânica via Google, indicação e site já gera fluxo. Decisão com dado, não com achismo.",
   },
   {
     icon: RefreshCw,
@@ -2964,7 +2966,7 @@ function PremiumFooter() {
   const links = [
     { label: "Solução", href: "#solucao" },
     { label: "Demonstração", href: "#showcase" },
-    { label: "Anúncios", href: "#anuncios" },
+    { label: "Captação", href: "#anuncios" },
     { label: "ROI", href: "#roi" },
     { label: "Operação ao vivo", href: "#live-ops" },
     { label: "Dúvidas frequentes", href: "#faq" },
