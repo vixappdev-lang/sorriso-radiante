@@ -7,6 +7,8 @@ import {
   PhoneOff, CalendarX, ThumbsDown, BellOff, FileX, MousePointerClick,
   CheckCircle2, ChartLine, Layers, Phone, Crown, Workflow, Award, Building2,
   Instagram, Lock, Infinity as InfinityIcon, KeyRound, Server, HandCoins, Rocket,
+  Menu as MenuIcon, X as XIcon, HelpCircle, ChevronDown, DollarSign, Headphones,
+  RefreshCw, Database,
 } from "lucide-react";
 import SEO from "@/components/SEO";
 import "./apresentacao/pres-styles.css";
@@ -330,30 +332,31 @@ function Solucao() {
 }
 
 // ===== Showcase com prints reais =====
+const SHOT_V = "v=3"; // cache-bust dos prints atualizados
 const SHOTS = [
-  { id: "dashboard", label: "Dashboard", icon: BarChart3, file: "/apresentacao/dashboard.png", url: "lynecloud.com.br/admin/dashboard",
+  { id: "dashboard", label: "Dashboard", icon: BarChart3, file: `/apresentacao/dashboard.png?${SHOT_V}`, url: "lynecloud.com.br/admin/dashboard",
     title: "Visão completa em tempo real", desc: "KPIs operacionais, faturamento estimado, agendamentos do dia, taxa de confirmação e gráficos de performance, tudo em uma única tela." },
-  { id: "agenda", label: "Agenda", icon: Calendar, file: "/apresentacao/agenda.png", url: "lynecloud.com.br/admin/agenda",
+  { id: "agenda", label: "Agenda", icon: Calendar, file: `/apresentacao/agenda.png?${SHOT_V}`, url: "lynecloud.com.br/admin/agenda",
     title: "Agenda profissional sem conflitos", desc: "Visão por dia, semana ou mês, status colorido, encaixes, bloqueios e link público para o paciente agendar sozinho." },
-  { id: "pacientes", label: "Pacientes", icon: Users, file: "/apresentacao/pacientes.png", url: "lynecloud.com.br/admin/pacientes",
+  { id: "pacientes", label: "Pacientes", icon: Users, file: `/apresentacao/pacientes.png?${SHOT_V}`, url: "lynecloud.com.br/admin/pacientes",
     title: "Base de pacientes ativa e organizada", desc: "Histórico de visitas, tratamentos realizados, observações clínicas e ações rápidas de contato direto." },
-  { id: "tratamentos", label: "Tratamentos", icon: Stethoscope, file: "/apresentacao/tratamentos.png", url: "lynecloud.com.br/admin/tratamentos",
+  { id: "tratamentos", label: "Tratamentos", icon: Stethoscope, file: `/apresentacao/tratamentos.png?${SHOT_V}`, url: "lynecloud.com.br/admin/tratamentos",
     title: "Catálogo controlado de procedimentos", desc: "Valores, duração, profissional responsável, status e ranking dos mais procurados." },
-  { id: "profissionais", label: "Profissionais", icon: Users, file: "/apresentacao/profissionais.png", url: "lynecloud.com.br/admin/profissionais",
+  { id: "profissionais", label: "Profissionais", icon: Users, file: `/apresentacao/profissionais.png?${SHOT_V}`, url: "lynecloud.com.br/admin/profissionais",
     title: "Equipe gerenciada de ponta a ponta", desc: "CRO, especialidades, agenda individual e produtividade por profissional." },
-  { id: "financeiro", label: "Financeiro", icon: Wallet, file: "/apresentacao/financeiro.png", url: "lynecloud.com.br/admin/financeiro",
+  { id: "financeiro", label: "Financeiro", icon: Wallet, file: `/apresentacao/financeiro.png?${SHOT_V}`, url: "lynecloud.com.br/admin/financeiro",
     title: "Controle financeiro real, não planilha", desc: "A receber, recebido no mês, atrasados, ticket médio e crescimento mês contra mês." },
-  { id: "leads", label: "Leads & Captação", icon: Target, file: "/apresentacao/leads.png", url: "lynecloud.com.br/admin/leads",
+  { id: "leads", label: "Leads & Captação", icon: Target, file: `/apresentacao/leads.png?${SHOT_V}`, url: "lynecloud.com.br/admin/leads",
     title: "Funil comercial estilo CRM", desc: "Kanban de leads do primeiro contato ao fechamento, com pipeline e taxa de conversão." },
-  { id: "whatsapp", label: "WhatsApp", icon: MessageCircle, file: "/apresentacao/whatsapp.png", url: "lynecloud.com.br/admin/whatsapp",
+  { id: "whatsapp", label: "WhatsApp", icon: MessageCircle, file: `/apresentacao/whatsapp.png?${SHOT_V}`, url: "lynecloud.com.br/admin/whatsapp",
     title: "Automação de comunicação", desc: "Disparos automáticos de confirmação, lembrete 24h, pós-consulta e campanhas em massa via VPS própria ou ChatPro." },
-  { id: "avaliacoes", label: "Avaliações", icon: Star, file: "/apresentacao/avaliacoes.png", url: "lynecloud.com.br/admin/avaliacoes",
+  { id: "avaliacoes", label: "Avaliações", icon: Star, file: `/apresentacao/avaliacoes.png?${SHOT_V}`, url: "lynecloud.com.br/admin/avaliacoes",
     title: "Reputação que vende sozinha", desc: "Convites automáticos, NPS, distribuição de notas e gestão de respostas para Google e site." },
-  { id: "site", label: "Site & Landing", icon: Globe, file: "/apresentacao/site.png", url: "lynecloud.com.br/admin/site",
+  { id: "site", label: "Site & Landing", icon: Globe, file: `/apresentacao/site.png?${SHOT_V}`, url: "lynecloud.com.br/admin/site",
     title: "Site editável sem programador", desc: "Hero, sobre, contato, rodapé e promoções, tudo gerenciado em blocos pelo painel." },
-  { id: "relatorios", label: "Relatórios", icon: ChartLine, file: "/apresentacao/relatorios.png", url: "lynecloud.com.br/admin/relatorios",
+  { id: "relatorios", label: "Relatórios", icon: ChartLine, file: `/apresentacao/relatorios.png?${SHOT_V}`, url: "lynecloud.com.br/admin/relatorios",
     title: "Decisões baseadas em dados", desc: "Performance mensal, exportação CSV e métricas operacionais e comerciais auditáveis." },
-  { id: "configuracoes", label: "Configurações", icon: Settings, file: "/apresentacao/configuracoes.png", url: "lynecloud.com.br/admin/configuracoes",
+  { id: "configuracoes", label: "Configurações", icon: Settings, file: `/apresentacao/configuracoes.png?${SHOT_V}`, url: "lynecloud.com.br/admin/configuracoes",
     title: "Configuração total da operação", desc: "Dados da clínica, horários, integrações, área do cliente, branding, usuários, webhooks e API." },
 ];
 
@@ -2239,6 +2242,272 @@ function LiveOps() {
   );
 }
 
+// ===== Objeções e dúvidas (FAQ persuasivo) =====
+const OBJECOES: { icon: typeof HelpCircle; q: string; a: string; tag: string }[] = [
+  {
+    icon: DollarSign,
+    tag: "Investimento",
+    q: "E se eu investir e não der retorno? O custo vai pesar no caixa?",
+    a: "Essa preocupação é justa, é o que toda clínica séria pensa antes de decidir. Por isso a LyneCloud não trabalha com mensalidade. Você paga uma vez pela estrutura e o painel passa a ser da clínica, definitivamente. O retorno acontece quando a agenda começa a encher de paciente novo vindo do Google e dos anúncios, com confirmação automática reduzindo as faltas. Em média, basta recuperar de 2 a 4 consultas no mês para o investimento já se pagar. O risco real é continuar perdendo paciente para o concorrente que já está usando esse tipo de estrutura.",
+  },
+  {
+    icon: CalendarX,
+    tag: "Agendamento",
+    q: "Meu paciente não vai querer agendar pela internet, ele prefere ligar.",
+    a: "Quem ainda prefere ligar continua ligando, isso não muda. O agendamento online não substitui o telefone, ele captura o paciente que hoje você está perdendo, aquele que pesquisa às 22h, no domingo, no intervalo do almoço, e que não vai ligar no dia seguinte porque já agendou em outro lugar. Mais de 60% das pesquisas por dentista acontecem fora do horário comercial. Sem agendamento online, esse paciente simplesmente vai para o concorrente que oferece. Com a LyneCloud, ele agenda no instante em que pensou em você.",
+  },
+  {
+    icon: BellOff,
+    tag: "Faltas",
+    q: "Já tentei lembrete por WhatsApp e o paciente continua faltando. O que muda?",
+    a: "Lembrete manual, na correria da recepção, sai tarde, sai sem padrão e às vezes nem sai. A LyneCloud automatiza confirmação 24h antes, lembrete no dia, pós-consulta e reativação de paciente sumido, com mensagem personalizada com nome, horário e profissional. Clínicas que ativam essa rotina relatam queda de 40 a 60% nas faltas em 30 dias. A diferença não é o WhatsApp, é o processo rodar sozinho, sem depender da memória da equipe.",
+  },
+  {
+    icon: Smartphone,
+    tag: "Equipe",
+    q: "Minha equipe não é de tecnologia. Vão demorar para aprender e vai virar bagunça.",
+    a: "O painel foi desenhado para clínica, não para programador. As telas seguem o fluxo natural do dia a dia: agenda, paciente, financeiro, tudo no lugar que faz sentido. A implantação inclui treinamento ao vivo com a sua equipe, materiais em vídeo e suporte direto durante a transição. A maioria das recepções está operando sozinha em menos de uma semana. E como o sistema centraliza o que hoje está em planilha, papel e WhatsApp pessoal, a operação fica menos bagunçada, não mais.",
+  },
+  {
+    icon: Search,
+    tag: "Google",
+    q: "Já tentei Google Ads e queimei dinheiro sem resultado. Por que dessa vez seria diferente?",
+    a: "Anúncio sem estrutura é dinheiro no lixo, e isso é mais comum do que parece. O paciente clica, cai num site lento, sem agendamento, sem prova social, e vai embora. A LyneCloud entrega o ecossistema completo: anúncio segmentado por bairro e tratamento, landing page de alta conversão, agenda integrada e CRM de leads. Você acompanha custo por lead e custo por agendamento direto no painel, com rastreio real. Não é mais achismo, é decisão com dado.",
+  },
+  {
+    icon: RefreshCw,
+    tag: "Migração",
+    q: "Já uso outro sistema. Vou perder meus dados e atrapalhar a operação?",
+    a: "Migração é uma das partes mais sensíveis e por isso é tratada com cuidado cirúrgico. A equipe técnica importa pacientes, histórico, agenda e financeiro do seu sistema atual sem interromper o atendimento. A virada é planejada para um momento de menor movimento, com plano de contingência e suporte ativo. A clínica continua operando normalmente durante todo o processo. Em 14 dias, no máximo, você está rodando 100% no novo painel.",
+  },
+  {
+    icon: Lock,
+    tag: "Dados e LGPD",
+    q: "E os dados da clínica e dos meus pacientes? Estão seguros?",
+    a: "O banco de dados, o domínio e as contas ficam todos sob o nome da clínica, não da agência. A infraestrutura usa criptografia em trânsito e em repouso, backup automático diário e servidores em conformidade com a LGPD. Você tem acesso administrativo total e pode exportar tudo a qualquer momento. Não existe refém de plataforma: se um dia quiser sair, leva os dados junto. Essa é a diferença entre ser dono e ser inquilino.",
+  },
+  {
+    icon: HandCoins,
+    tag: "Sem mensalidade",
+    q: "Sem mensalidade parece bom demais. Onde está a pegadinha?",
+    a: "Não há pegadinha, há modelo de negócio diferente. A LyneCloud cobra pela construção e implantação da estrutura, uma única vez. Hospedagem otimizada vai inclusa no pacote inicial e os custos de infraestrutura são transparentes. Não existe upsell forçado, taxa de paciente cadastrado, taxa por consulta agendada ou módulo bloqueado pedindo upgrade. O painel é seu, para sempre. Esse modelo só funciona porque a estrutura é entregue pronta e estável, não vendida em assinatura eterna.",
+  },
+  {
+    icon: Headphones,
+    tag: "Suporte",
+    q: "E se der problema depois? Vou ficar na mão sem suporte?",
+    a: "Suporte direto com a equipe técnica via WhatsApp, sem fila de atendimento e sem robô. Atualizações do sistema são contínuas e não geram custo extra. Para clínicas que querem evolução constante, existe o plano opcional de manutenção e novas features, mas o painel funciona perfeitamente sem ele. Você nunca fica refém: o que foi entregue, continua rodando. A relação é de parceria de longo prazo, não de venda e some.",
+  },
+  {
+    icon: Clock,
+    tag: "Tempo de implantação",
+    q: "Não tenho tempo para parar a clínica para implantar isso agora.",
+    a: "A implantação acontece em paralelo à operação, sem parar atendimento. A equipe LyneCloud cuida da configuração técnica, da integração com Google, do treinamento e da migração de dados. O envolvimento da clínica é mínimo: alguns pontos de validação, escolhas de identidade visual e definição dos tratamentos. Em 14 dias, no máximo, o sistema está no ar. Adiar é o que custa caro, cada mês sem essa estrutura é faturamento indo para o concorrente.",
+  },
+];
+
+function Objecoes() {
+  const [open, setOpen] = useState<number | null>(0);
+  return (
+    <section className="pres-section" id="faq">
+      <div className="pres-container">
+        <div className="pres-reveal" style={{ maxWidth: 820 }}>
+          <span className="pres-eyebrow"><HelpCircle size={12} /> Dúvidas reais de clínicas reais</span>
+          <h2 className="pres-h2" style={{ marginTop: 20 }}>
+            Toda clínica que cresceu com a LyneCloud passou pelas mesmas dúvidas que você está sentindo agora.
+          </h2>
+          <p className="pres-lead" style={{ marginTop: 16 }}>
+            Antes de decidir, é normal pesar custo, tempo, equipe e segurança. Abaixo estão as
+            objeções mais comuns ouvidas em mais de 100 conversas com donos de clínica e como
+            cada uma é resolvida na prática.
+          </p>
+        </div>
+
+        <div className="pres-reveal pres-faq-list" style={{ marginTop: 48 }}>
+          {OBJECOES.map((item, i) => {
+            const Icon = item.icon;
+            const isOpen = open === i;
+            return (
+              <div
+                key={item.q}
+                className={`pres-faq-item ${isOpen ? "is-open" : ""}`}
+              >
+                <button
+                  type="button"
+                  className="pres-faq-q"
+                  aria-expanded={isOpen}
+                  onClick={() => setOpen(isOpen ? null : i)}
+                >
+                  <span className="pres-faq-q-icon">
+                    <Icon size={18} />
+                  </span>
+                  <span className="pres-faq-q-content">
+                    <span className="pres-faq-tag">{item.tag}</span>
+                    <span className="pres-faq-q-text">{item.q}</span>
+                  </span>
+                  <span className="pres-faq-chev" aria-hidden="true">
+                    <ChevronDown size={20} />
+                  </span>
+                </button>
+                <div className="pres-faq-a-wrap">
+                  <div className="pres-faq-a">
+                    {item.a}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <div
+          className="pres-reveal"
+          style={{
+            marginTop: 48,
+            padding: "32px 28px",
+            borderRadius: 20,
+            background: "linear-gradient(135deg, hsl(var(--pres-dark)) 0%, hsl(220 50% 12%) 100%)",
+            color: "white",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 20,
+            boxShadow: "0 30px 60px -30px hsl(var(--pres-primary) / 0.45)",
+          }}
+        >
+          <div style={{ flex: "1 1 320px", minWidth: 0 }}>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "hsl(38 80% 70%)" }}>
+              Ainda tem alguma dúvida específica?
+            </div>
+            <div style={{ marginTop: 10, fontSize: 20, fontWeight: 600, lineHeight: 1.35, color: "white" }}>
+              Conversa direta, sem script de venda. Em 15 minutos você sai com clareza total sobre o que a estrutura entrega para a sua clínica.
+            </div>
+          </div>
+          <a
+            href={WPP_LINK}
+            target="_blank"
+            rel="noreferrer"
+            className="pres-btn pres-btn-primary"
+            style={{ flexShrink: 0 }}
+          >
+            <Phone size={16} /> Tirar dúvidas no WhatsApp <ArrowRight size={14} />
+          </a>
+        </div>
+      </div>
+
+      <style>{`
+        .pres-shell .pres-faq-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .pres-shell .pres-faq-item {
+          background: white;
+          border: 1px solid hsl(var(--pres-border, 220 15% 88%));
+          border-radius: 16px;
+          overflow: hidden;
+          transition: border-color .25s, box-shadow .25s, transform .25s;
+        }
+        .pres-shell .pres-faq-item.is-open {
+          border-color: hsl(var(--pres-primary) / 0.45);
+          box-shadow: 0 18px 40px -22px hsl(var(--pres-primary) / 0.35);
+        }
+        .pres-shell .pres-faq-q {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding: 20px 22px;
+          background: transparent;
+          border: 0;
+          text-align: left;
+          cursor: pointer;
+          color: hsl(var(--pres-text-1, 220 25% 12%));
+        }
+        .pres-shell .pres-faq-q-icon {
+          width: 40px;
+          height: 40px;
+          flex-shrink: 0;
+          border-radius: 12px;
+          background: hsl(var(--pres-primary) / 0.10);
+          color: hsl(var(--pres-primary));
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .pres-shell .pres-faq-q-content {
+          flex: 1;
+          min-width: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+        .pres-shell .pres-faq-tag {
+          font-size: 10.5px;
+          font-weight: 700;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: hsl(var(--pres-primary));
+        }
+        .pres-shell .pres-faq-q-text {
+          font-size: 16px;
+          font-weight: 600;
+          line-height: 1.4;
+          letter-spacing: -0.01em;
+        }
+        .pres-shell .pres-faq-chev {
+          flex-shrink: 0;
+          width: 32px;
+          height: 32px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 999px;
+          background: hsl(220 15% 95%);
+          color: hsl(var(--pres-text-2, 220 15% 40%));
+          transition: transform .3s, background .25s, color .25s;
+        }
+        .pres-shell .pres-faq-item.is-open .pres-faq-chev {
+          transform: rotate(180deg);
+          background: hsl(var(--pres-primary) / 0.12);
+          color: hsl(var(--pres-primary));
+        }
+        .pres-shell .pres-faq-a-wrap {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows .35s ease;
+        }
+        .pres-shell .pres-faq-item.is-open .pres-faq-a-wrap {
+          grid-template-rows: 1fr;
+        }
+        .pres-shell .pres-faq-a {
+          overflow: hidden;
+          font-size: 15px;
+          line-height: 1.7;
+          color: hsl(var(--pres-text-2, 220 15% 35%));
+          padding: 0 22px;
+        }
+        .pres-shell .pres-faq-item.is-open .pres-faq-a {
+          padding: 0 22px 22px 78px;
+        }
+
+        @media (max-width: 640px) {
+          .pres-shell .pres-faq-q { padding: 16px 16px; gap: 12px; }
+          .pres-shell .pres-faq-q-icon { width: 36px; height: 36px; border-radius: 10px; }
+          .pres-shell .pres-faq-q-text { font-size: 15px; }
+          .pres-shell .pres-faq-tag { font-size: 9.5px; letter-spacing: 0.16em; }
+          .pres-shell .pres-faq-chev { width: 28px; height: 28px; }
+          .pres-shell .pres-faq-item.is-open .pres-faq-a {
+            padding: 0 16px 18px 16px;
+            font-size: 14.5px;
+            line-height: 1.65;
+          }
+        }
+      `}</style>
+    </section>
+  );
+}
+
 // ===== Próximos passos com timeline animada =====
 const STEPS = [
   { icon: Search, title: "Análise", text: "Diagnóstico da clínica e do mercado local." },
@@ -2346,8 +2615,38 @@ function CTAFinal() {
   );
 }
 
-// ===== Top Bar minimalista =====
+// ===== Top Bar com navegação =====
+const NAV_LINKS = [
+  { label: "Solução", href: "#solucao" },
+  { label: "Painel", href: "#showcase" },
+  { label: "Google", href: "#google" },
+  { label: "ROI", href: "#roi" },
+  { label: "Dúvidas", href: "#faq" },
+  { label: "Próximos passos", href: "#proximos-passos" },
+];
+
 function TopBar() {
+  const [open, setOpen] = useState(false);
+
+  // Fecha o drawer ao navegar / redimensionar para desktop
+  useEffect(() => {
+    if (!open) return;
+    const onResize = () => {
+      if (window.innerWidth > 900) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    window.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("resize", onResize);
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
   return (
     <div
       style={{
@@ -2386,20 +2685,226 @@ function TopBar() {
             </div>
           </div>
         </Link>
-        <a href={WPP_LINK} target="_blank" rel="noreferrer" className="pres-btn pres-btn-primary pres-topbar-cta" style={{ flexShrink: 0 }}>
-          <span className="pres-topbar-cta-label">Solicitar demo</span>
-          <span className="pres-topbar-cta-short">Demo</span>
+
+        {/* Navegação desktop */}
+        <nav className="pres-topbar-nav" aria-label="Seções do dossiê">
+          {NAV_LINKS.map((l) => (
+            <a key={l.href} href={l.href} className="pres-topbar-link">
+              {l.label}
+            </a>
+          ))}
+        </nav>
+
+        {/* CTA desktop */}
+        <a
+          href={WPP_LINK}
+          target="_blank"
+          rel="noreferrer"
+          className="pres-btn pres-btn-primary pres-topbar-cta"
+          style={{ flexShrink: 0 }}
+        >
+          <Phone size={14} />
+          <span>Falar agora</span>
           <ArrowRight size={14} />
         </a>
+
+        {/* Botão hamburger mobile */}
+        <button
+          type="button"
+          className="pres-topbar-burger"
+          aria-label={open ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={open}
+          onClick={() => setOpen((v) => !v)}
+        >
+          {open ? <XIcon size={22} /> : <MenuIcon size={22} />}
+        </button>
       </div>
+
+      {/* Drawer mobile */}
+      <div
+        className={`pres-mobile-drawer ${open ? "is-open" : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-hidden={!open}
+      >
+        <div className="pres-mobile-drawer-inner">
+          <div className="pres-mobile-drawer-head">
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.2em", textTransform: "uppercase", color: "hsl(0 0% 100% / 0.55)" }}>
+              Navegação
+            </span>
+          </div>
+          <nav className="pres-mobile-nav">
+            {NAV_LINKS.map((l) => (
+              <a
+                key={l.href}
+                href={l.href}
+                className="pres-mobile-link"
+                onClick={() => setOpen(false)}
+              >
+                {l.label}
+                <ArrowRight size={16} />
+              </a>
+            ))}
+          </nav>
+          <a
+            href={WPP_LINK}
+            target="_blank"
+            rel="noreferrer"
+            className="pres-btn pres-btn-primary"
+            style={{ width: "100%", justifyContent: "center", marginTop: 8 }}
+            onClick={() => setOpen(false)}
+          >
+            <Phone size={16} /> Falar com a LyneCloud <ArrowRight size={14} />
+          </a>
+          <div style={{ marginTop: 16, fontSize: 12, color: "hsl(0 0% 100% / 0.55)", textAlign: "center" }}>
+            (27) 98112-0322 · Atendimento Seg a Sex
+          </div>
+        </div>
+      </div>
+
+      {/* Backdrop */}
+      <button
+        type="button"
+        aria-hidden="true"
+        tabIndex={-1}
+        className={`pres-mobile-backdrop ${open ? "is-open" : ""}`}
+        onClick={() => setOpen(false)}
+      />
+
       <style>{`
         .pres-shell .pres-topbar { padding: 10px 20px; min-height: 64px; }
         .pres-shell .pres-topbar-brand { gap: 12px; }
         .pres-shell .pres-topbar-logo { width: 64px; height: 64px; margin: -6px 0; }
         .pres-shell .pres-topbar-title { font-size: 17px; }
         .pres-shell .pres-topbar-sub { font-size: 9.5px; }
-        .pres-shell .pres-topbar-cta { padding: 9px 16px; font-size: 13px; gap: 8px; }
-        .pres-shell .pres-topbar-cta-short { display: none; }
+
+        /* Nav desktop */
+        .pres-shell .pres-topbar-nav {
+          display: none;
+          align-items: center;
+          gap: 4px;
+          margin-left: auto;
+          margin-right: 8px;
+        }
+        .pres-shell .pres-topbar-link {
+          position: relative;
+          padding: 8px 12px;
+          font-size: 13.5px;
+          font-weight: 500;
+          color: hsl(0 0% 100% / 0.72);
+          text-decoration: none;
+          border-radius: 8px;
+          transition: color .2s, background .2s;
+          white-space: nowrap;
+        }
+        .pres-shell .pres-topbar-link:hover {
+          color: white;
+          background: hsl(0 0% 100% / 0.06);
+        }
+
+        .pres-shell .pres-topbar-cta {
+          padding: 9px 16px;
+          font-size: 13px;
+          gap: 8px;
+        }
+
+        /* Hamburger */
+        .pres-shell .pres-topbar-burger {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 42px;
+          height: 42px;
+          border-radius: 10px;
+          background: hsl(0 0% 100% / 0.06);
+          border: 1px solid hsl(0 0% 100% / 0.12);
+          color: white;
+          cursor: pointer;
+          transition: background .2s, border-color .2s;
+          flex-shrink: 0;
+        }
+        .pres-shell .pres-topbar-burger:hover {
+          background: hsl(0 0% 100% / 0.10);
+          border-color: hsl(0 0% 100% / 0.2);
+        }
+
+        /* Drawer mobile */
+        .pres-shell .pres-mobile-drawer {
+          position: fixed;
+          top: 64px;
+          right: 0;
+          width: min(340px, 92vw);
+          max-height: calc(100dvh - 64px);
+          overflow-y: auto;
+          background: hsl(var(--pres-dark) / 0.98);
+          backdrop-filter: blur(18px);
+          border-left: 1px solid hsl(0 0% 100% / 0.10);
+          border-bottom: 1px solid hsl(0 0% 100% / 0.10);
+          border-bottom-left-radius: 16px;
+          transform: translateX(105%);
+          transition: transform .3s cubic-bezier(.4,0,.2,1);
+          z-index: 60;
+          box-shadow: -20px 30px 60px -20px hsl(220 60% 4% / 0.6);
+        }
+        .pres-shell .pres-mobile-drawer.is-open { transform: translateX(0); }
+        .pres-shell .pres-mobile-drawer-inner { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+        .pres-shell .pres-mobile-drawer-head { padding: 4px 4px 8px; border-bottom: 1px solid hsl(0 0% 100% / 0.08); }
+        .pres-shell .pres-mobile-nav { display: flex; flex-direction: column; gap: 4px; }
+        .pres-shell .pres-mobile-link {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 14px 14px;
+          font-size: 15px;
+          font-weight: 500;
+          color: hsl(0 0% 100% / 0.86);
+          text-decoration: none;
+          border-radius: 12px;
+          background: hsl(0 0% 100% / 0.03);
+          border: 1px solid hsl(0 0% 100% / 0.06);
+          transition: background .2s, color .2s, transform .2s;
+        }
+        .pres-shell .pres-mobile-link:active { transform: scale(0.98); }
+        .pres-shell .pres-mobile-link:hover {
+          color: white;
+          background: hsl(0 0% 100% / 0.07);
+        }
+
+        .pres-shell .pres-mobile-backdrop {
+          position: fixed;
+          inset: 64px 0 0 0;
+          background: hsl(220 50% 4% / 0.55);
+          backdrop-filter: blur(2px);
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity .3s;
+          z-index: 55;
+          border: 0;
+          padding: 0;
+          cursor: default;
+        }
+        .pres-shell .pres-mobile-backdrop.is-open {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        /* >= 901px desktop: mostra nav, esconde hamburger */
+        @media (min-width: 901px) {
+          .pres-shell .pres-topbar-nav { display: flex; }
+          .pres-shell .pres-topbar-burger { display: none; }
+          .pres-shell .pres-mobile-drawer { display: none; }
+          .pres-shell .pres-mobile-backdrop { display: none; }
+        }
+
+        /* Tablet: esconde alguns links menos críticos */
+        @media (min-width: 901px) and (max-width: 1100px) {
+          .pres-shell .pres-topbar-link[href="#proximos-passos"] { display: none; }
+        }
+
+        /* Mobile <= 900px */
+        @media (max-width: 900px) {
+          .pres-shell .pres-topbar-cta { display: none; }
+        }
 
         @media (max-width: 720px) {
           .pres-shell .pres-topbar { padding: 10px 16px; min-height: 60px; gap: 10px; }
@@ -2407,9 +2912,8 @@ function TopBar() {
           .pres-shell .pres-topbar-logo { width: 48px; height: 48px; margin: -4px 0; }
           .pres-shell .pres-topbar-title { font-size: 15px; letter-spacing: -0.01em; }
           .pres-shell .pres-topbar-sub { font-size: 8.5px; letter-spacing: 0.16em; margin-top: 3px; }
-          .pres-shell .pres-topbar-cta { padding: 8px 12px; font-size: 12.5px; gap: 6px; border-radius: 10px; }
-          .pres-shell .pres-topbar-cta-label { display: none; }
-          .pres-shell .pres-topbar-cta-short { display: inline; }
+          .pres-shell .pres-mobile-drawer { top: 60px; max-height: calc(100dvh - 60px); }
+          .pres-shell .pres-mobile-backdrop { inset: 60px 0 0 0; }
         }
 
         @media (max-width: 380px) {
@@ -2446,6 +2950,7 @@ export default function Apresentacao() {
       <Trafego />
       <SemMensalidade />
       <LiveOps />
+      <Objecoes />
       <ProximosPassos />
       <CTAFinal />
       <PremiumFooter />
@@ -2462,6 +2967,7 @@ function PremiumFooter() {
     { label: "Anúncios", href: "#anuncios" },
     { label: "ROI", href: "#roi" },
     { label: "Operação ao vivo", href: "#live-ops" },
+    { label: "Dúvidas frequentes", href: "#faq" },
     { label: "Próximos passos", href: "#proximos-passos" },
   ];
   return (
