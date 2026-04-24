@@ -33,8 +33,8 @@ export default function Contato() {
   return (
     <SiteLayout>
       <SEO
-        title="Contato — Clínica Levii"
-        description="Fale com a Clínica Levii: WhatsApp, telefone, e-mail e formulário de contato. Estamos prontos para tirar suas dúvidas."
+        title="Contato — LyneCloud"
+        description="Fale com a LyneCloud: WhatsApp, telefone, e-mail e formulário de contato. Estamos prontos para tirar suas dúvidas."
       />
       <PageHero
         eyebrow="Fale com a gente"
@@ -45,9 +45,9 @@ export default function Contato() {
       <section className="section">
         <div className="container-edge grid lg:grid-cols-5 gap-8 lg:gap-12">
           <div className="lg:col-span-2 grid gap-4 content-start">
-            <ContactCard icon={MessageCircle} title="WhatsApp" subtitle="Resposta em minutos" link="https://wa.me/5527999990000" linkText="(27) 99999-0000" />
-            <ContactCard icon={Phone} title="Telefone" subtitle="Seg–Sex 8h–19h" link="tel:+552732560000" linkText="(27) 3256-0000" />
-            <ContactCard icon={Mail} title="E-mail" subtitle="Respondemos em até 24h" link="mailto:contato@clinicalevii.com.br" linkText="contato@clinicalevii.com.br" />
+            <ContactCard icon={MessageCircle} title="WhatsApp" subtitle="Resposta em minutos" link="https://wa.me/5527981120322" linkText="(27) 98112-0322" />
+            <ContactCard icon={Phone} title="Telefone" subtitle="Seg–Sex 8h–19h" link="tel:+5527981120322" linkText="(27) 98112-0322" />
+            <ContactCard icon={Mail} title="E-mail" subtitle="Respondemos em até 24h" link="mailto:contato@lynecloud.com.br" linkText="contato@lynecloud.com.br" />
             <ContactCard icon={MapPin} title="Endereço" subtitle="Av. Venâncio Flores, 350 — Aracruz/ES" />
           </div>
 

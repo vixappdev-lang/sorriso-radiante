@@ -1,4 +1,4 @@
-// Bootstrap do primeiro admin do painel Levii.
+// Bootstrap do primeiro admin do painel LyneCloud.
 // Cria (ou recupera) o usuário definido em ADMIN_BOOTSTRAP_EMAIL/PASSWORD
 // e garante a role 'admin' em public.user_roles.
 // Pode ser chamado a qualquer momento — é idempotente.

@@ -123,8 +123,8 @@ export type Dentist = {
 
 export const DENTISTS: Dentist[] = [
   {
-    slug: "dra-camila-levii",
-    name: "Dra. Camila Levii",
+    slug: "dra-camila-andrade",
+    name: "Dra. Camila Andrade",
     cro: "CRO/ES 5.421",
     specialty: "Implantodontia & Estética",
     bio: "Diretora clínica, com mais de 15 anos dedicados à reabilitação oral e estética avançada. Mestre em Implantodontia.",
@@ -201,7 +201,7 @@ export const TESTIMONIALS = [
 
 // ============= Dados de contato e localização =============
 export const CLINIC_INFO = {
-  name: "Clínica Levii",
+  name: "LyneCloud",
   city: "Aracruz",
   state: "ES",
   address: {
@@ -211,14 +211,14 @@ export const CLINIC_INFO = {
     zip: "CEP 29190-036",
   },
   phone: {
-    display: "(27) 3256-0000",
-    tel: "+552732560000",
+    display: "(27) 98112-0322",
+    tel: "+5527981120322",
   },
   whatsapp: {
-    display: "(27) 99999-0000",
-    number: "5527999990000",
+    display: "(27) 98112-0322",
+    number: "5527981120322",
   },
-  email: "contato@clinicalevii.com.br",
+  email: "contato@lynecloud.com.br",
   hours: "Seg–Sex 8h–19h • Sáb 8h–13h",
   mapsQuery: "Av.+Ven%C3%A2ncio+Flores+Aracruz+ES",
 };

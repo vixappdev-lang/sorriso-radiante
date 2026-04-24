@@ -12,8 +12,8 @@ export default function Equipe() {
   return (
     <SiteLayout>
       <SEO
-        title="Equipe — Clínica Levii"
-        description="Conheça os especialistas da Clínica Levii: implantodontistas, ortodontistas, endodontistas e odontopediatras com formação de excelência."
+        title="Equipe — LyneCloud"
+        description="Conheça os especialistas da LyneCloud: implantodontistas, ortodontistas, endodontistas e odontopediatras com formação de excelência."
       />
       <PageHero
         eyebrow="Nossa equipe"

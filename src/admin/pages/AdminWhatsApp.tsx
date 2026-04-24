@@ -262,7 +262,7 @@ function EventsTab() {
     const { data, error } = await supabase.functions.invoke("whatsapp-gateway", {
       body: {
         event_key: eventKey, to: phone,
-        vars: { nome: "Teste", data: "amanhã", hora: "15:00", tratamento: "Avaliação", profissional: "Dr. Levii" },
+        vars: { nome: "Teste", data: "amanhã", hora: "15:00", tratamento: "Avaliação", profissional: "Dr. LyneCloud" },
       },
     });
     if (error || !data?.ok) toast({ title: "Falhou", description: error?.message ?? data?.result?.error ?? "Sem resposta", variant: "destructive" });
@@ -657,7 +657,7 @@ function VpsConfigModal({ open, onOpenChange, provider, reload }: any) {
       const blob = await resp.blob();
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "levii-whatsapp-vps.zip";
+      link.download = "lynecloud-whatsapp-vps.zip";
       document.body.appendChild(link); link.click(); link.remove();
       toast({ title: "✓ Download iniciado", description: "Extraia o ZIP na sua VPS e rode install.sh" });
     } catch (e: any) {
@@ -717,14 +717,14 @@ function VpsConfigModal({ open, onOpenChange, provider, reload }: any) {
             </div>
           </div>
           <Button onClick={downloadScript} disabled={downloading} className="w-full sm:w-auto">
-            {downloading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando…</> : <><Download className="h-4 w-4 mr-2" /> Baixar levii-whatsapp-vps.zip</>}
+            {downloading ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Gerando…</> : <><Download className="h-4 w-4 mr-2" /> Baixar lynecloud-whatsapp-vps.zip</>}
           </Button>
           <div className="mt-3 rounded-lg bg-slate-50 border border-slate-200 p-3 text-[12px] text-slate-700 font-mono leading-relaxed">
             <p className="font-semibold text-slate-900 mb-1.5 font-sans text-xs">Na sua VPS Ubuntu, execute:</p>
-            <code className="block">scp levii-whatsapp-vps.zip root@SEU_IP:/opt/</code>
+            <code className="block">scp lynecloud-whatsapp-vps.zip root@SEU_IP:/opt/</code>
             <code className="block">ssh root@SEU_IP</code>
-            <code className="block">cd /opt && unzip levii-whatsapp-vps.zip -d levii-wa</code>
-            <code className="block">cd levii-wa && chmod +x install.sh && sudo bash install.sh</code>
+            <code className="block">cd /opt && unzip lynecloud-whatsapp-vps.zip -d lynecloud-wa</code>
+            <code className="block">cd lynecloud-wa && chmod +x install.sh && sudo bash install.sh</code>
           </div>
         </section>
 

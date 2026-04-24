@@ -31,7 +31,7 @@ export default function RequireAdmin({ children }: { children: React.ReactNode }
           </div>
           <h1 className="font-display text-2xl mb-2">Sem permissão</h1>
           <p className="text-muted-foreground mb-6">
-            Sua conta não possui acesso de administrador. Solicite à equipe da Clínica Levii.
+            Sua conta não possui acesso de administrador. Solicite à equipe da LyneCloud.
           </p>
           <Button onClick={() => adminSignOut().then(() => window.location.assign("/admin/login"))}>
             Voltar ao login

@@ -29,11 +29,11 @@ Deno.serve(async (req: Request) => {
     const { label, scopes } = await req.json();
     if (!label) return json({ error: "Label obrigatório" }, 400);
 
-    // gera chave: levii_<32 chars hex>
+    // gera chave: lyne_<32 chars hex>
     const bytes = new Uint8Array(24);
     crypto.getRandomValues(bytes);
     const raw = Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
-    const fullKey = `levii_${raw}`;
+    const fullKey = `lyne_${raw}`;
     const prefix = fullKey.slice(0, 14);
 
     // hash sha-256

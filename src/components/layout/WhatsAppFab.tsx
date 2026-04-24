@@ -2,7 +2,7 @@ import { CLINIC_INFO } from "@/data/clinic";
 
 export default function WhatsAppFab() {
   const phone = CLINIC_INFO.whatsapp.number;
-  const text = encodeURIComponent("Olá! Gostaria de informações sobre tratamentos na Clínica Levii.");
+  const text = encodeURIComponent("Olá! Gostaria de informações sobre tratamentos na LyneCloud.");
   return (
     <a
       href={`https://wa.me/${phone}?text=${text}`}

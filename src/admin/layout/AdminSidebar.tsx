@@ -53,7 +53,7 @@ export default function AdminSidebar({ onNavigate }: { onNavigate?: () => void }
             </svg>
           </div>
           <div className="leading-tight">
-            <p className="text-[15px] font-semibold">Clínica Levii</p>
+            <p className="text-[15px] font-semibold">LyneCloud</p>
             <p className="text-[10px] uppercase tracking-[0.22em] text-white/45">Painel admin</p>
           </div>
         </div>

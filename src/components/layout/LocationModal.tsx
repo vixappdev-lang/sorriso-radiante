@@ -55,7 +55,7 @@ export default function LocationModal({ open, onOpenChange }: Props) {
             </span>
             <div className="min-w-0 flex-1">
               <DialogTitle className="font-display text-xl sm:text-2xl text-balance leading-tight">
-                Como chegar à Clínica Levii
+                Como chegar à LyneCloud
               </DialogTitle>
               <DialogDescription className="text-xs sm:text-sm mt-1">
                 Toque em "Abrir no mapa" para iniciar a rota no seu GPS.
@@ -68,7 +68,7 @@ export default function LocationModal({ open, onOpenChange }: Props) {
           {/* Mini-mapa preview */}
           <div className="rounded-xl overflow-hidden border border-border/70 aspect-video shadow-soft">
             <iframe
-              title="Mapa Clínica Levii"
+              title="Mapa LyneCloud"
               src={`https://www.google.com/maps?q=${LAT},${LNG}&z=16&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

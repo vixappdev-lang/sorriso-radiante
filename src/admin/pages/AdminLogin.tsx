@@ -54,7 +54,7 @@ export default function AdminLogin() {
 
   return (
     <>
-      <SEO title="Painel Levii — Acesso restrito" description="Acesso ao painel administrativo da Clínica Levii." />
+      <SEO title="Painel LyneCloud — Acesso restrito" description="Acesso ao painel administrativo da LyneCloud." />
       <div className="admin-shell min-h-screen w-full bg-[hsl(var(--admin-bg))] grid lg:grid-cols-[1.05fr_1fr]">
         {/* ---------- LADO ESQUERDO (lg+) ---------- */}
         <aside className="hidden lg:flex relative overflow-hidden bg-[hsl(222_32%_8%)] text-white">
@@ -76,7 +76,7 @@ export default function AdminLogin() {
                 </svg>
               </div>
               <div className="leading-tight">
-                <p className="text-[16px] font-semibold tracking-tight">Clínica Levii</p>
+                <p className="text-[16px] font-semibold tracking-tight">LyneCloud</p>
                 <p className="text-[10px] uppercase tracking-[0.24em] text-white/55">Plataforma de gestão</p>
               </div>
             </div>
@@ -90,7 +90,7 @@ export default function AdminLogin() {
                 Toda a clínica em uma só plataforma.
               </h1>
               <p className="mt-4 text-white/70 text-[15px] leading-relaxed max-w-md">
-                Agenda, financeiro, leads, avaliações e integrações trabalhando juntos para a equipe Levii.
+                Agenda, financeiro, leads, avaliações e integrações trabalhando juntos para a equipe LyneCloud.
               </p>
 
               <ul className="mt-10 space-y-4">
@@ -110,7 +110,7 @@ export default function AdminLogin() {
 
             {/* Footer */}
             <p className="text-[11px] text-white/40">
-              © {new Date().getFullYear()} Clínica Levii · Aracruz/ES · v1.0
+              © {new Date().getFullYear()} LyneCloud · Aracruz/ES · v1.0
             </p>
           </div>
         </aside>
@@ -125,7 +125,7 @@ export default function AdminLogin() {
                   <path d="M12 21V8M5 8a7 7 0 0 1 14 0M5 8c0 4 3 6 3 8M19 8c0 4-3 6-3 8" />
                 </svg>
               </div>
-              <p className="text-[14px] font-semibold tracking-tight">Clínica Levii</p>
+              <p className="text-[14px] font-semibold tracking-tight">LyneCloud</p>
             </div>
             <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">Painel</span>
           </div>
@@ -133,7 +133,7 @@ export default function AdminLogin() {
           <div className="w-full max-w-[420px] animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div className="mb-7">
               <h2 className="text-[26px] sm:text-[28px] font-semibold tracking-[-0.02em] text-[hsl(var(--admin-text))]">Bem-vindo de volta</h2>
-              <p className="mt-1.5 text-[14px] text-[hsl(var(--admin-text-muted))]">Acesse o painel da Clínica Levii.</p>
+              <p className="mt-1.5 text-[14px] text-[hsl(var(--admin-text-muted))]">Acesse o painel da LyneCloud.</p>
             </div>
 
             <form onSubmit={onSubmit} className="space-y-4">
@@ -145,7 +145,7 @@ export default function AdminLogin() {
                     id="email" type="email" autoComplete="email"
                     value={email} onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 h-12 bg-white text-[14px]"
-                    placeholder="voce@clinicalevii.com.br"
+                    placeholder="voce@lynecloud.com.br"
                   />
                 </div>
                 {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
@@ -196,7 +196,7 @@ export default function AdminLogin() {
             </form>
 
             <p className="mt-8 text-center text-[11px] text-muted-foreground lg:hidden">
-              © {new Date().getFullYear()} Clínica Levii · Aracruz/ES
+              © {new Date().getFullYear()} LyneCloud · Aracruz/ES
             </p>
           </div>
         </section>

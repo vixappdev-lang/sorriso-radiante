@@ -11,8 +11,8 @@ export default function Servicos() {
   return (
     <SiteLayout>
       <SEO
-        title="Serviços e Preços — Clínica Levii"
-        description="Lista completa de serviços odontológicos da Clínica Levii com faixas de preço e duração média de cada procedimento."
+        title="Serviços e Preços — LyneCloud"
+        description="Lista completa de serviços odontológicos da LyneCloud com faixas de preço e duração média de cada procedimento."
       />
       <PageHero
         eyebrow="Serviços e preços"

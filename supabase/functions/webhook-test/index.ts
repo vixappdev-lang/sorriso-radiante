@@ -31,7 +31,7 @@ Deno.serve(async (req: Request) => {
     const payload = {
       event: "test.ping",
       timestamp: new Date().toISOString(),
-      data: { message: "Disparo de teste do painel Levii" },
+      data: { message: "Disparo de teste do painel LyneCloud" },
     };
     const body = JSON.stringify(payload);
 
@@ -48,7 +48,7 @@ Deno.serve(async (req: Request) => {
     try {
       const r = await fetch(hook.url, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "X-Levii-Signature": signature, "X-Levii-Event": "test.ping" },
+        headers: { "Content-Type": "application/json", "X-LyneCloud-Signature": signature, "X-LyneCloud-Event": "test.ping" },
         body,
       });
       status = r.status;

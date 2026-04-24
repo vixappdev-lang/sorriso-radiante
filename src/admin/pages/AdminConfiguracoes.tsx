@@ -499,7 +499,7 @@ function SectionWebhooks() {
   return (
     <SectionCard
       title="Webhooks"
-      description="Receba notificações em tempo real quando eventos importantes acontecem na clínica. Cada disparo inclui assinatura HMAC SHA-256 no header X-Levii-Signature."
+      description="Receba notificações em tempo real quando eventos importantes acontecem na clínica. Cada disparo inclui assinatura HMAC SHA-256 no header X-LyneCloud-Signature."
       footer={<Button onClick={() => setOpen({ url: "", events: [], active: true, secret: newSecret() })}><Plus className="h-4 w-4 mr-2" />Novo webhook</Button>}
     >
       {hooks.length === 0 ? (
