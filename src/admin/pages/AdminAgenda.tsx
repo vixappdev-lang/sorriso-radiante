@@ -264,6 +264,15 @@ export default function AdminAgenda() {
       <ConfirmDialog open={!!confirmCancel} onOpenChange={(v) => !v && setConfirmCancel(null)}
         title="Cancelar agendamento?" description="Essa ação não pode ser desfeita pelo painel." destructive confirmLabel="Sim, cancelar"
         onConfirm={async () => { if (confirmCancel) { await setStatus(confirmCancel, "cancelled"); setConfirmCancel(null); } }} />
+
+      <PublicLinkModal
+        open={linkModalOpen}
+        onOpenChange={setLinkModalOpen}
+        title="Link público de agendamento"
+        description="Compartilhe para receber agendamentos automáticos"
+        path={defaultLink ? `/agendar/${defaultLink.access_token || defaultLink.slug}` : "/agendar/geral"}
+        helper="Este link permite que qualquer pessoa agende uma consulta diretamente. Os horários ocupados (incluindo os sincronizados da Clinicorp) aparecem bloqueados automaticamente. Domínio captado da hospedagem atual."
+      />
     </>
   );
 }
