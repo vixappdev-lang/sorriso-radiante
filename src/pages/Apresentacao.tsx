@@ -1866,14 +1866,14 @@ function SemMensalidade() {
   );
 }
 
-// ===== Tráfego pago local =====
+// ===== Funil de conversão (estrutura entregue pela plataforma) =====
 function Trafego() {
   const steps = [
-    { icon: Megaphone, title: "Anúncio local", text: "Google Ads e Meta segmentados por bairro e intenção." },
-    { icon: MousePointerClick, title: "Landing page", text: "Página otimizada para o tratamento anunciado." },
-    { icon: Calendar, title: "Agendamento", text: "Quiz que qualifica e marca em poucos cliques." },
-    { icon: Users, title: "Paciente ativo", text: "Confirmação e lembrete automático até a consulta." },
-    { icon: TrendingUp, title: "ROI mensurável", text: "Cada real investido rastreado até o caixa." },
+    { icon: Globe, title: "Site e landing prontos", text: "Página de alta conversão para cada tratamento, com agendamento direto." },
+    { icon: MousePointerClick, title: "Lead qualificado", text: "Quiz curto entende a necessidade antes de cair na recepção." },
+    { icon: Calendar, title: "Agenda integrada", text: "Horário marcado vira evento na agenda da clínica em tempo real." },
+    { icon: Bell, title: "Confirmação automática", text: "Lembretes no WhatsApp 48h, 24h e 2h antes, sem ninguém digitar." },
+    { icon: TrendingUp, title: "Resultado mensurável", text: "Origem, conversão, no-show e ticket por canal direto no painel." },
   ];
 
   return (
@@ -1889,14 +1889,15 @@ function Trafego() {
       <div className="pres-container" style={{ position: "relative" }}>
         <div className="pres-reveal" style={{ maxWidth: 820 }}>
           <span className="pres-eyebrow" style={{ color: "hsl(38 80% 70%)", background: "hsl(0 0% 100% / 0.06)", borderColor: "hsl(0 0% 100% / 0.12)" }}>
-            <Zap size={12} /> Tráfego pago local
+            <Zap size={12} /> Estrutura de conversão entregue pronta
           </span>
           <h2 className="pres-h2" style={{ marginTop: 20, color: "white" }}>
-            Anúncio sem estrutura é dinheiro queimando todo dia.
+            Lead chegando é só metade. O resto é estrutura que converte.
           </h2>
           <p className="pres-lead" style={{ marginTop: 16, color: "hsl(0 0% 100% / 0.75)" }}>
-            Clínicas que investem em anúncios sem landing page, rastreamento e funil completo
-            perdem entre 60% e 80% do potencial. A estrutura abaixo recupera cada lead.
+            A LyneCloud não roda anúncio para você, e nem precisa. O que ela entrega é o que decide
+            se o lead vira paciente: site rápido, agendamento direto, CRM, automação no WhatsApp e
+            relatório real. Se você (ou sua agência) já investe em mídia, tudo desemboca aqui dentro.
           </p>
         </div>
 
