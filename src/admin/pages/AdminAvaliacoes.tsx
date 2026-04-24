@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
-import { Star, Plus, MessageCircle, Trash2, Reply } from "lucide-react";
+import { Star, Plus, MessageCircle, Trash2, Reply, Link as LinkIcon, Send } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
 import EmptyState from "@/admin/components/EmptyState";
 import EntityDrawer from "@/admin/components/EntityDrawer";
 import ConfirmDialog from "@/admin/components/ConfirmDialog";
+import PublicLinkModal from "@/admin/components/PublicLinkModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { useReviews, useCreateReview, useReplyReview, useDeleteReview, type Review } from "@/admin/hooks/useReviews";
+import { useReviewInvites, useCreateReviewInvite, useDeleteReviewInvite } from "@/admin/hooks/useReviewInvites";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
