@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Calendar, LogOut, User as UserIcon, Clock, CheckCircle2, FileText, Home as HomeIcon,
-  CreditCard, ChevronRight, Loader2, ShieldCheck, Eye, EyeOff, Receipt, Phone, Mail, MapPin
+  CreditCard, ChevronRight, Loader2, ShieldCheck, Eye, EyeOff, Receipt, Phone, Mail, MapPin, Sparkles,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
