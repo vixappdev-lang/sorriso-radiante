@@ -253,3 +253,48 @@ export default function AdminProfissionais() {
     </>
   );
 }
+
+function PhotoUploader({ value, onChange, disabled, name }: { value?: string; onChange: (url: string) => void; disabled?: boolean; name: string }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { toast({ title: "Imagem deve ter menos de 5MB", variant: "destructive" }); return; }
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const path = `${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage.from("professional-photos").upload(path, file, { upsert: false, contentType: file.type });
+      if (error) throw error;
+      const { data } = supabase.storage.from("professional-photos").getPublicUrl(path);
+      onChange(data.publicUrl);
+      toast({ title: "Foto enviada" });
+    } catch (e: any) { toast({ title: "Erro no upload", description: e.message, variant: "destructive" }); }
+    finally { setUploading(false); if (inputRef.current) inputRef.current.value = ""; }
+  }
+  return (
+    <div>
+      <Label className="text-xs">Foto do profissional</Label>
+      <div className="flex items-center gap-3 mt-1">
+        <Avatar className="h-16 w-16 border border-[hsl(var(--admin-border))]">
+          {value && <AvatarImage src={value} alt={name} />}
+          <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">{name.split(" ").map(n => n[0]).slice(0,2).join("").toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1 space-y-2">
+          <input ref={inputRef} type="file" accept="image/*" hidden onChange={handleFile} disabled={disabled || uploading} />
+          <div className="flex gap-2">
+            <Button type="button" variant="outline" size="sm" disabled={disabled || uploading} onClick={() => inputRef.current?.click()}>
+              {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
+              {uploading ? "Enviando…" : "Enviar foto"}
+            </Button>
+            {value && !disabled && (
+              <Button type="button" variant="ghost" size="sm" className="text-destructive" onClick={() => onChange("")}>Remover</Button>
+            )}
+          </div>
+          <Input value={value || ""} disabled={disabled} onChange={(e) => onChange(e.target.value)} placeholder="ou cole uma URL externa" className="h-8 text-xs" />
+        </div>
+      </div>
+    </div>
+  );
+}
