@@ -1178,26 +1178,26 @@ function RoiCalculator() {
               }}
             >
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.85 }}>
-                Receita extra recuperada
+                Ganho projetado em receita
               </div>
               <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 18 }}>
                 <div>
                   <div style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, letterSpacing: "-0.03em" }}>
                     <AnimatedNumber value={ganho} prefix="R$ " />
                   </div>
-                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>por mês</div>
+                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>estimativa por mês</div>
                 </div>
                 <div style={{ height: 32, width: 1, background: "hsl(0 0% 100% / 0.25)" }} />
                 <div>
                   <div style={{ fontSize: 24, fontWeight: 700, lineHeight: 1 }}>
                     <AnimatedNumber value={ganhoAnual} prefix="R$ " />
                   </div>
-                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>por ano</div>
+                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>projeção anual</div>
                 </div>
               </div>
               <div style={{ marginTop: 16, fontSize: 12.5, opacity: 0.9, lineHeight: 1.5 }}>
-                Estimativa conservadora baseada em ganhos típicos de conversão, redução de no-show
-                e captação contínua via Instagram, Google e WhatsApp.
+                Cálculo conservador. Considera ganho médio de conversão de leads, redução de no-show
+                com confirmações automáticas e captação contínua via Google, Instagram e WhatsApp.
               </div>
             </div>
           </div>
