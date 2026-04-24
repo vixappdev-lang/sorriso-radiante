@@ -354,7 +354,7 @@ function HomeView({ config, profile, upcoming, openInvoices, setSection, navigat
       </div>
 
       {next && (
-        <section className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <section className="bg-white rounded-2xl border-2 border-slate-200 p-6 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_4px_12px_-6px_rgba(15,23,42,0.08)]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-slate-900">Próxima consulta</h3>
             <Badge variant="outline" className="capitalize">{next.status}</Badge>
