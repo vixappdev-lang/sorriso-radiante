@@ -315,14 +315,34 @@
 
   .app-card {
     background: white;
-    border: 1px solid hsl(220 16% 91%);
+    border: 1px solid hsl(220 16% 88%);
     border-radius: 16px;
-    box-shadow: 0 1px 2px hsl(220 25% 12% / 0.04), 0 1px 3px hsl(220 25% 12% / 0.05);
+    box-shadow:
+      0 1px 0 hsl(220 25% 12% / 0.02),
+      0 1px 2px hsl(220 25% 12% / 0.04),
+      0 4px 12px -6px hsl(220 25% 12% / 0.08);
   }
   .app-card-hover { transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
   .app-card-hover:hover {
-    box-shadow: 0 4px 12px -4px hsl(220 25% 12% / 0.10), 0 8px 24px -12px hsl(220 25% 12% / 0.12);
-    border-color: hsl(220 16% 84%);
+    box-shadow:
+      0 1px 0 hsl(220 25% 12% / 0.03),
+      0 6px 16px -6px hsl(220 25% 12% / 0.14),
+      0 12px 32px -16px hsl(220 25% 12% / 0.16);
+    border-color: hsl(220 16% 80%);
+  }
+  /* Surface mais marcada para "aterrar" no fundo branco */
+  .app-surface {
+    background: hsl(220 28% 98.5%);
+    border: 1px solid hsl(220 16% 89%);
+  }
+  .app-input {
+    background: hsl(220 28% 98%);
+    border: 1px solid hsl(220 16% 86%);
+  }
+  .app-input:focus {
+    background: white;
+    border-color: hsl(215 75% 50%);
+    box-shadow: 0 0 0 3px hsl(215 75% 50% / 0.12);
   }
 
   @keyframes step-fade {
