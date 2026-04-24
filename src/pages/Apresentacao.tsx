@@ -2273,8 +2273,8 @@ const OBJECOES: { icon: typeof HelpCircle; q: string; a: string; tag: string }[]
   {
     icon: Search,
     tag: "Google",
-    q: "Já tentei Google Ads e queimei dinheiro sem resultado. Por que dessa vez seria diferente?",
-    a: "Anúncio sem estrutura é dinheiro no lixo, e isso é mais comum do que parece. O paciente clica, cai num site lento, sem agendamento, sem prova social, e vai embora. A LyneCloud entrega o ecossistema completo: anúncio segmentado por bairro e tratamento, landing page de alta conversão, agenda integrada e CRM de leads. Você acompanha custo por lead e custo por agendamento direto no painel, com rastreio real. Não é mais achismo, é decisão com dado.",
+    q: "Já tentei Google Ads e queimei dinheiro sem ver resultado. Como a LyneCloud muda isso?",
+    a: "A LyneCloud não roda os anúncios para você, mas é exatamente o que faltava para o seu investimento dar retorno. Anúncio sem estrutura é dinheiro no lixo: o paciente clica, cai num site lento, sem agendamento direto, sem prova social, e vai embora. O que a plataforma entrega é o ecossistema que recebe esse lead: landing page de alta conversão, agendamento online, CRM com origem do contato, confirmação automática no WhatsApp e relatório de custo por lead e por agendamento. Se você ou sua agência fazem mídia, o resultado fica visível e mensurável. Se ainda não fazem, a captação orgânica via Google, indicação e site já gera fluxo. Decisão com dado, não com achismo.",
   },
   {
     icon: RefreshCw,
