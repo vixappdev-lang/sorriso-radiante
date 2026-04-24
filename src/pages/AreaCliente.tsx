@@ -403,7 +403,7 @@ function AppointmentsView({ items, title, empty, canBook, bookingSlug, navigate,
           <p className="text-sm text-slate-500">{empty}</p>
         </div>
       ) : (
-        <div className="space-y-3">{items.map((a: any) => <div key={a.id} className="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-sm transition"><ApptRow a={a} /></div>)}</div>
+        <div className="space-y-3">{items.map((a: any) => <div key={a.id} className="bg-white rounded-2xl border-2 border-slate-200 p-5 shadow-[0_1px_3px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_24px_-12px_rgba(15,23,42,0.16)] hover:border-slate-300 transition"><ApptRow a={a} /></div>)}</div>
       )}
     </div>
   );
