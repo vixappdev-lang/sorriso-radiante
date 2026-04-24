@@ -452,7 +452,7 @@ function GoogleSearchSim() {
   const [phase, setPhase] = useState<"typing" | "searching" | "results-bad" | "results-good">("typing");
   const [highlight, setHighlight] = useState(false);
 
-  // Loop completo: digita -> busca -> mostra ruim -> reorganiza -> destaca
+  // Loop completo: digita devagar -> busca -> mostra ruim -> reorganiza -> destaca
   useEffect(() => {
     let timers: number[] = [];
     const run = () => {
@@ -460,36 +460,79 @@ function GoogleSearchSim() {
       setPhase("typing");
       setHighlight(false);
 
-      // digitação caractere por caractere
+      // digitação caractere por caractere (mais lenta e natural)
       fullQuery.split("").forEach((_, i) => {
         timers.push(window.setTimeout(() => {
           setTyped(fullQuery.slice(0, i + 1));
-        }, 120 + i * 95));
+        }, 350 + i * 160));
       });
 
-      const afterType = 120 + fullQuery.length * 95;
-      timers.push(window.setTimeout(() => setPhase("searching"), afterType + 250));
-      timers.push(window.setTimeout(() => setPhase("results-bad"), afterType + 1300));
-      timers.push(window.setTimeout(() => setPhase("results-good"), afterType + 3400));
-      timers.push(window.setTimeout(() => setHighlight(true), afterType + 3800));
-      timers.push(window.setTimeout(run, afterType + 8200));
+      const afterType = 350 + fullQuery.length * 160;
+      timers.push(window.setTimeout(() => setPhase("searching"), afterType + 700));
+      timers.push(window.setTimeout(() => setPhase("results-bad"), afterType + 2100));
+      // permanece no estado "ruim" por mais tempo para fixar a dor
+      timers.push(window.setTimeout(() => setPhase("results-good"), afterType + 7800));
+      timers.push(window.setTimeout(() => setHighlight(true), afterType + 8400));
+      // permanece no estado "bom" por mais tempo para fixar o ganho
+      timers.push(window.setTimeout(run, afterType + 16500));
     };
     run();
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // Resultados antes (sua clínica fora do top) e depois (sua clínica em 1º)
+  // Resultados ANTES — Sua Clínica aparece igual aos outros, mas no fim, sem estrutura
   const resultsBefore = [
-    { name: "OdontoPrime Centro", rating: 4.7, reviews: 218, sponsored: true, has: true },
-    { name: "Sorriso & Estética Dental", rating: 4.5, reviews: 156, has: true },
-    { name: "Clínica DentalCare", rating: 4.3, reviews: 92, has: true },
-    { name: "Sua clínica", rating: 4.0, reviews: 11, has: false, you: true },
+    {
+      name: "OdontoPrime Centro",
+      url: "odontoprime.com.br",
+      desc: "Implantes, ortodontia e clareamento. Agende online em poucos cliques.",
+      rating: 4.7, reviews: 218, sponsored: true, has: true,
+    },
+    {
+      name: "Sorriso e Estética Dental",
+      url: "sorrisoestetica.com.br",
+      desc: "Clínica odontológica completa. Atendimento humanizado e tecnologia avançada.",
+      rating: 4.5, reviews: 156, has: true,
+    },
+    {
+      name: "Clínica DentalCare",
+      url: "dentalcare.com.br",
+      desc: "Tratamentos estéticos e preventivos. Convênios e parcelamento facilitado.",
+      rating: 4.3, reviews: 92, has: true,
+    },
+    {
+      name: "Sua Clínica",
+      url: "facebook.com/suaclinica",
+      desc: "Página com poucas informações. Sem horários disponíveis e sem agendamento online.",
+      rating: 4.0, reviews: 11, has: false, you: true,
+    },
   ];
+  // Resultados DEPOIS — Sua Clínica em 1º com estrutura completa (mantém o mesmo nome)
   const resultsAfter = [
-    { name: "Sua clínica · LyneCloud", rating: 4.9, reviews: 287, sponsored: true, has: true, you: true },
-    { name: "OdontoPrime Centro", rating: 4.7, reviews: 218, has: true },
-    { name: "Sorriso & Estética Dental", rating: 4.5, reviews: 156, has: true },
-    { name: "Clínica DentalCare", rating: 4.3, reviews: 92, has: true },
+    {
+      name: "Sua Clínica",
+      url: "suaclinica.com.br",
+      desc: "Odontologia premium. Agendamento online 24h, WhatsApp ativo e avaliações verificadas.",
+      rating: 4.9, reviews: 287, sponsored: true, has: true, you: true,
+    },
+    {
+      name: "OdontoPrime Centro",
+      url: "odontoprime.com.br",
+      desc: "Implantes, ortodontia e clareamento. Agende online em poucos cliques.",
+      rating: 4.7, reviews: 218, has: true,
+    },
+    {
+      name: "Sorriso e Estética Dental",
+      url: "sorrisoestetica.com.br",
+      desc: "Clínica odontológica completa. Atendimento humanizado e tecnologia avançada.",
+      rating: 4.5, reviews: 156, has: true,
+    },
+    {
+      name: "Clínica DentalCare",
+      url: "dentalcare.com.br",
+      desc: "Tratamentos estéticos e preventivos. Convênios e parcelamento facilitado.",
+      rating: 4.3, reviews: 92, has: true,
+    },
   ];
 
   const list = phase === "results-good" ? resultsAfter : resultsBefore;
@@ -601,26 +644,43 @@ function GoogleSearchSim() {
                   }}
                 >
                   {(r as any).sponsored && (
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "#202124", marginBottom: 4 }}>
-                      <span style={{ background: "#202124", color: "white", padding: "1px 5px", borderRadius: 3, marginRight: 6 }}>Anúncio</span>
-                      <span style={{ color: "hsl(220 9% 46%)", fontWeight: 400 }}>{isFirst && phase === "results-good" ? "Topo da pesquisa local" : "Resultado patrocinado"}</span>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#202124", marginBottom: 6 }}>
+                      <span style={{ background: "#202124", color: "white", padding: "1px 5px", borderRadius: 3, marginRight: 6, fontSize: 10 }}>Anúncio</span>
+                      <span style={{ color: "hsl(220 9% 46%)", fontWeight: 400, fontSize: 11 }}>
+                        {isFirst && phase === "results-good" ? "Topo da pesquisa local" : "Resultado patrocinado"}
+                      </span>
                     </div>
                   )}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10 }}>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 500, color: isHighlighted ? "hsl(215 85% 40%)" : "#1a0dab", lineHeight: 1.3 }}>
+                      {/* URL no topo, padrão Google */}
+                      <div style={{ fontSize: 11.5, color: "#202124", lineHeight: 1.3, fontFamily: "Arial, sans-serif" }}>
+                        {(r as any).url}
+                      </div>
+                      {/* Título azul, padrão Google */}
+                      <div style={{
+                        fontSize: 17, fontWeight: 400, marginTop: 2,
+                        color: isHighlighted ? "hsl(215 85% 40%)" : "#1a0dab",
+                        lineHeight: 1.25, fontFamily: "Arial, sans-serif",
+                      }}>
                         {r.name}
                       </div>
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                      {/* Avaliação */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 5 }}>
                         <span style={{ color: "#5f6368", fontWeight: 600, fontSize: 12 }}>{r.rating.toFixed(1)}</span>
                         <div style={{ display: "flex", gap: 1 }}>
                           {Array.from({ length: 5 }).map((_, idx) => (
-                            <Star key={idx} size={10} fill={idx < Math.round(r.rating) ? "#fbbc05" : "transparent"} stroke="#fbbc05" strokeWidth={1.5} />
+                            <Star key={idx} size={11} fill={idx < Math.round(r.rating) ? "#fbbc05" : "transparent"} stroke="#fbbc05" strokeWidth={1.5} />
                           ))}
                         </div>
-                        <span style={{ fontSize: 11, color: "hsl(220 9% 46%)" }}>· {r.reviews} avaliações</span>
+                        <span style={{ fontSize: 11.5, color: "hsl(220 9% 46%)" }}>· {r.reviews} avaliações Google</span>
                       </div>
-                      <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 8, fontSize: 11, color: "hsl(220 9% 46%)" }}>
+                      {/* Descrição (snippet) */}
+                      <div style={{ marginTop: 6, fontSize: 12.5, color: "#4d5156", lineHeight: 1.5, fontFamily: "Arial, sans-serif" }}>
+                        {(r as any).desc}
+                      </div>
+                      {/* Sinais visuais de estrutura */}
+                      <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 10, fontSize: 11, color: "hsl(220 9% 46%)" }}>
                         {(r as any).has ? (
                           <>
                             <span style={{ color: "#34A853", fontWeight: 500 }}>● Site profissional</span>
@@ -629,9 +689,9 @@ function GoogleSearchSim() {
                           </>
                         ) : (
                           <>
-                            <span style={{ color: "#d93025" }}>○ Sem site</span>
+                            <span style={{ color: "#d93025" }}>○ Sem site próprio</span>
                             <span>· Sem agendamento online</span>
-                            <span>· Avaliações desatualizadas</span>
+                            <span>· Avaliações antigas</span>
                           </>
                         )}
                       </div>
@@ -643,19 +703,19 @@ function GoogleSearchSim() {
                       position: "absolute", right: 10, top: 10,
                       fontSize: 10, fontWeight: 700,
                       background: "hsl(0 80% 95%)", color: "hsl(0 70% 40%)",
-                      padding: "3px 8px", borderRadius: 999,
+                      padding: "3px 9px", borderRadius: 999, letterSpacing: "0.05em",
                     }}>
-                      INVISÍVEL
+                      4ª POSIÇÃO
                     </div>
                   )}
                   {isHighlighted && (
                     <div style={{
                       position: "absolute", right: 10, top: 10,
-                      fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
+                      fontSize: 10, fontWeight: 700, letterSpacing: "0.06em",
                       background: "hsl(215 85% 55%)", color: "white",
-                      padding: "3px 9px", borderRadius: 999,
+                      padding: "3px 10px", borderRadius: 999,
                     }}>
-                      ★ TOPO
+                      ★ 1º LUGAR
                     </div>
                   )}
                 </div>
@@ -671,8 +731,8 @@ function GoogleSearchSim() {
             textAlign: "center", fontWeight: 500,
           }}>
             {phase === "results-good"
-              ? "Sua clínica conquistou o topo. 87% dos cliques vão para os 3 primeiros."
-              : "Sem estrutura digital, você fica fora da decisão do paciente."}
+              ? "Sua clínica subiu para o 1º lugar. 87% dos cliques vão para os 3 primeiros resultados."
+              : "Sem site próprio e sem agendamento online, sua clínica fica fora da escolha do paciente."}
           </div>
         </div>
       )}
@@ -1004,15 +1064,25 @@ function RoiCalculator() {
   return (
     <section className="pres-section" id="roi" style={{ background: "hsl(var(--pres-surface))" }}>
       <div className="pres-container">
-        <div className="pres-reveal" style={{ maxWidth: 820 }}>
-          <span className="pres-eyebrow"><ChartLine size={12} /> ROI inteligente</span>
+        <div className="pres-reveal" style={{ maxWidth: 860 }}>
+          <span className="pres-eyebrow"><ChartLine size={12} /> ROI estimado · Projeção de retorno</span>
           <h2 className="pres-h2" style={{ marginTop: 20 }}>
-            Veja, em tempo real, o que sua clínica deixa na mesa todo mês.
+            Quanto sua clínica deixa de faturar todo mês sem essa estrutura.
           </h2>
           <p className="pres-lead" style={{ marginTop: 16 }}>
-            Ajuste os números da sua realidade. O simulador compara o cenário atual sem estrutura
-            com o cenário com a infraestrutura LyneCloud rodando.
+            Projeção de retorno calculada com base em médias reais do mercado odontológico:
+            taxa de captação de leads, conversão de WhatsApp, comparecimento e ticket médio.
+            Ajuste os campos com a sua realidade e veja a diferença em receita.
           </p>
+          <div style={{
+            marginTop: 14, display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "6px 12px", borderRadius: 999,
+            background: "hsl(var(--pres-primary) / 0.08)",
+            color: "hsl(var(--pres-primary))",
+            fontSize: 11.5, fontWeight: 600, letterSpacing: "0.04em",
+          }}>
+            <ShieldCheck size={13} /> Estimativa conservadora · margens reais de mercado
+          </div>
         </div>
 
         <div
@@ -1108,26 +1178,26 @@ function RoiCalculator() {
               }}
             >
               <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", opacity: 0.85 }}>
-                Receita extra recuperada
+                Ganho projetado em receita
               </div>
               <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", alignItems: "baseline", gap: 18 }}>
                 <div>
                   <div style={{ fontSize: 36, fontWeight: 700, lineHeight: 1, letterSpacing: "-0.03em" }}>
                     <AnimatedNumber value={ganho} prefix="R$ " />
                   </div>
-                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>por mês</div>
+                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>estimativa por mês</div>
                 </div>
                 <div style={{ height: 32, width: 1, background: "hsl(0 0% 100% / 0.25)" }} />
                 <div>
                   <div style={{ fontSize: 24, fontWeight: 700, lineHeight: 1 }}>
                     <AnimatedNumber value={ganhoAnual} prefix="R$ " />
                   </div>
-                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>por ano</div>
+                  <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4 }}>projeção anual</div>
                 </div>
               </div>
               <div style={{ marginTop: 16, fontSize: 12.5, opacity: 0.9, lineHeight: 1.5 }}>
-                Estimativa conservadora baseada em ganhos típicos de conversão, redução de no-show
-                e captação contínua via Instagram, Google e WhatsApp.
+                Cálculo conservador. Considera ganho médio de conversão de leads, redução de no-show
+                com confirmações automáticas e captação contínua via Google, Instagram e WhatsApp.
               </div>
             </div>
           </div>
@@ -1787,15 +1857,15 @@ function TopBar() {
           padding: "12px 24px",
         }}
       >
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 14, color: "white", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 16, color: "white", textDecoration: "none" }}>
           <img
             src="/apresentacao/lynecloud-icon.png"
             alt="LyneCloud"
-            style={{ width: 60, height: 60, objectFit: "contain", filter: "drop-shadow(0 6px 18px hsl(215 90% 50% / 0.5))" }}
+            style={{ width: 78, height: 78, objectFit: "contain", filter: "drop-shadow(0 8px 22px hsl(215 90% 50% / 0.55))" }}
           />
           <div>
-            <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.02em" }}>{BRAND}</div>
-            <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 4 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.025em" }}>{BRAND}</div>
+            <div style={{ fontSize: 10.5, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 5 }}>
               Dossiê comercial
             </div>
           </div>
