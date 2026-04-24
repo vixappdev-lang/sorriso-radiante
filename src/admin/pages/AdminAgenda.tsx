@@ -76,11 +76,35 @@ export default function AdminAgenda() {
 
   async function setStatus(id: string, status: string) {
     setBusyId(id);
+    // Busca dados para WhatsApp antes de atualizar
+    const appt = appts.find((a) => a.id === id);
     const { error } = await supabase.from("appointments").update({ status }).eq("id", id);
     setBusyId(null);
     if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return; }
     toast({ title: "Atualizado" });
     qc.invalidateQueries({ queryKey: ["admin", "appointments"] });
+
+    // Auto-WhatsApp em eventos chave (cancelamento + confirmação)
+    if (appt && (status === "cancelled" || status === "confirmed")) {
+      const eventKey = status === "cancelled" ? "appointment_cancelled" : "appointment_confirmed";
+      const dateBR = new Date(appt.appointment_date + "T00:00:00").toLocaleDateString("pt-BR");
+      try {
+        await supabase.functions.invoke("whatsapp-gateway", {
+          body: {
+            event_key: eventKey,
+            to: appt.phone,
+            appointment_id: appt.id,
+            vars: {
+              nome: (appt.name || "").split(" ")[0] || "paciente",
+              tratamento: appt.treatment || "consulta",
+              data: dateBR,
+              hora: appt.appointment_time || "",
+              profissional: appt.professional || "",
+            },
+          },
+        });
+      } catch (e) { /* silencioso — log já registrado server-side */ }
+    }
   }
 
   async function reschedule() {

@@ -14,6 +14,8 @@ export default {
       fontFamily: {
         sans: ["Montserrat", "system-ui", "sans-serif"],
         display: ["'Playfair Display'", "Georgia", "serif"],
+        app: ["'Inter Tight'", "Inter", "system-ui", "sans-serif"],
+        appbody: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

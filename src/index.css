@@ -295,4 +295,59 @@
     50% { transform: translate3d(-2%, -1%, 0) scale(1.04); }
   }
   .admin-pan { animation: admin-pan 22s ease-in-out infinite; }
+
+  /* ===== App namespace (Área do Cliente, Booking, Review) ===== */
+  .app-shell,
+  .app-shell * {
+    font-family: 'Inter Tight', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'cv11','ss01','ss03','tnum';
+  }
+  .app-shell {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+  }
+  .app-shell h1, .app-shell h2, .app-shell h3, .app-shell h4 {
+    letter-spacing: -0.025em;
+    font-weight: 600;
+  }
+  .app-shell .tabular { font-variant-numeric: tabular-nums; }
+
+  .app-card {
+    background: white;
+    border: 1px solid hsl(220 16% 91%);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px hsl(220 25% 12% / 0.04), 0 1px 3px hsl(220 25% 12% / 0.05);
+  }
+  .app-card-hover { transition: box-shadow .2s ease, border-color .2s ease, transform .2s ease; }
+  .app-card-hover:hover {
+    box-shadow: 0 4px 12px -4px hsl(220 25% 12% / 0.10), 0 8px 24px -12px hsl(220 25% 12% / 0.12);
+    border-color: hsl(220 16% 84%);
+  }
+
+  @keyframes step-fade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .step-enter { animation: step-fade .35s cubic-bezier(.2,.8,.2,1) both; }
+
+  @keyframes confetti-fall {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(540deg); opacity: 0; }
+  }
+  .confetti-piece {
+    position: fixed;
+    top: 0;
+    width: 8px;
+    height: 14px;
+    border-radius: 2px;
+    animation: confetti-fall 2.4s linear forwards;
+    z-index: 60;
+  }
+
+  .app-bottom-nav {
+    background: white;
+    border-top: 1px solid hsl(220 16% 91%);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
