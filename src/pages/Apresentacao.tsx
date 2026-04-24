@@ -502,7 +502,7 @@ function ClinicaReal() {
                   textShadow: "0 2px 8px hsl(220 40% 6% / 0.6)",
                 }}
               >
-                Sua recepção atendendo com a agenda já organizada — sem caderno, sem retrabalho.
+                Sua recepção atendendo com a agenda já organizada, sem caderno e sem retrabalho.
               </div>
             </div>
 
