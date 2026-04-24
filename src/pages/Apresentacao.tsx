@@ -332,7 +332,7 @@ function Solucao() {
 }
 
 // ===== Showcase com prints reais =====
-const SHOT_V = "v=3"; // cache-bust dos prints atualizados
+const SHOT_V = "v=4"; // cache-bust dos prints atualizados (LyneCloud rebrand)
 const SHOTS = [
   { id: "dashboard", label: "Dashboard", icon: BarChart3, file: `/apresentacao/dashboard.png?${SHOT_V}`, url: "lynecloud.com.br/admin/dashboard",
     title: "Visão completa em tempo real", desc: "KPIs operacionais, faturamento estimado, agendamentos do dia, taxa de confirmação e gráficos de performance, tudo em uma única tela." },
@@ -2312,9 +2312,9 @@ function Objecoes() {
     <section className="pres-section" id="faq">
       <div className="pres-container">
         <div className="pres-reveal" style={{ maxWidth: 820 }}>
-          <span className="pres-eyebrow"><HelpCircle size={12} /> Dúvidas reais de clínicas reais</span>
+          <span className="pres-eyebrow"><HelpCircle size={12} /> Perguntas que toda clínica faz antes de decidir</span>
           <h2 className="pres-h2" style={{ marginTop: 20 }}>
-            Toda clínica que cresceu com a LyneCloud passou pelas mesmas dúvidas que você está sentindo agora.
+            As mesmas dúvidas que você está sentindo agora, já foram respondidas por dezenas de clínicas que hoje operam com a LyneCloud.
           </h2>
           <p className="pres-lead" style={{ marginTop: 16 }}>
             Antes de decidir, é normal pesar custo, tempo, equipe e segurança. Abaixo estão as
