@@ -1618,15 +1618,151 @@ export default function Apresentacao() {
       <Google />
       <Trafego />
       <SemMensalidade />
-      <Beneficios />
+      <LiveOps />
       <ProximosPassos />
       <CTAFinal />
-
-      <footer style={{ borderTop: "1px solid hsl(var(--pres-border))", padding: "32px 0", textAlign: "center", fontSize: 13, color: "hsl(var(--pres-text-3))" }}>
-        <div className="pres-container">
-          © {new Date().getFullYear()} {BRAND} · Dossiê comercial de implantação
-        </div>
-      </footer>
+      <PremiumFooter />
     </div>
+  );
+}
+
+// ===== Premium Footer =====
+function PremiumFooter() {
+  const year = new Date().getFullYear();
+  const links = [
+    { label: "Solução", href: "#solucao" },
+    { label: "Demonstração", href: "#showcase" },
+    { label: "Anúncios", href: "#anuncios" },
+    { label: "ROI", href: "#roi" },
+    { label: "Operação ao vivo", href: "#live-ops" },
+    { label: "Próximos passos", href: "#proximos-passos" },
+  ];
+  return (
+    <footer style={{
+      position: "relative",
+      background: "hsl(var(--pres-dark))",
+      color: "white",
+      overflow: "hidden",
+      paddingTop: 80,
+      paddingBottom: 32,
+      marginTop: 0,
+    }}>
+      {/* Glow background */}
+      <div style={{
+        position: "absolute", inset: 0, pointerEvents: "none",
+        background:
+          "radial-gradient(60% 50% at 50% 0%, hsl(215 90% 55% / 0.22), transparent 60%)," +
+          "radial-gradient(40% 40% at 85% 80%, hsl(38 80% 55% / 0.10), transparent 60%)",
+      }} />
+      {/* Logo central topo */}
+      <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+        <img
+          src="/apresentacao/lynecloud-full.png"
+          alt="LyneCloud"
+          style={{
+            width: "auto",
+            maxWidth: 220,
+            height: "auto",
+            filter: "drop-shadow(0 10px 30px hsl(215 90% 50% / 0.45))",
+          }}
+        />
+        <p style={{
+          marginTop: 18, maxWidth: 520, padding: "0 24px",
+          fontSize: 14, lineHeight: 1.65, color: "hsl(0 0% 100% / 0.7)",
+        }}>
+          Estrutura digital completa para clínicas odontológicas que querem dominar
+          o mercado local com método, tecnologia e zero mensalidade.
+        </p>
+
+        <a
+          href={WPP_LINK}
+          target="_blank"
+          rel="noreferrer"
+          className="pres-btn pres-btn-primary"
+          style={{ marginTop: 24 }}
+        >
+          <Phone size={16} /> Falar com a LyneCloud <ArrowRight size={14} />
+        </a>
+      </div>
+
+      <div className="pres-container" style={{ position: "relative", marginTop: 56 }}>
+        <div style={{
+          display: "grid",
+          gap: 40,
+          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        }}>
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "hsl(38 80% 70%)" }}>
+              Navegação
+            </div>
+            <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10 }}>
+              {links.map((l) => (
+                <a
+                  key={l.label}
+                  href={l.href}
+                  style={{ fontSize: 14, color: "hsl(0 0% 100% / 0.75)", textDecoration: "none", transition: "color .2s" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(0 0% 100% / 0.75)")}
+                >
+                  {l.label}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "hsl(38 80% 70%)" }}>
+              Contato direto
+            </div>
+            <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+              <a href={WPP_LINK} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 10, color: "hsl(0 0% 100% / 0.85)", textDecoration: "none", fontSize: 14 }}>
+                <MessageCircle size={16} color="hsl(152 70% 65%)" />
+                (27) 98112-0322
+              </a>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, color: "hsl(0 0% 100% / 0.7)", fontSize: 14 }}>
+                <Clock size={16} color="hsl(38 80% 70%)" />
+                Atendimento comercial · Seg–Sex
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, color: "hsl(0 0% 100% / 0.7)", fontSize: 14 }}>
+                <ShieldCheck size={16} color="hsl(152 70% 65%)" />
+                Sem mensalidade · Painel próprio
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase", color: "hsl(38 80% 70%)" }}>
+              Garantias
+            </div>
+            <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 10, fontSize: 14, color: "hsl(0 0% 100% / 0.75)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <CheckCircle2 size={14} color="hsl(152 70% 65%)" /> Implantação em até 14 dias
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <CheckCircle2 size={14} color="hsl(152 70% 65%)" /> Treinamento incluso
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <CheckCircle2 size={14} color="hsl(152 70% 65%)" /> Painel 100% da clínica
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style={{
+          marginTop: 56, paddingTop: 24,
+          borderTop: "1px solid hsl(0 0% 100% / 0.10)",
+          display: "flex", flexWrap: "wrap", gap: 12,
+          alignItems: "center", justifyContent: "space-between",
+        }}>
+          <div style={{ fontSize: 12, color: "hsl(0 0% 100% / 0.55)" }}>
+            © {year} {BRAND} · Dossiê comercial de implantação · Todos os direitos reservados.
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, color: "hsl(0 0% 100% / 0.55)" }}>
+            <span style={{ width: 6, height: 6, borderRadius: 999, background: "hsl(var(--pres-success))", boxShadow: "0 0 10px hsl(var(--pres-success))" }} />
+            Sistema operacional em produção
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
