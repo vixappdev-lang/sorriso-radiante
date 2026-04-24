@@ -368,18 +368,18 @@ function HomeView({ config, profile, upcoming, openInvoices, setSection, navigat
 
 function SummaryCard({ label, value, hint, icon: Icon, onClick, accent = "blue" }: any) {
   const colors: any = {
-    blue: "from-blue-50 to-white text-blue-600",
-    amber: "from-amber-50 to-white text-amber-600",
+    blue: "from-blue-50 to-white text-blue-600 ring-blue-100",
+    amber: "from-amber-50 to-white text-amber-600 ring-amber-100",
   };
   return (
-    <button onClick={onClick} className="text-left bg-white border border-slate-200 rounded-2xl p-5 hover:border-slate-300 hover:shadow-sm transition group">
+    <button onClick={onClick} className="text-left bg-white border-2 border-slate-200 rounded-2xl p-5 hover:border-slate-300 hover:shadow-[0_8px_24px_-12px_rgba(15,23,42,0.18)] shadow-[0_1px_3px_rgba(15,23,42,0.04),0_4px_12px_-6px_rgba(15,23,42,0.08)] transition group">
       <div className="flex items-start justify-between">
-        <div className={cn("h-10 w-10 rounded-xl grid place-items-center bg-gradient-to-br", colors[accent])}>
+        <div className={cn("h-10 w-10 rounded-xl grid place-items-center bg-gradient-to-br ring-4", colors[accent])}>
           <Icon className="h-5 w-5" />
         </div>
         <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-slate-500 mt-1.5" />
       </div>
-      <p className="mt-4 text-[11px] uppercase tracking-wider text-slate-400">{label}</p>
+      <p className="mt-4 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">{label}</p>
       <p className="text-xl font-semibold text-slate-900 mt-1 tabular-nums">{value}</p>
       {hint && <p className="text-xs text-slate-500 mt-1 truncate">{hint}</p>}
     </button>
