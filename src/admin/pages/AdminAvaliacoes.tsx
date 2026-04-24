@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Star, Plus, MessageCircle, Trash2, Reply, Link as LinkIcon, Send } from "lucide-react";
+import { Star, Plus, MessageCircle, Trash2, Reply, Link as LinkIcon, Send, ChevronLeft, ChevronRight } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
 import EmptyState from "@/admin/components/EmptyState";
