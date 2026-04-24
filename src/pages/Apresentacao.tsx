@@ -1175,41 +1175,37 @@ function LiveOps() {
     return () => clearInterval(id);
   }, []);
 
-  // métricas que sobem suavemente
+  // métricas realistas de uma clínica odontológica de médio porte
   const base = useMemo(() => ({
-    pacientes: 1287,
-    receita: 184500,
-    confirmacoes: 96,
-    leads: 312,
-    avaliacoes: 4.9,
-    noShow: 6,
+    pacientes: 312,
+    receita: 48700,
+    confirmacoes: 92,
+    leads: 47,
   }), []);
 
   const live = useMemo(() => {
     const drift = Math.sin(tick * 0.7) * 0.5 + 0.5;
     return {
-      pacientes: base.pacientes + tick * 1,
-      receita: base.receita + Math.round(tick * 240 + drift * 800),
-      confirmacoes: Math.min(99, base.confirmacoes + Math.round(drift * 2)),
-      leads: base.leads + Math.round(tick * 0.4),
-      avaliacoes: base.avaliacoes,
-      noShow: Math.max(3, base.noShow - Math.round(drift * 1)),
+      pacientes: base.pacientes + Math.floor(tick / 3),
+      receita: base.receita + Math.round(tick * 35 + drift * 120),
+      confirmacoes: Math.min(96, base.confirmacoes + Math.round(drift * 2)),
+      leads: base.leads + Math.floor(tick / 5),
     };
   }, [tick, base]);
 
-  // feed de eventos
+  // feed de eventos realista
   const events = [
-    { icon: Calendar, color: "hsl(215 85% 55%)", text: "Novo agendamento — Camila R.", time: "agora" },
-    { icon: CheckCircle2, color: "hsl(152 60% 45%)", text: "Confirmação automática enviada", time: "12s" },
-    { icon: MessageCircle, color: "hsl(152 60% 45%)", text: "Lead respondeu no WhatsApp", time: "38s" },
-    { icon: Star, color: "hsl(38 80% 55%)", text: "Avaliação 5★ recebida no Google", time: "1m" },
-    { icon: Wallet, color: "hsl(215 85% 55%)", text: "Pagamento recebido — R$ 1.200", time: "2m" },
-    { icon: Users, color: "hsl(215 85% 55%)", text: "Novo paciente cadastrado", time: "3m" },
-    { icon: Target, color: "hsl(38 80% 55%)", text: "Lead avançou no funil → Fechamento", time: "4m" },
+    { icon: Calendar, color: "hsl(215 85% 55%)", text: "Novo agendamento · Camila R.", time: "agora" },
+    { icon: CheckCircle2, color: "hsl(152 60% 45%)", text: "Confirmação automática enviada", time: "18s" },
+    { icon: MessageCircle, color: "hsl(152 60% 45%)", text: "Lead respondeu no WhatsApp", time: "42s" },
+    { icon: Star, color: "hsl(38 80% 55%)", text: "Avaliação 5 estrelas no Google", time: "2m" },
+    { icon: Wallet, color: "hsl(215 85% 55%)", text: "Pagamento recebido · R$ 480", time: "4m" },
+    { icon: Users, color: "hsl(215 85% 55%)", text: "Novo paciente cadastrado", time: "7m" },
+    { icon: Target, color: "hsl(38 80% 55%)", text: "Lead avançou para fechamento", time: "11m" },
   ];
 
-  // barras animadas
-  const bars = [22, 38, 31, 52, 47, 64, 58, 72, 68, 85, 79, 91];
+  // barras animadas (escala mensal realista)
+  const bars = [8, 11, 9, 13, 12, 15, 14, 17, 16, 19, 18, 22];
 
   return (
     <section className="pres-section" id="live-ops">
@@ -1251,10 +1247,10 @@ function LiveOps() {
             {/* KPIs */}
             <div className="pres-live-kpis">
               {[
-                { label: "Pacientes ativos", value: live.pacientes, prefix: "" },
-                { label: "Faturamento do mês", value: live.receita, prefix: "R$ " },
-                { label: "Taxa confirmação", value: live.confirmacoes, suffix: "%" },
-                { label: "Leads no funil", value: live.leads, prefix: "" },
+                { label: "Pacientes ativos", value: live.pacientes, prefix: "", suffix: "" },
+                { label: "Faturamento do mês", value: live.receita, prefix: "R$ ", suffix: "" },
+                { label: "Taxa confirmação", value: live.confirmacoes, prefix: "", suffix: "%" },
+                { label: "Leads no funil", value: live.leads, prefix: "", suffix: "" },
               ].map((k) => (
                 <div key={k.label} className="pres-live-kpi">
                   <div style={{ fontSize: 11, color: "hsl(var(--pres-text-3))", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
@@ -1356,10 +1352,10 @@ function LiveOps() {
           }}
         >
           {[
-            { icon: TrendingUp, label: "Mais conversão", v: "+62%" },
-            { icon: CheckCircle2, label: "Menos faltas", v: "-38%" },
-            { icon: Wallet, label: "Mais faturamento", v: "+R$28k/mês" },
-            { icon: Star, label: "Reputação online", v: "4.9 ★" },
+            { icon: TrendingUp, label: "Mais conversão de leads", v: "+34%" },
+            { icon: CheckCircle2, label: "Menos faltas", v: "-27%" },
+            { icon: Wallet, label: "Faturamento adicional", v: "+R$ 9,4k/mês" },
+            { icon: Star, label: "Reputação no Google", v: "4.9 ★" },
           ].map(({ icon: Icon, label, v }) => (
             <div key={label} className="pres-card pres-card-hover" style={{ padding: 20, display: "flex", alignItems: "center", gap: 14 }}>
               <div className="pres-icon-box" style={{
@@ -1576,15 +1572,15 @@ function TopBar() {
           padding: "12px 24px",
         }}
       >
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, color: "white", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 14, color: "white", textDecoration: "none" }}>
           <img
             src="/apresentacao/lynecloud-icon.png"
             alt="LyneCloud"
-            style={{ width: 38, height: 38, objectFit: "contain", filter: "drop-shadow(0 4px 12px hsl(215 90% 50% / 0.4))" }}
+            style={{ width: 60, height: 60, objectFit: "contain", filter: "drop-shadow(0 6px 18px hsl(215 90% 50% / 0.5))" }}
           />
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.015em" }}>{BRAND}</div>
-            <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: 2 }}>
+            <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.02em" }}>{BRAND}</div>
+            <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 4 }}>
               Dossiê comercial
             </div>
           </div>
