@@ -83,13 +83,15 @@ function LoginScreen({ config }: any) {
   }
 
   return (
-    <main className="min-h-screen bg-white grid lg:grid-cols-[1.1fr_1fr]">
+    <main className="min-h-screen grid lg:grid-cols-[1.1fr_1fr] bg-slate-50">
       {/* Painel lateral (desktop) */}
       <aside
         className="hidden lg:flex flex-col justify-between p-12 text-white relative overflow-hidden"
         style={{ background: `linear-gradient(140deg, ${config.portal_color}, ${shade(config.portal_color, -25)})` }}
       >
         <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle at 25% 20%, white 1px, transparent 1px)", backgroundSize: "26px 26px" }} />
+        <div className="absolute -top-32 -left-20 h-[400px] w-[400px] rounded-full blur-[120px]" style={{ background: shade(config.portal_color, 20) + "60" }} />
+        <div className="absolute -bottom-32 -right-20 h-[420px] w-[420px] rounded-full blur-[140px]" style={{ background: shade(config.portal_color, -40) + "50" }} />
         <div className="relative">
           <p className="text-[11px] uppercase tracking-[0.28em] text-white/60">{BRAND}</p>
           <h1 className="mt-6 text-4xl font-semibold leading-tight tracking-tight">{config.welcome_title}</h1>
@@ -109,11 +111,11 @@ function LoginScreen({ config }: any) {
       </aside>
 
       {/* Form */}
-      <section className="flex items-center justify-center px-6 py-10 sm:py-16 bg-white">
+      <section className="flex items-center justify-center px-6 py-10 sm:py-16 bg-slate-50">
         <div className="w-full max-w-sm">
           {/* Brand mobile */}
           <div className="lg:hidden text-center mb-10">
-            <div className="mx-auto h-14 w-14 rounded-2xl grid place-items-center text-white shadow-md mb-4"
+            <div className="mx-auto h-14 w-14 rounded-2xl grid place-items-center text-white shadow-lg mb-4"
                  style={{ background: `linear-gradient(140deg, ${config.portal_color}, ${shade(config.portal_color, -25)})` }}>
               <ShieldCheck className="h-7 w-7" />
             </div>
@@ -126,39 +128,46 @@ function LoginScreen({ config }: any) {
             <p className="text-sm text-slate-500 mt-1">Entre com seus dados de acesso.</p>
           </div>
 
-          <form onSubmit={submit} className="space-y-5">
-            <div>
-              <Label className="text-[12px] font-medium text-slate-700">E-mail</Label>
-              <Input
-                type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
-                placeholder="seuemail@exemplo.com"
-                className="mt-1.5 h-11 bg-slate-50 border-slate-200 focus:bg-white"
-              />
-            </div>
-            <div>
-              <Label className="text-[12px] font-medium text-slate-700">Senha</Label>
-              <div className="relative mt-1.5">
+          <div className="bg-white rounded-2xl border-2 border-slate-200 shadow-[0_8px_30px_-12px_rgba(15,23,42,0.12)] p-6 sm:p-7">
+            <form onSubmit={submit} className="space-y-5">
+              <div>
+                <Label className="text-[12px] font-semibold text-slate-700">E-mail</Label>
                 <Input
-                  type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}
-                  placeholder="••••••••"
-                  className="h-11 bg-slate-50 border-slate-200 focus:bg-white pr-10"
+                  type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
+                  placeholder="seuemail@exemplo.com"
+                  className="mt-1.5 h-11 bg-slate-50/60 border-2 border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl"
                 />
-                <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                  {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                </button>
               </div>
+              <div>
+                <Label className="text-[12px] font-semibold text-slate-700">Senha</Label>
+                <div className="relative mt-1.5">
+                  <Input
+                    type={show ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6}
+                    placeholder="••••••••"
+                    className="h-11 bg-slate-50/60 border-2 border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 pr-10 rounded-xl"
+                  />
+                  <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                    {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <Button
+                type="submit" disabled={busy}
+                className="w-full h-11 text-[15px] font-semibold shadow-md hover:shadow-lg transition-shadow rounded-xl"
+                style={{ background: config.portal_color }}
+              >
+                {busy ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Entrando…</> : "Entrar na minha área"}
+              </Button>
+            </form>
+
+            <div className="mt-5 flex items-center gap-3 rounded-xl bg-slate-50 border border-slate-200/70 p-3">
+              <ShieldCheck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+              <p className="text-[11px] text-slate-600 leading-relaxed">Seus dados são protegidos com criptografia de ponta a ponta.</p>
             </div>
+          </div>
 
-            <Button
-              type="submit" disabled={busy}
-              className="w-full h-11 text-[15px] font-medium shadow-sm"
-              style={{ background: config.portal_color }}
-            >
-              {busy ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Entrando…</> : "Entrar"}
-            </Button>
-          </form>
-
-          <p className="mt-8 text-center text-xs text-slate-400">
+          <p className="mt-6 text-center text-xs text-slate-400">
             Acesso exclusivo para pacientes cadastrados. <br />
             Solicite seu acesso à recepção da clínica.
           </p>
