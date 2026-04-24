@@ -224,9 +224,18 @@ export default function AdminAgenda() {
               <div><Label className="text-xs">Horário</Label><Input type="time" value={drawer.appointment_time} onChange={(e) => setDrawer({ ...drawer, appointment_time: e.target.value })} /></div>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button size="sm" variant="outline" onClick={() => setStatus(drawer.id, "confirmed")} disabled={busyId === drawer.id}>Confirmar</Button>
-              <Button size="sm" variant="outline" onClick={() => setStatus(drawer.id, "done")} disabled={busyId === drawer.id}>Concluir</Button>
-              <Button size="sm" variant="ghost" className="text-destructive ml-auto" onClick={() => setConfirmCancel(drawer.id)}>Cancelar</Button>
+              {drawer.status === "pending" && (
+                <Button size="sm" variant="outline" onClick={() => setStatus(drawer.id, "confirmed")} disabled={busyId === drawer.id}>Confirmar</Button>
+              )}
+              {drawer.status === "confirmed" && (
+                <Button size="sm" variant="outline" onClick={() => setStatus(drawer.id, "done")} disabled={busyId === drawer.id}>Concluir</Button>
+              )}
+              {(drawer.status === "pending" || drawer.status === "confirmed") && (
+                <Button size="sm" variant="ghost" className="text-destructive ml-auto" onClick={() => setConfirmCancel(drawer.id)}>Cancelar</Button>
+              )}
+              {(drawer.status === "done" || drawer.status === "cancelled") && (
+                <span className="text-xs text-slate-500 italic ml-auto">Status final · sem ações</span>
+              )}
             </div>
             <a href={`https://wa.me/55${(drawer.phone || "").replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
               <Button variant="outline" className="w-full"><MessageCircle className="h-4 w-4 mr-2 text-emerald-600" /> Avisar paciente no WhatsApp</Button>
@@ -343,9 +352,21 @@ function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }
                       </div>
                       <p className="text-[12px] mt-1 opacity-75 truncate font-medium">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
                       <div className="mt-2.5 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                        <Button size="sm" variant="outline" className="h-7 text-xs bg-white" disabled={busyId === a.id || a.status === "confirmed"} onClick={() => onSetStatus(a.id, "confirmed")}>Confirmar</Button>
-                        <Button size="sm" variant="outline" className="h-7 text-xs bg-white" disabled={busyId === a.id || a.status === "done"} onClick={() => onSetStatus(a.id, "done")}>Concluir</Button>
-                        <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive ml-auto hover:bg-red-50" onClick={() => onCancel(a.id)}>Cancelar</Button>
+                        {a.status === "pending" && (
+                          <>
+                            <Button size="sm" variant="outline" className="h-7 text-xs bg-white" disabled={busyId === a.id} onClick={() => onSetStatus(a.id, "confirmed")}>Confirmar</Button>
+                            <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive ml-auto hover:bg-red-50" onClick={() => onCancel(a.id)}>Cancelar</Button>
+                          </>
+                        )}
+                        {a.status === "confirmed" && (
+                          <>
+                            <Button size="sm" variant="outline" className="h-7 text-xs bg-white" disabled={busyId === a.id} onClick={() => onSetStatus(a.id, "done")}>Concluir</Button>
+                            <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive ml-auto hover:bg-red-50" onClick={() => onCancel(a.id)}>Cancelar</Button>
+                          </>
+                        )}
+                        {(a.status === "done" || a.status === "cancelled") && (
+                          <span className="text-[11px] text-slate-500 italic">Sem ações disponíveis</span>
+                        )}
                       </div>
                     </button>
                   ))}
