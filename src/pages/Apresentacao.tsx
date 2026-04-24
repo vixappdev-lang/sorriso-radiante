@@ -1419,10 +1419,10 @@ function Anuncios() {
             }}
           >
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.18em", color: "hsl(var(--pres-primary))", textTransform: "uppercase" }}>
-              Fluxo completo de aquisição
+              Fluxo automatizado do lead até a cadeira
             </div>
             <div style={{ fontWeight: 600, fontSize: 18, marginTop: 8, color: "hsl(var(--pres-text))" }}>
-              Do anúncio no Instagram até o paciente confirmado na cadeira.
+              Da primeira mensagem até o paciente confirmado, sem cair em planilha ou caderno.
             </div>
 
             <div className="pres-flow" style={{ marginTop: 24 }}>
