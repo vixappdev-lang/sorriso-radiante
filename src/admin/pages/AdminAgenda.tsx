@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, RefreshCw, Loader2, Calendar as CalIcon, MessageCircle, Lock } from "lucide-react";
+import { Plus, RefreshCw, Loader2, Calendar as CalIcon, MessageCircle, Lock, Link as LinkIcon } from "lucide-react";
 import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ import StatusPill from "@/admin/components/StatusPill";
 import EntityDrawer from "@/admin/components/EntityDrawer";
 import ConfirmDialog from "@/admin/components/ConfirmDialog";
 import { useAppointments } from "@/admin/hooks/useAppointments";
+import PublicLinkModal from "@/admin/components/PublicLinkModal";
+import { useBookingLinks } from "@/admin/hooks/useBookingLinks";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
