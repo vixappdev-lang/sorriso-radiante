@@ -445,7 +445,241 @@ function Showcase() {
   );
 }
 
-// ===== Google =====
+// ===== Google (simulação realista de busca) =====
+function GoogleSearchSim() {
+  const fullQuery = "dentista perto de mim";
+  const [typed, setTyped] = useState("");
+  const [phase, setPhase] = useState<"typing" | "searching" | "results-bad" | "results-good">("typing");
+  const [highlight, setHighlight] = useState(false);
+
+  // Loop completo: digita -> busca -> mostra ruim -> reorganiza -> destaca
+  useEffect(() => {
+    let timers: number[] = [];
+    const run = () => {
+      setTyped("");
+      setPhase("typing");
+      setHighlight(false);
+
+      // digitação caractere por caractere
+      fullQuery.split("").forEach((_, i) => {
+        timers.push(window.setTimeout(() => {
+          setTyped(fullQuery.slice(0, i + 1));
+        }, 120 + i * 95));
+      });
+
+      const afterType = 120 + fullQuery.length * 95;
+      timers.push(window.setTimeout(() => setPhase("searching"), afterType + 250));
+      timers.push(window.setTimeout(() => setPhase("results-bad"), afterType + 1300));
+      timers.push(window.setTimeout(() => setPhase("results-good"), afterType + 3400));
+      timers.push(window.setTimeout(() => setHighlight(true), afterType + 3800));
+      timers.push(window.setTimeout(run, afterType + 8200));
+    };
+    run();
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  // Resultados antes (sua clínica fora do top) e depois (sua clínica em 1º)
+  const resultsBefore = [
+    { name: "OdontoPrime Centro", rating: 4.7, reviews: 218, sponsored: true, has: true },
+    { name: "Sorriso & Estética Dental", rating: 4.5, reviews: 156, has: true },
+    { name: "Clínica DentalCare", rating: 4.3, reviews: 92, has: true },
+    { name: "Sua clínica", rating: 4.0, reviews: 11, has: false, you: true },
+  ];
+  const resultsAfter = [
+    { name: "Sua clínica · LyneCloud", rating: 4.9, reviews: 287, sponsored: true, has: true, you: true },
+    { name: "OdontoPrime Centro", rating: 4.7, reviews: 218, has: true },
+    { name: "Sorriso & Estética Dental", rating: 4.5, reviews: 156, has: true },
+    { name: "Clínica DentalCare", rating: 4.3, reviews: 92, has: true },
+  ];
+
+  const list = phase === "results-good" ? resultsAfter : resultsBefore;
+  const showResults = phase === "results-bad" || phase === "results-good";
+
+  return (
+    <div className="pres-card" style={{ padding: 0, overflow: "hidden", background: "white" }}>
+      {/* Chrome do navegador */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: 8,
+        padding: "10px 14px",
+        background: "hsl(220 14% 96%)",
+        borderBottom: "1px solid hsl(220 13% 91%)",
+      }}>
+        <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#ff5f57" }} />
+        <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#febc2e" }} />
+        <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#28c840" }} />
+        <div style={{
+          flex: 1, marginLeft: 10,
+          padding: "5px 12px",
+          background: "white",
+          border: "1px solid hsl(220 13% 88%)",
+          borderRadius: 6,
+          fontSize: 11,
+          color: "hsl(220 9% 46%)",
+          fontFamily: "system-ui, sans-serif",
+        }}>
+          🔒 google.com/search
+        </div>
+      </div>
+
+      {/* Header Google */}
+      <div style={{ padding: "20px 22px 14px", borderBottom: "1px solid hsl(220 13% 93%)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <span style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em" }}>
+            <span style={{ color: "#4285F4" }}>G</span>
+            <span style={{ color: "#EA4335" }}>o</span>
+            <span style={{ color: "#FBBC05" }}>o</span>
+            <span style={{ color: "#4285F4" }}>g</span>
+            <span style={{ color: "#34A853" }}>l</span>
+            <span style={{ color: "#EA4335" }}>e</span>
+          </span>
+          <div style={{
+            flex: 1,
+            display: "flex", alignItems: "center", gap: 10,
+            padding: "9px 16px",
+            border: "1px solid hsl(220 13% 88%)",
+            borderRadius: 999,
+            boxShadow: "0 1px 6px hsl(220 13% 50% / 0.1)",
+            background: "white",
+            minHeight: 38,
+          }}>
+            <Search size={14} color="hsl(220 9% 46%)" />
+            <span style={{ fontSize: 14, color: "hsl(220 9% 20%)", fontFamily: "Arial, sans-serif" }}>
+              {typed}
+              {phase === "typing" && <span className="pres-caret">|</span>}
+            </span>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: "flex", gap: 22, marginTop: 14, fontSize: 12, color: "hsl(220 9% 46%)" }}>
+          {["Tudo", "Mapa", "Imagens", "Notícias", "Vídeos"].map((t, i) => (
+            <span key={t} style={{
+              paddingBottom: 8,
+              borderBottom: i === 0 ? "3px solid #1a73e8" : "3px solid transparent",
+              color: i === 0 ? "#1a73e8" : "hsl(220 9% 46%)",
+              fontWeight: i === 0 ? 500 : 400,
+            }}>{t}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Estado: Searching */}
+      {phase === "searching" && (
+        <div style={{ padding: "32px 22px", textAlign: "center" }}>
+          <div className="pres-spinner" />
+          <div style={{ marginTop: 14, fontSize: 12, color: "hsl(220 9% 46%)" }}>
+            Pesquisando clínicas próximas...
+          </div>
+        </div>
+      )}
+
+      {/* Estado: Resultados */}
+      {showResults && (
+        <div style={{ padding: "16px 22px 22px", minHeight: 380 }}>
+          <div style={{ fontSize: 11, color: "hsl(220 9% 46%)", marginBottom: 10 }}>
+            Cerca de 24.300 resultados (0,42 segundos)
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {list.map((r, i) => {
+              const isYou = (r as any).you;
+              const isFirst = i === 0;
+              const isHighlighted = isYou && highlight && phase === "results-good";
+              return (
+                <div
+                  key={r.name + phase}
+                  className="pres-google-result"
+                  style={{
+                    padding: 12,
+                    border: isHighlighted ? "1.5px solid hsl(215 85% 55%)" : "1px solid hsl(220 13% 92%)",
+                    borderRadius: 10,
+                    background: isHighlighted ? "hsl(215 85% 96%)" : "white",
+                    boxShadow: isHighlighted ? "0 8px 24px hsl(215 85% 55% / 0.18)" : "none",
+                    transition: "all .5s cubic-bezier(.2,.8,.2,1)",
+                    animation: `pres-result-in .5s ease ${i * 0.08}s both`,
+                    position: "relative",
+                  }}
+                >
+                  {(r as any).sponsored && (
+                    <div style={{ fontSize: 10, fontWeight: 700, color: "#202124", marginBottom: 4 }}>
+                      <span style={{ background: "#202124", color: "white", padding: "1px 5px", borderRadius: 3, marginRight: 6 }}>Anúncio</span>
+                      <span style={{ color: "hsl(220 9% 46%)", fontWeight: 400 }}>{isFirst && phase === "results-good" ? "Topo da pesquisa local" : "Resultado patrocinado"}</span>
+                    </div>
+                  )}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 500, color: isHighlighted ? "hsl(215 85% 40%)" : "#1a0dab", lineHeight: 1.3 }}>
+                        {r.name}
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                        <span style={{ color: "#5f6368", fontWeight: 600, fontSize: 12 }}>{r.rating.toFixed(1)}</span>
+                        <div style={{ display: "flex", gap: 1 }}>
+                          {Array.from({ length: 5 }).map((_, idx) => (
+                            <Star key={idx} size={10} fill={idx < Math.round(r.rating) ? "#fbbc05" : "transparent"} stroke="#fbbc05" strokeWidth={1.5} />
+                          ))}
+                        </div>
+                        <span style={{ fontSize: 11, color: "hsl(220 9% 46%)" }}>· {r.reviews} avaliações</span>
+                      </div>
+                      <div style={{ marginTop: 6, display: "flex", flexWrap: "wrap", gap: 8, fontSize: 11, color: "hsl(220 9% 46%)" }}>
+                        {(r as any).has ? (
+                          <>
+                            <span style={{ color: "#34A853", fontWeight: 500 }}>● Site profissional</span>
+                            <span>· Agendamento online</span>
+                            {isHighlighted && <span style={{ color: "#34A853", fontWeight: 500 }}>· WhatsApp ativo</span>}
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ color: "#d93025" }}>○ Sem site</span>
+                            <span>· Sem agendamento online</span>
+                            <span>· Avaliações desatualizadas</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {isYou && phase === "results-bad" && (
+                    <div style={{
+                      position: "absolute", right: 10, top: 10,
+                      fontSize: 10, fontWeight: 700,
+                      background: "hsl(0 80% 95%)", color: "hsl(0 70% 40%)",
+                      padding: "3px 8px", borderRadius: 999,
+                    }}>
+                      INVISÍVEL
+                    </div>
+                  )}
+                  {isHighlighted && (
+                    <div style={{
+                      position: "absolute", right: 10, top: 10,
+                      fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
+                      background: "hsl(215 85% 55%)", color: "white",
+                      padding: "3px 9px", borderRadius: 999,
+                    }}>
+                      ★ TOPO
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{
+            marginTop: 16, padding: 12, borderRadius: 10,
+            background: phase === "results-good" ? "hsl(152 60% 96%)" : "hsl(0 80% 97%)",
+            border: `1px solid ${phase === "results-good" ? "hsl(152 60% 80%)" : "hsl(0 70% 88%)"}`,
+            fontSize: 12, color: phase === "results-good" ? "hsl(152 60% 25%)" : "hsl(0 70% 35%)",
+            textAlign: "center", fontWeight: 500,
+          }}>
+            {phase === "results-good"
+              ? "Sua clínica conquistou o topo. 87% dos cliques vão para os 3 primeiros."
+              : "Sem estrutura digital, você fica fora da decisão do paciente."}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function Google() {
   return (
     <section className="pres-section" id="google">
@@ -470,7 +704,7 @@ function Google() {
 
             <div style={{ marginTop: 28, display: "grid", gap: 14 }}>
               {[
-                { icon: MapPin, title: "Google Maps & Perfil da Empresa", text: "Aparição destacada nas buscas locais e no mapa." },
+                { icon: MapPin, title: "Google Maps e Perfil da Empresa", text: "Aparição destacada nas buscas locais e no mapa." },
                 { icon: Star, title: "Avaliações reais e responsivas", text: "Prova social ativa que decide o paciente em segundos." },
                 { icon: TrendingUp, title: "SEO local técnico", text: "Estrutura, conteúdo e velocidade que o Google premia." },
                 { icon: Award, title: "Reputação acumulada", text: "Cada paciente satisfeito vira ativo digital permanente." },
@@ -497,53 +731,8 @@ function Google() {
             </div>
           </div>
 
-          <div className="pres-reveal pres-card" style={{ padding: 28 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 18 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 6, background: "hsl(var(--pres-surface-2))", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Search size={14} color="hsl(var(--pres-text-2))" />
-              </div>
-              <div style={{ flex: 1, padding: "8px 14px", border: "1px solid hsl(var(--pres-border))", borderRadius: 999, fontSize: 13, color: "hsl(var(--pres-text-2))" }}>
-                dentista perto de mim
-              </div>
-            </div>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              {[
-                { name: "Sua Clínica · Odontologia Premium", rating: 4.9, reviews: 287, badge: "PATROCINADO" },
-                { name: "Sorriso & Estética Dental", rating: 4.6, reviews: 142 },
-                { name: "OdontoCenter Local", rating: 4.2, reviews: 64 },
-              ].map((r, i) => (
-                <div
-                  key={r.name}
-                  style={{
-                    padding: 14,
-                    border: i === 0 ? "1.5px solid hsl(var(--pres-primary) / 0.4)" : "1px solid hsl(var(--pres-border))",
-                    borderRadius: 12,
-                    background: i === 0 ? "hsl(var(--pres-primary) / 0.04)" : "white",
-                  }}
-                >
-                  {r.badge && (
-                    <div style={{ fontSize: 10, fontWeight: 700, color: "hsl(var(--pres-primary))", letterSpacing: "0.1em" }}>
-                      {r.badge}
-                    </div>
-                  )}
-                  <div style={{ fontWeight: 600, fontSize: 14, marginTop: r.badge ? 4 : 0 }}>{r.name}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-                    <span style={{ color: "hsl(var(--pres-gold))", fontWeight: 600, fontSize: 13 }}>{r.rating}</span>
-                    <div style={{ display: "flex", gap: 1 }}>
-                      {Array.from({ length: 5 }).map((_, idx) => (
-                        <Star key={idx} size={12} fill="hsl(var(--pres-gold))" stroke="hsl(var(--pres-gold))" />
-                      ))}
-                    </div>
-                    <span style={{ fontSize: 12, color: "hsl(var(--pres-text-3))" }}>· {r.reviews} avaliações</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 18, padding: 14, borderRadius: 10, background: "hsl(var(--pres-surface-2))", fontSize: 12, color: "hsl(var(--pres-text-2))", textAlign: "center" }}>
-              <strong style={{ color: "hsl(var(--pres-text))" }}>+87%</strong> dos cliques vão para os 3 primeiros resultados.
-            </div>
+          <div className="pres-reveal">
+            <GoogleSearchSim />
           </div>
         </div>
       </div>
@@ -553,6 +742,32 @@ function Google() {
           .pres-shell #google > .pres-container > div {
             grid-template-columns: 1fr 1fr;
           }
+        }
+        .pres-shell .pres-caret {
+          display: inline-block;
+          margin-left: 1px;
+          color: #1a73e8;
+          animation: pres-blink 1s steps(2) infinite;
+          font-weight: 300;
+        }
+        @keyframes pres-blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+        .pres-shell .pres-spinner {
+          width: 28px; height: 28px;
+          border: 3px solid hsl(220 13% 90%);
+          border-top-color: #1a73e8;
+          border-radius: 50%;
+          margin: 0 auto;
+          animation: pres-spin .8s linear infinite;
+        }
+        @keyframes pres-spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes pres-result-in {
+          0% { transform: translateY(10px); opacity: 0; }
+          100% { transform: translateY(0); opacity: 1; }
         }
       `}</style>
     </section>
@@ -1175,41 +1390,37 @@ function LiveOps() {
     return () => clearInterval(id);
   }, []);
 
-  // métricas que sobem suavemente
+  // métricas realistas de uma clínica odontológica de médio porte
   const base = useMemo(() => ({
-    pacientes: 1287,
-    receita: 184500,
-    confirmacoes: 96,
-    leads: 312,
-    avaliacoes: 4.9,
-    noShow: 6,
+    pacientes: 312,
+    receita: 48700,
+    confirmacoes: 92,
+    leads: 47,
   }), []);
 
   const live = useMemo(() => {
     const drift = Math.sin(tick * 0.7) * 0.5 + 0.5;
     return {
-      pacientes: base.pacientes + tick * 1,
-      receita: base.receita + Math.round(tick * 240 + drift * 800),
-      confirmacoes: Math.min(99, base.confirmacoes + Math.round(drift * 2)),
-      leads: base.leads + Math.round(tick * 0.4),
-      avaliacoes: base.avaliacoes,
-      noShow: Math.max(3, base.noShow - Math.round(drift * 1)),
+      pacientes: base.pacientes + Math.floor(tick / 3),
+      receita: base.receita + Math.round(tick * 35 + drift * 120),
+      confirmacoes: Math.min(96, base.confirmacoes + Math.round(drift * 2)),
+      leads: base.leads + Math.floor(tick / 5),
     };
   }, [tick, base]);
 
-  // feed de eventos
+  // feed de eventos realista
   const events = [
-    { icon: Calendar, color: "hsl(215 85% 55%)", text: "Novo agendamento — Camila R.", time: "agora" },
-    { icon: CheckCircle2, color: "hsl(152 60% 45%)", text: "Confirmação automática enviada", time: "12s" },
-    { icon: MessageCircle, color: "hsl(152 60% 45%)", text: "Lead respondeu no WhatsApp", time: "38s" },
-    { icon: Star, color: "hsl(38 80% 55%)", text: "Avaliação 5★ recebida no Google", time: "1m" },
-    { icon: Wallet, color: "hsl(215 85% 55%)", text: "Pagamento recebido — R$ 1.200", time: "2m" },
-    { icon: Users, color: "hsl(215 85% 55%)", text: "Novo paciente cadastrado", time: "3m" },
-    { icon: Target, color: "hsl(38 80% 55%)", text: "Lead avançou no funil → Fechamento", time: "4m" },
+    { icon: Calendar, color: "hsl(215 85% 55%)", text: "Novo agendamento · Camila R.", time: "agora" },
+    { icon: CheckCircle2, color: "hsl(152 60% 45%)", text: "Confirmação automática enviada", time: "18s" },
+    { icon: MessageCircle, color: "hsl(152 60% 45%)", text: "Lead respondeu no WhatsApp", time: "42s" },
+    { icon: Star, color: "hsl(38 80% 55%)", text: "Avaliação 5 estrelas no Google", time: "2m" },
+    { icon: Wallet, color: "hsl(215 85% 55%)", text: "Pagamento recebido · R$ 480", time: "4m" },
+    { icon: Users, color: "hsl(215 85% 55%)", text: "Novo paciente cadastrado", time: "7m" },
+    { icon: Target, color: "hsl(38 80% 55%)", text: "Lead avançou para fechamento", time: "11m" },
   ];
 
-  // barras animadas
-  const bars = [22, 38, 31, 52, 47, 64, 58, 72, 68, 85, 79, 91];
+  // barras animadas (escala mensal realista)
+  const bars = [8, 11, 9, 13, 12, 15, 14, 17, 16, 19, 18, 22];
 
   return (
     <section className="pres-section" id="live-ops">
@@ -1251,10 +1462,10 @@ function LiveOps() {
             {/* KPIs */}
             <div className="pres-live-kpis">
               {[
-                { label: "Pacientes ativos", value: live.pacientes, prefix: "" },
-                { label: "Faturamento do mês", value: live.receita, prefix: "R$ " },
-                { label: "Taxa confirmação", value: live.confirmacoes, suffix: "%" },
-                { label: "Leads no funil", value: live.leads, prefix: "" },
+                { label: "Pacientes ativos", value: live.pacientes, prefix: "", suffix: "" },
+                { label: "Faturamento do mês", value: live.receita, prefix: "R$ ", suffix: "" },
+                { label: "Taxa confirmação", value: live.confirmacoes, prefix: "", suffix: "%" },
+                { label: "Leads no funil", value: live.leads, prefix: "", suffix: "" },
               ].map((k) => (
                 <div key={k.label} className="pres-live-kpi">
                   <div style={{ fontSize: 11, color: "hsl(var(--pres-text-3))", textTransform: "uppercase", letterSpacing: "0.1em", fontWeight: 600 }}>
@@ -1356,10 +1567,10 @@ function LiveOps() {
           }}
         >
           {[
-            { icon: TrendingUp, label: "Mais conversão", v: "+62%" },
-            { icon: CheckCircle2, label: "Menos faltas", v: "-38%" },
-            { icon: Wallet, label: "Mais faturamento", v: "+R$28k/mês" },
-            { icon: Star, label: "Reputação online", v: "4.9 ★" },
+            { icon: TrendingUp, label: "Mais conversão de leads", v: "+34%" },
+            { icon: CheckCircle2, label: "Menos faltas", v: "-27%" },
+            { icon: Wallet, label: "Faturamento adicional", v: "+R$ 9,4k/mês" },
+            { icon: Star, label: "Reputação no Google", v: "4.9 ★" },
           ].map(({ icon: Icon, label, v }) => (
             <div key={label} className="pres-card pres-card-hover" style={{ padding: 20, display: "flex", alignItems: "center", gap: 14 }}>
               <div className="pres-icon-box" style={{
@@ -1576,15 +1787,15 @@ function TopBar() {
           padding: "12px 24px",
         }}
       >
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, color: "white", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 14, color: "white", textDecoration: "none" }}>
           <img
             src="/apresentacao/lynecloud-icon.png"
             alt="LyneCloud"
-            style={{ width: 38, height: 38, objectFit: "contain", filter: "drop-shadow(0 4px 12px hsl(215 90% 50% / 0.4))" }}
+            style={{ width: 60, height: 60, objectFit: "contain", filter: "drop-shadow(0 6px 18px hsl(215 90% 50% / 0.5))" }}
           />
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.1, letterSpacing: "-0.015em" }}>{BRAND}</div>
-            <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.18em", textTransform: "uppercase", marginTop: 2 }}>
+            <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.02em" }}>{BRAND}</div>
+            <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 4 }}>
               Dossiê comercial
             </div>
           </div>
