@@ -380,28 +380,19 @@ function ClinicaReal() {
             A clínica que o paciente vê.<br />
             <span style={{ color: "hsl(38 80% 70%)" }}>A estrutura que ele nem percebe.</span>
           </h2>
-          <p className="pres-lead" style={{ marginTop: 18, color: "hsl(0 0% 100% / 0.72)" }}>
-            Você continua dono do ambiente, da equipe e do atendimento. A LyneCloud entra invisível por trás —
+          <p className="pres-lead" style={{ marginTop: 18, color: "hsl(0 0% 100% / 0.82)" }}>
+            Você continua dono do ambiente, da equipe e do atendimento. A LyneCloud entra invisível por trás,
             organizando agenda, lembretes, leads, financeiro e reputação enquanto você atende.
           </p>
         </div>
 
         <div
           className="pres-reveal pres-clinica-grid"
-          style={{ display: "grid", gap: 24, alignItems: "stretch" }}
+          style={{ display: "grid", gap: 24, alignItems: "start" }}
         >
-          {/* Coluna principal — foto grande */}
-          <div className="pres-clinica-main">
-            <div
-              style={{
-                position: "relative",
-                borderRadius: 22,
-                overflow: "hidden",
-                border: "1px solid hsl(0 0% 100% / 0.10)",
-                boxShadow: "0 30px 80px -30px hsl(220 60% 4% / 0.8), 0 60px 120px -40px hsl(215 70% 10% / 0.5)",
-                aspectRatio: "16 / 10",
-              }}
-            >
+          {/* Coluna principal: foto grande + stats abaixo (visíveis em mobile) */}
+          <div className="pres-clinica-main" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <div className="pres-clinica-photo">
               <img
                 src="/apresentacao/clinica-real.jpg"
                 alt="Ambiente clínico premium operando com a estrutura LyneCloud"
@@ -414,74 +405,65 @@ function ClinicaReal() {
                 style={{
                   position: "absolute", inset: 0,
                   background:
-                    "linear-gradient(180deg, hsl(220 40% 6% / 0) 40%, hsl(220 40% 6% / 0.55) 80%, hsl(220 40% 6% / 0.85) 100%)",
+                    "linear-gradient(180deg, hsl(220 40% 6% / 0) 45%, hsl(220 40% 6% / 0.55) 85%, hsl(220 40% 6% / 0.85) 100%)",
                 }}
               />
-              {/* Selo flutuante topo-esquerda */}
-              <div
-                style={{
-                  position: "absolute", top: 18, left: 18,
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  padding: "8px 14px",
-                  borderRadius: 999,
-                  background: "hsl(0 0% 100% / 0.92)",
-                  color: "hsl(var(--pres-text))",
-                  fontSize: 12, fontWeight: 600,
-                  backdropFilter: "blur(10px)",
-                  boxShadow: "0 8px 24px -8px hsl(220 40% 6% / 0.4)",
-                }}
-              >
+              {/* Selo flutuante topo */}
+              <div className="pres-clinica-badge">
                 <span style={{ width: 8, height: 8, borderRadius: 999, background: "hsl(152 70% 45%)", boxShadow: "0 0 0 4px hsl(152 70% 45% / 0.25)" }} />
-                Painel ativo · operação em tempo real
+                <span>Painel ativo · operação em tempo real</span>
               </div>
-              {/* Card flutuante inferior — estatística viva */}
-              <div
-                style={{
-                  position: "absolute", left: 22, right: 22, bottom: 22,
-                  display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", justifyContent: "space-between",
-                  padding: "16px 20px",
-                  borderRadius: 16,
-                  background: "hsl(0 0% 100% / 0.10)",
-                  border: "1px solid hsl(0 0% 100% / 0.18)",
-                  backdropFilter: "blur(14px)",
-                  WebkitBackdropFilter: "blur(14px)",
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "hsl(0 0% 100% / 0.6)", fontWeight: 600 }}>
+              {/* Card flutuante: visível só em desktop */}
+              <div className="pres-clinica-floatcard">
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ fontSize: 11, letterSpacing: "0.16em", textTransform: "uppercase", color: "hsl(0 0% 100% / 0.72)", fontWeight: 600 }}>
                     Enquanto você atende
                   </div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: "white", marginTop: 4 }}>
+                  <div style={{ fontSize: 15, fontWeight: 600, color: "white", marginTop: 4, lineHeight: 1.4 }}>
                     A LyneCloud confirma agendamentos, qualifica leads e cobra inadimplentes.
                   </div>
                 </div>
-                <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
+                <div style={{ display: "flex", gap: 18, alignItems: "center", flexShrink: 0 }}>
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 22, fontWeight: 700, color: "white" }}>92%</div>
-                    <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.6)", letterSpacing: "0.1em", textTransform: "uppercase" }}>confirmados</div>
+                    <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.72)", letterSpacing: "0.1em", textTransform: "uppercase" }}>confirmados</div>
                   </div>
-                  <div style={{ width: 1, height: 32, background: "hsl(0 0% 100% / 0.18)" }} />
+                  <div style={{ width: 1, height: 32, background: "hsl(0 0% 100% / 0.22)" }} />
                   <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 22, fontWeight: 700, color: "white" }}>24/7</div>
-                    <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.6)", letterSpacing: "0.1em", textTransform: "uppercase" }}>operando</div>
+                    <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.72)", letterSpacing: "0.1em", textTransform: "uppercase" }}>operando</div>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card de stats fora da imagem: aparece apenas em mobile/tablet */}
+            <div className="pres-clinica-statscard">
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontSize: 10.5, letterSpacing: "0.16em", textTransform: "uppercase", color: "hsl(0 0% 100% / 0.7)", fontWeight: 600 }}>
+                  Enquanto você atende
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "white", marginTop: 4, lineHeight: 1.45 }}>
+                  A LyneCloud confirma agendamentos, qualifica leads e cobra inadimplentes.
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 14, alignItems: "center", flexShrink: 0 }}>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "white" }}>92%</div>
+                  <div style={{ fontSize: 9.5, color: "hsl(0 0% 100% / 0.7)", letterSpacing: "0.1em", textTransform: "uppercase" }}>confirmados</div>
+                </div>
+                <div style={{ width: 1, height: 28, background: "hsl(0 0% 100% / 0.22)" }} />
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "white" }}>24/7</div>
+                  <div style={{ fontSize: 9.5, color: "hsl(0 0% 100% / 0.7)", letterSpacing: "0.1em", textTransform: "uppercase" }}>operando</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Coluna lateral — recepção + bullets */}
+          {/* Coluna lateral: recepção + bullets */}
           <div className="pres-clinica-side" style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            <div
-              style={{
-                position: "relative",
-                borderRadius: 18,
-                overflow: "hidden",
-                border: "1px solid hsl(0 0% 100% / 0.10)",
-                boxShadow: "0 20px 50px -20px hsl(220 60% 4% / 0.7)",
-                aspectRatio: "16 / 11",
-              }}
-            >
+            <div className="pres-clinica-side-photo">
               <img
                 src="/apresentacao/clinica-recepcao.jpg"
                 alt="Recepção atendendo com agenda e CRM da LyneCloud"
@@ -492,51 +474,51 @@ function ClinicaReal() {
                 aria-hidden
                 style={{
                   position: "absolute", inset: 0,
-                  background: "linear-gradient(180deg, hsl(220 40% 6% / 0) 50%, hsl(220 40% 6% / 0.75) 100%)",
+                  background: "linear-gradient(180deg, hsl(220 40% 6% / 0) 45%, hsl(220 40% 6% / 0.85) 100%)",
                 }}
               />
               <div
                 style={{
                   position: "absolute", left: 16, right: 16, bottom: 14,
-                  fontSize: 13, color: "white", fontWeight: 500,
-                  textShadow: "0 2px 8px hsl(220 40% 6% / 0.6)",
+                  fontSize: 13, color: "white", fontWeight: 500, lineHeight: 1.45,
+                  textShadow: "0 2px 8px hsl(220 40% 6% / 0.8)",
                 }}
               >
-                Sua recepção atendendo com a agenda já organizada — sem caderno, sem retrabalho.
+                Sua recepção atendendo com a agenda já organizada, sem caderno e sem retrabalho.
               </div>
             </div>
 
             <div
               style={{
-                padding: "22px 22px",
+                padding: "20px 20px",
                 borderRadius: 18,
-                background: "hsl(0 0% 100% / 0.04)",
-                border: "1px solid hsl(0 0% 100% / 0.10)",
+                background: "hsl(0 0% 100% / 0.05)",
+                border: "1px solid hsl(0 0% 100% / 0.12)",
                 display: "grid",
-                gap: 14,
+                gap: 16,
               }}
             >
               {[
-                { icon: ShieldCheck, t: "Sua marca, sua vitrine", d: "Domínio e identidade da clínica — nada da LyneCloud aparece pro paciente." },
+                { icon: ShieldCheck, t: "Sua marca, sua vitrine", d: "Domínio e identidade da clínica. Nada da LyneCloud aparece pro paciente." },
                 { icon: Workflow, t: "Estrutura nos bastidores", d: "Agenda, leads, financeiro e WhatsApp girando 24h, sem você operar." },
-                { icon: Crown, t: "Posicionamento premium", d: "Site, presença no Google e fluxo digital de uma rede grande — para a sua clínica." },
+                { icon: Crown, t: "Posicionamento premium", d: "Site, presença no Google e fluxo digital de uma rede grande, dentro da sua clínica." },
               ].map((b) => (
                 <div key={b.t} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
                   <span
                     style={{
                       flexShrink: 0,
                       width: 36, height: 36, borderRadius: 10,
-                      background: "hsl(215 80% 55% / 0.18)",
-                      border: "1px solid hsl(215 80% 60% / 0.30)",
-                      color: "hsl(215 90% 75%)",
+                      background: "hsl(215 80% 55% / 0.20)",
+                      border: "1px solid hsl(215 80% 60% / 0.32)",
+                      color: "hsl(215 95% 80%)",
                       display: "inline-flex", alignItems: "center", justifyContent: "center",
                     }}
                   >
                     <b.icon size={17} />
                   </span>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: "white" }}>{b.t}</div>
-                    <div style={{ fontSize: 13, color: "hsl(0 0% 100% / 0.65)", marginTop: 3, lineHeight: 1.5 }}>{b.d}</div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 14.5, fontWeight: 600, color: "white" }}>{b.t}</div>
+                    <div style={{ fontSize: 13, color: "hsl(0 0% 100% / 0.78)", marginTop: 4, lineHeight: 1.55 }}>{b.d}</div>
                   </div>
                 </div>
               ))}
@@ -546,19 +528,18 @@ function ClinicaReal() {
 
         {/* Faixa de assinatura final */}
         <div
-          className="pres-reveal"
+          className="pres-reveal pres-clinica-cta"
           style={{
-            marginTop: 40,
-            padding: "20px 24px",
+            marginTop: 36,
+            padding: "18px 22px",
             borderRadius: 14,
-            border: "1px solid hsl(0 0% 100% / 0.10)",
-            background: "hsl(0 0% 100% / 0.03)",
-            display: "flex", flexWrap: "wrap", gap: 14, alignItems: "center", justifyContent: "space-between",
+            border: "1px solid hsl(0 0% 100% / 0.12)",
+            background: "hsl(0 0% 100% / 0.04)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 12, color: "hsl(0 0% 100% / 0.78)", fontSize: 14 }}>
-            <Sparkles size={16} style={{ color: "hsl(38 80% 70%)" }} />
-            A clínica continua sua. A operação fica nossa.
+          <div style={{ display: "flex", alignItems: "center", gap: 12, color: "hsl(0 0% 100% / 0.85)", fontSize: 14, lineHeight: 1.4 }}>
+            <Sparkles size={16} style={{ color: "hsl(38 80% 70%)", flexShrink: 0 }} />
+            <span>A clínica continua sua. A operação fica com a LyneCloud.</span>
           </div>
           <a href={WPP_LINK} target="_blank" rel="noopener noreferrer" className="pres-btn pres-btn-primary" style={{ padding: "12px 18px", fontSize: 14 }}>
             Quero essa estrutura na minha clínica <ArrowRight size={16} />
@@ -571,6 +552,123 @@ function ClinicaReal() {
         .pres-shell .pres-clinica-grid { grid-template-columns: 1fr; }
         @media (min-width: 960px) {
           .pres-shell .pres-clinica-grid { grid-template-columns: 1.55fr 1fr; }
+        }
+
+        /* Foto principal */
+        .pres-shell .pres-clinica-photo {
+          position: relative;
+          border-radius: 18px;
+          overflow: hidden;
+          border: 1px solid hsl(0 0% 100% / 0.10);
+          box-shadow: 0 30px 80px -30px hsl(220 60% 4% / 0.8), 0 60px 120px -40px hsl(215 70% 10% / 0.5);
+          aspect-ratio: 4 / 3;
+        }
+        @media (min-width: 640px) {
+          .pres-shell .pres-clinica-photo { aspect-ratio: 16 / 11; border-radius: 22px; }
+        }
+        @media (min-width: 960px) {
+          .pres-shell .pres-clinica-photo { aspect-ratio: 16 / 10; }
+        }
+
+        /* Selo topo da foto */
+        .pres-shell .pres-clinica-badge {
+          position: absolute;
+          top: 12px; left: 12px;
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 7px 12px;
+          border-radius: 999px;
+          background: hsl(0 0% 100% / 0.95);
+          color: hsl(var(--pres-text));
+          font-size: 11px; font-weight: 600;
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 24px -8px hsl(220 40% 6% / 0.4);
+          max-width: calc(100% - 24px);
+        }
+        .pres-shell .pres-clinica-badge > span:last-child {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        @media (min-width: 640px) {
+          .pres-shell .pres-clinica-badge {
+            top: 18px; left: 18px;
+            padding: 8px 14px; font-size: 12px;
+          }
+        }
+
+        /* Card flutuante (só desktop) */
+        .pres-shell .pres-clinica-floatcard { display: none; }
+        @media (min-width: 960px) {
+          .pres-shell .pres-clinica-floatcard {
+            display: flex;
+            position: absolute;
+            left: 22px; right: 22px; bottom: 22px;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-radius: 16px;
+            background: hsl(220 40% 8% / 0.55);
+            border: 1px solid hsl(0 0% 100% / 0.18);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+          }
+        }
+
+        /* Card de stats abaixo (mobile/tablet) */
+        .pres-shell .pres-clinica-statscard {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          padding: 16px 18px;
+          border-radius: 14px;
+          background: hsl(0 0% 100% / 0.05);
+          border: 1px solid hsl(0 0% 100% / 0.12);
+        }
+        @media (min-width: 480px) {
+          .pres-shell .pres-clinica-statscard {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+          }
+        }
+        @media (min-width: 960px) {
+          .pres-shell .pres-clinica-statscard { display: none; }
+        }
+
+        /* Foto da recepção */
+        .pres-shell .pres-clinica-side-photo {
+          position: relative;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid hsl(0 0% 100% / 0.10);
+          box-shadow: 0 20px 50px -20px hsl(220 60% 4% / 0.7);
+          aspect-ratio: 4 / 3;
+        }
+        @media (min-width: 640px) {
+          .pres-shell .pres-clinica-side-photo { aspect-ratio: 16 / 11; border-radius: 18px; }
+        }
+
+        /* Faixa CTA final */
+        .pres-shell .pres-clinica-cta {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          align-items: stretch;
+        }
+        .pres-shell .pres-clinica-cta > a {
+          justify-content: center;
+        }
+        @media (min-width: 720px) {
+          .pres-shell .pres-clinica-cta {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+          }
+          .pres-shell .pres-clinica-cta > a { width: auto; }
         }
       `}</style>
     </section>
