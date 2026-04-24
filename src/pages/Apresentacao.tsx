@@ -1442,9 +1442,10 @@ function Anuncios() {
             <div style={{ marginTop: 24, padding: 16, borderRadius: 12, background: "hsl(var(--pres-surface-2))", display: "flex", gap: 12, alignItems: "flex-start" }}>
               <ShieldCheck size={20} color="hsl(var(--pres-success))" style={{ flexShrink: 0, marginTop: 2 }} />
               <div style={{ fontSize: 13.5, color: "hsl(var(--pres-text))", lineHeight: 1.5 }}>
-                <strong>Agendamento manual e humano:</strong> seu paciente entra em contato direto pelo WhatsApp
-                da clínica. Sua equipe atende, qualifica, encanta e marca. O sistema apenas registra,
-                organiza e dispara confirmações. Tecnologia a serviço da relação, nunca no lugar dela.
+                <strong>Atendimento humano, organização automática:</strong> sua equipe continua atendendo
+                pelo WhatsApp, qualificando e marcando como sempre fez. O painel só registra cada conversa,
+                organiza no CRM, dispara confirmações e lembretes e mostra para você o caminho de cada lead.
+                Tecnologia a serviço da relação, nunca no lugar dela.
               </div>
             </div>
           </div>
