@@ -1960,7 +1960,7 @@ function Trafego() {
         >
           <ShieldCheck size={22} color="hsl(152 70% 60%)" />
           <div style={{ fontSize: 14, color: "hsl(0 0% 100% / 0.85)", flex: 1, minWidth: 240 }}>
-            <strong style={{ color: "white" }}>Integração nativa:</strong> a estrutura entregue já conecta anúncio, landing, agenda e CRM. Você acompanha custo por lead, custo por agendamento e ROI real direto no painel.
+            <strong style={{ color: "white" }}>Tudo conectado em um lugar:</strong> site, agenda, CRM, WhatsApp e relatórios trabalham juntos. Você acompanha origem do lead, custo por agendamento (se houver mídia paga) e ticket por canal direto no painel, sem planilha externa.
           </div>
         </div>
       </div>
