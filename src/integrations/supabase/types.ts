@@ -464,6 +464,42 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_invoices: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          paid_at: string | null
+          patient_phone: string
+          payment_url: string | null
+          status: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          description: string
+          due_date?: string | null
+          id?: string
+          paid_at?: string | null
+          patient_phone: string
+          payment_url?: string | null
+          status?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          paid_at?: string | null
+          patient_phone?: string
+          payment_url?: string | null
+          status?: string
+        }
+        Relationships: []
+      }
       patient_notes: {
         Row: {
           created_at: string
@@ -588,6 +624,7 @@ export type Database = {
       }
       public_booking_links: {
         Row: {
+          access_token: string | null
           active: boolean
           created_at: string
           description: string | null
@@ -598,6 +635,7 @@ export type Database = {
           treatment_slug: string | null
         }
         Insert: {
+          access_token?: string | null
           active?: boolean
           created_at?: string
           description?: string | null
@@ -608,6 +646,7 @@ export type Database = {
           treatment_slug?: string | null
         }
         Update: {
+          access_token?: string | null
           active?: boolean
           created_at?: string
           description?: string | null
