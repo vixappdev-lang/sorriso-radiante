@@ -452,7 +452,7 @@ function GoogleSearchSim() {
   const [phase, setPhase] = useState<"typing" | "searching" | "results-bad" | "results-good">("typing");
   const [highlight, setHighlight] = useState(false);
 
-  // Loop completo: digita -> busca -> mostra ruim -> reorganiza -> destaca
+  // Loop completo: digita devagar -> busca -> mostra ruim -> reorganiza -> destaca
   useEffect(() => {
     let timers: number[] = [];
     const run = () => {
@@ -460,36 +460,79 @@ function GoogleSearchSim() {
       setPhase("typing");
       setHighlight(false);
 
-      // digitação caractere por caractere
+      // digitação caractere por caractere (mais lenta e natural)
       fullQuery.split("").forEach((_, i) => {
         timers.push(window.setTimeout(() => {
           setTyped(fullQuery.slice(0, i + 1));
-        }, 120 + i * 95));
+        }, 350 + i * 160));
       });
 
-      const afterType = 120 + fullQuery.length * 95;
-      timers.push(window.setTimeout(() => setPhase("searching"), afterType + 250));
-      timers.push(window.setTimeout(() => setPhase("results-bad"), afterType + 1300));
-      timers.push(window.setTimeout(() => setPhase("results-good"), afterType + 3400));
-      timers.push(window.setTimeout(() => setHighlight(true), afterType + 3800));
-      timers.push(window.setTimeout(run, afterType + 8200));
+      const afterType = 350 + fullQuery.length * 160;
+      timers.push(window.setTimeout(() => setPhase("searching"), afterType + 700));
+      timers.push(window.setTimeout(() => setPhase("results-bad"), afterType + 2100));
+      // permanece no estado "ruim" por mais tempo para fixar a dor
+      timers.push(window.setTimeout(() => setPhase("results-good"), afterType + 7800));
+      timers.push(window.setTimeout(() => setHighlight(true), afterType + 8400));
+      // permanece no estado "bom" por mais tempo para fixar o ganho
+      timers.push(window.setTimeout(run, afterType + 16500));
     };
     run();
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  // Resultados antes (sua clínica fora do top) e depois (sua clínica em 1º)
+  // Resultados ANTES — Sua Clínica aparece igual aos outros, mas no fim, sem estrutura
   const resultsBefore = [
-    { name: "OdontoPrime Centro", rating: 4.7, reviews: 218, sponsored: true, has: true },
-    { name: "Sorriso & Estética Dental", rating: 4.5, reviews: 156, has: true },
-    { name: "Clínica DentalCare", rating: 4.3, reviews: 92, has: true },
-    { name: "Sua clínica", rating: 4.0, reviews: 11, has: false, you: true },
+    {
+      name: "OdontoPrime Centro",
+      url: "odontoprime.com.br",
+      desc: "Implantes, ortodontia e clareamento. Agende online em poucos cliques.",
+      rating: 4.7, reviews: 218, sponsored: true, has: true,
+    },
+    {
+      name: "Sorriso e Estética Dental",
+      url: "sorrisoestetica.com.br",
+      desc: "Clínica odontológica completa. Atendimento humanizado e tecnologia avançada.",
+      rating: 4.5, reviews: 156, has: true,
+    },
+    {
+      name: "Clínica DentalCare",
+      url: "dentalcare.com.br",
+      desc: "Tratamentos estéticos e preventivos. Convênios e parcelamento facilitado.",
+      rating: 4.3, reviews: 92, has: true,
+    },
+    {
+      name: "Sua Clínica",
+      url: "facebook.com/suaclinica",
+      desc: "Página com poucas informações. Sem horários disponíveis e sem agendamento online.",
+      rating: 4.0, reviews: 11, has: false, you: true,
+    },
   ];
+  // Resultados DEPOIS — Sua Clínica em 1º com estrutura completa (mantém o mesmo nome)
   const resultsAfter = [
-    { name: "Sua clínica · LyneCloud", rating: 4.9, reviews: 287, sponsored: true, has: true, you: true },
-    { name: "OdontoPrime Centro", rating: 4.7, reviews: 218, has: true },
-    { name: "Sorriso & Estética Dental", rating: 4.5, reviews: 156, has: true },
-    { name: "Clínica DentalCare", rating: 4.3, reviews: 92, has: true },
+    {
+      name: "Sua Clínica",
+      url: "suaclinica.com.br",
+      desc: "Odontologia premium. Agendamento online 24h, WhatsApp ativo e avaliações verificadas.",
+      rating: 4.9, reviews: 287, sponsored: true, has: true, you: true,
+    },
+    {
+      name: "OdontoPrime Centro",
+      url: "odontoprime.com.br",
+      desc: "Implantes, ortodontia e clareamento. Agende online em poucos cliques.",
+      rating: 4.7, reviews: 218, has: true,
+    },
+    {
+      name: "Sorriso e Estética Dental",
+      url: "sorrisoestetica.com.br",
+      desc: "Clínica odontológica completa. Atendimento humanizado e tecnologia avançada.",
+      rating: 4.5, reviews: 156, has: true,
+    },
+    {
+      name: "Clínica DentalCare",
+      url: "dentalcare.com.br",
+      desc: "Tratamentos estéticos e preventivos. Convênios e parcelamento facilitado.",
+      rating: 4.3, reviews: 92, has: true,
+    },
   ];
 
   const list = phase === "results-good" ? resultsAfter : resultsBefore;
@@ -1787,15 +1830,15 @@ function TopBar() {
           padding: "12px 24px",
         }}
       >
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 14, color: "white", textDecoration: "none" }}>
+        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 16, color: "white", textDecoration: "none" }}>
           <img
             src="/apresentacao/lynecloud-icon.png"
             alt="LyneCloud"
-            style={{ width: 60, height: 60, objectFit: "contain", filter: "drop-shadow(0 6px 18px hsl(215 90% 50% / 0.5))" }}
+            style={{ width: 78, height: 78, objectFit: "contain", filter: "drop-shadow(0 8px 22px hsl(215 90% 50% / 0.55))" }}
           />
           <div>
-            <div style={{ fontSize: 19, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.02em" }}>{BRAND}</div>
-            <div style={{ fontSize: 10, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.2em", textTransform: "uppercase", marginTop: 4 }}>
+            <div style={{ fontSize: 22, fontWeight: 700, lineHeight: 1.05, letterSpacing: "-0.025em" }}>{BRAND}</div>
+            <div style={{ fontSize: 10.5, color: "hsl(0 0% 100% / 0.55)", letterSpacing: "0.22em", textTransform: "uppercase", marginTop: 5 }}>
               Dossiê comercial
             </div>
           </div>
