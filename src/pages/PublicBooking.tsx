@@ -227,13 +227,13 @@ export default function PublicBooking() {
               </div>
 
               {/* Conteúdo da etapa */}
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-[0_4px_20px_-8px_rgba(15,23,42,0.08)] overflow-hidden">
+              <div className="bg-white rounded-3xl border-2 border-slate-200/80 shadow-[0_8px_30px_-12px_rgba(15,23,42,0.15),0_2px_8px_-2px_rgba(15,23,42,0.06)] overflow-hidden">
                 <div key={step} className="step-enter p-6 sm:p-8 min-h-[420px]">
                   {step === "treatment" && (
                     <StepTreatment value={treatment} onChange={setTreatment} />
                   )}
                   {step === "professional" && (
-                    <StepProfessional value={professional} onChange={setProfessional} />
+                    <StepProfessional value={professional} onChange={setProfessional} dbPros={dbPros} />
                   )}
                   {step === "datetime" && (
                     <StepDateTime date={date} setDate={setDate} time={time} setTime={setTime} takenTimes={takenTimes} />
