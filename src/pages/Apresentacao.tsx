@@ -7,6 +7,8 @@ import {
   PhoneOff, CalendarX, ThumbsDown, BellOff, FileX, MousePointerClick,
   CheckCircle2, ChartLine, Layers, Phone, Crown, Workflow, Award, Building2,
   Instagram, Lock, Infinity as InfinityIcon, KeyRound, Server, HandCoins, Rocket,
+  Menu as MenuIcon, X as XIcon, HelpCircle, ChevronDown, DollarSign, Headphones,
+  RefreshCw, Database,
 } from "lucide-react";
 import SEO from "@/components/SEO";
 import "./apresentacao/pres-styles.css";
