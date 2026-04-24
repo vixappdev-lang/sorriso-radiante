@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
-import { Megaphone, Plus, MessageCircle, Pencil, Trash2, Phone, Mail, Calendar, DollarSign, Filter } from "lucide-react";
+import { Megaphone, Plus, MessageCircle, Pencil, Trash2, Phone, DollarSign, Filter, GripVertical } from "lucide-react";
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
+import { useDraggable } from "@dnd-kit/core";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
 import EmptyState from "@/admin/components/EmptyState";
-import EntityDrawer from "@/admin/components/EntityDrawer";
+import EntityModal from "@/admin/components/EntityModal";
 import ConfirmDialog from "@/admin/components/ConfirmDialog";
 import StatusPill from "@/admin/components/StatusPill";
 import { Button } from "@/components/ui/button";
@@ -11,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLeads, useUpsertLead, useDeleteLead, type Lead } from "@/admin/hooks/useLeads";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -25,6 +27,11 @@ const COLUMNS = [
   { key: "perdido", label: "Perdido", color: "rose" },
 ] as const;
 
+const COLOR_DOTS: Record<string, string> = {
+  sky: "bg-sky-500", violet: "bg-violet-500", amber: "bg-amber-500",
+  blue: "bg-blue-500", emerald: "bg-emerald-500", rose: "bg-rose-500",
+};
+
 function emptyForm() {
   return { id: "", name: "", phone: "", email: "", source: "site", status: "novo", treatment_interest: "", estimated_value: "", notes: "", owner: "" };
 }
@@ -33,11 +40,14 @@ export default function AdminLeads() {
   const { data: leads = [] } = useLeads();
   const upsert = useUpsertLead();
   const del = useDeleteLead();
-  const [drawer, setDrawer] = useState<"new" | Lead | null>(null);
+  const [modal, setModal] = useState<"new" | Lead | null>(null);
   const [form, setForm] = useState<any>(emptyForm());
   const [confirmDel, setConfirmDel] = useState<string | null>(null);
   const [view, setView] = useState<"kanban" | "table">("kanban");
   const [search, setSearch] = useState("");
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const grouped = useMemo(() => {
     const map: Record<string, Lead[]> = {};
@@ -61,7 +71,7 @@ export default function AdminLeads() {
     return { total, open, won, conversion, value };
   }, [leads]);
 
-  function openNew() { setForm(emptyForm()); setDrawer("new"); }
+  function openNew() { setForm(emptyForm()); setModal("new"); }
   function openEdit(l: Lead) {
     setForm({
       id: l.id, name: l.name, phone: l.phone ?? "", email: l.email ?? "",
@@ -69,7 +79,7 @@ export default function AdminLeads() {
       estimated_value: l.estimated_value_cents ? (l.estimated_value_cents / 100).toFixed(2) : "",
       notes: l.notes ?? "", owner: l.owner ?? "",
     });
-    setDrawer(l);
+    setModal(l);
   }
   async function save() {
     if (!form.name) { toast({ title: "Nome obrigatório", variant: "destructive" }); return; }
@@ -82,22 +92,35 @@ export default function AdminLeads() {
         last_touch_at: new Date().toISOString(),
       } as any);
       toast({ title: "Lead salvo" });
-      setDrawer(null);
-    } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
-  }
-  async function quickMove(lead: Lead, status: string) {
-    try {
-      await upsert.mutateAsync({ id: lead.id, name: lead.name, status, last_touch_at: new Date().toISOString() } as any);
+      setModal(null);
     } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
   }
 
+  function handleDragStart(e: DragStartEvent) { setDraggingId(String(e.active.id)); }
+
+  async function handleDragEnd(e: DragEndEvent) {
+    setDraggingId(null);
+    const { active, over } = e;
+    if (!over) return;
+    const leadId = String(active.id);
+    const newStatus = String(over.id);
+    const lead = leads.find((l) => l.id === leadId);
+    if (!lead || lead.status === newStatus) return;
+    try {
+      await upsert.mutateAsync({ id: lead.id, name: lead.name, status: newStatus, last_touch_at: new Date().toISOString() } as any);
+      toast({ title: `Movido para "${COLUMNS.find((c) => c.key === newStatus)?.label}"` });
+    } catch (err: any) { toast({ title: "Erro", description: err.message, variant: "destructive" }); }
+  }
+
   function brl(cents: number | null) { return cents ? (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—"; }
+
+  const draggingLead = draggingId ? leads.find((l) => l.id === draggingId) : null;
 
   return (
     <>
       <PageHeader
         title="Leads & Captação"
-        description="Funil comercial: do primeiro contato à conversão."
+        description="Funil comercial: arraste os cards entre colunas para atualizar o status."
         actions={<Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Novo lead</Button>}
       />
 
@@ -124,47 +147,16 @@ export default function AdminLeads() {
       {leads.length === 0 ? (
         <EmptyState icon={Megaphone} title="Nenhum lead ainda" description="Adicione contatos manualmente ou aguarde leads chegarem do site." action={<Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Novo lead</Button>} />
       ) : view === "kanban" ? (
-        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-          {COLUMNS.map((col) => {
-            const items = grouped[col.key] ?? [];
-            return (
-              <div key={col.key} className="admin-card flex flex-col min-h-[400px] overflow-hidden">
-                <header className="flex items-center justify-between gap-2 border-b border-[hsl(var(--admin-border))] px-3 py-2.5">
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className={cn("h-2 w-2 rounded-full", `bg-${col.color}-500`)} />
-                    <h3 className="text-[13px] font-semibold truncate">{col.label}</h3>
-                  </div>
-                  <span className="text-[11px] tabular-nums text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded">{items.length}</span>
-                </header>
-                <div className="flex-1 overflow-y-auto p-2 space-y-2">
-                  {items.length === 0 ? (
-                    <p className="text-[11px] text-muted-foreground text-center py-6">Sem leads</p>
-                  ) : items.map((l) => (
-                    <article key={l.id} className="rounded-lg border border-[hsl(var(--admin-border))] bg-white p-3 hover:border-primary/40 transition-colors cursor-pointer" onClick={() => openEdit(l)}>
-                      <p className="text-sm font-semibold truncate">{l.name}</p>
-                      {l.treatment_interest && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{l.treatment_interest}</p>}
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-                        {l.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{l.phone}</span>}
-                        {l.estimated_value_cents && <span className="font-semibold text-emerald-700 tabular-nums">{brl(l.estimated_value_cents)}</span>}
-                      </div>
-                      <div className="mt-2 flex items-center justify-between gap-1" onClick={(e) => e.stopPropagation()}>
-                        <Select value={l.status} onValueChange={(v) => quickMove(l, v)}>
-                          <SelectTrigger className="h-7 text-[11px] w-auto px-2"><SelectValue /></SelectTrigger>
-                          <SelectContent>{COLUMNS.map((c) => <SelectItem key={c.key} value={c.key}>{c.label}</SelectItem>)}</SelectContent>
-                        </Select>
-                        {l.phone && (
-                          <a href={`https://wa.me/${l.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="grid h-7 w-7 place-items-center rounded text-emerald-600 hover:bg-emerald-50">
-                            <MessageCircle className="h-3.5 w-3.5" />
-                          </a>
-                        )}
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+            {COLUMNS.map((col) => (
+              <KanbanColumn key={col.key} col={col} leads={grouped[col.key] ?? []} onCardClick={openEdit} brl={brl} />
+            ))}
+          </div>
+          <DragOverlay>
+            {draggingLead && <LeadCard lead={draggingLead} brl={brl} dragging />}
+          </DragOverlay>
+        </DndContext>
       ) : (
         <div className="admin-card overflow-x-auto">
           <table className="w-full text-sm">
@@ -197,11 +189,10 @@ export default function AdminLeads() {
         </div>
       )}
 
-      <EntityDrawer
-        open={!!drawer}
-        onOpenChange={(v) => !v && setDrawer(null)}
-        title={drawer === "new" ? "Novo lead" : "Editar lead"}
-        footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setDrawer(null)}>Cancelar</Button><Button onClick={save}>Salvar</Button></div>}
+      <EntityModal
+        open={!!modal} onOpenChange={(v) => !v && setModal(null)}
+        title={modal === "new" ? "Novo lead" : "Editar lead"} size="md"
+        footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setModal(null)}>Cancelar</Button><Button onClick={save}>Salvar</Button></div>}
       >
         <div className="space-y-3">
           <div><Label className="text-xs">Nome*</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
@@ -230,7 +221,7 @@ export default function AdminLeads() {
           <div><Label className="text-xs">Responsável</Label><Input value={form.owner} onChange={(e) => setForm({ ...form, owner: e.target.value })} /></div>
           <div><Label className="text-xs">Anotações</Label><Textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
         </div>
-      </EntityDrawer>
+      </EntityModal>
 
       <ConfirmDialog
         open={!!confirmDel} onOpenChange={(v) => !v && setConfirmDel(null)}
@@ -238,5 +229,73 @@ export default function AdminLeads() {
         onConfirm={async () => { if (confirmDel) { await del.mutateAsync(confirmDel); toast({ title: "Removido" }); setConfirmDel(null); } }}
       />
     </>
+  );
+}
+
+function KanbanColumn({ col, leads, onCardClick, brl }: { col: typeof COLUMNS[number]; leads: Lead[]; onCardClick: (l: Lead) => void; brl: (c: number | null) => string }) {
+  const { setNodeRef, isOver } = useDroppable({ id: col.key });
+  return (
+    <div ref={setNodeRef} className={cn(
+      "admin-card flex flex-col min-h-[400px] overflow-hidden transition-colors",
+      isOver && "ring-2 ring-primary ring-offset-1"
+    )}>
+      <header className="flex items-center justify-between gap-2 border-b border-[hsl(var(--admin-border))] px-3 py-2.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className={cn("h-2 w-2 rounded-full", COLOR_DOTS[col.color])} />
+          <h3 className="text-[13px] font-semibold truncate">{col.label}</h3>
+        </div>
+        <span className="text-[11px] tabular-nums text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded">{leads.length}</span>
+      </header>
+      <div className="flex-1 overflow-y-auto p-2 space-y-2">
+        {leads.length === 0 ? (
+          <p className="text-[11px] text-muted-foreground text-center py-6">Sem leads</p>
+        ) : leads.map((l) => (
+          <DraggableLead key={l.id} lead={l} onClick={() => onCardClick(l)} brl={brl} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DraggableLead({ lead, onClick, brl }: any) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
+  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
+  return (
+    <div ref={setNodeRef} style={style} className={cn("touch-none", isDragging && "opacity-30")}>
+      <LeadCard lead={lead} brl={brl} onClick={onClick} dragHandleProps={{ ...attributes, ...listeners }} />
+    </div>
+  );
+}
+
+function LeadCard({ lead, brl, onClick, dragHandleProps, dragging }: any) {
+  return (
+    <article
+      onClick={onClick}
+      className={cn(
+        "rounded-lg border border-[hsl(var(--admin-border))] bg-white p-3 transition-colors",
+        dragging ? "shadow-lg ring-1 ring-primary/40" : "hover:border-primary/40 cursor-pointer"
+      )}
+    >
+      <div className="flex items-start gap-1.5">
+        <button {...(dragHandleProps ?? {})} onClick={(e) => e.stopPropagation()} className="mt-0.5 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing">
+          <GripVertical className="h-3.5 w-3.5" />
+        </button>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold truncate">{lead.name}</p>
+          {lead.treatment_interest && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{lead.treatment_interest}</p>}
+          <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+            {lead.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{lead.phone}</span>}
+            {lead.estimated_value_cents && <span className="font-semibold text-emerald-700 tabular-nums">{brl(lead.estimated_value_cents)}</span>}
+          </div>
+          {lead.phone && (
+            <div className="mt-2 flex justify-end" onClick={(e: any) => e.stopPropagation()}>
+              <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="grid h-7 w-7 place-items-center rounded text-emerald-600 hover:bg-emerald-50">
+                <MessageCircle className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </article>
   );
 }
