@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Building2, Clock, Plug, Users, Palette, Webhook, Key, UserCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Building2, Clock, Plug, Users as UsersIcon, Palette, Webhook, Key, UserCircle2, Plus, Copy, Trash2, Send, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,9 +7,16 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { useClinicSettings as useSettings, useUpsertSetting } from "@/admin/hooks/useSettings";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useClinicSettings, useUpsertSetting, useApiKeys, useDeleteApiKey, useWebhooks, useUpsertWebhook, useDeleteWebhook } from "@/admin/hooks/useSettings";
+import { useClinicHours, useUpsertClinicHours, WEEKDAY_LABELS } from "@/admin/hooks/useClinicHours";
+import { useStaffUsers, useCreateStaffUser, useUpdateStaffPermissions, useDeleteStaffUser, PERMISSION_MODULES } from "@/admin/hooks/useUsers";
+import EntityModal from "@/admin/components/EntityModal";
+import ConfirmDialog from "@/admin/components/ConfirmDialog";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const SECTIONS = [
   { key: "general", label: "Geral", icon: Building2 },
@@ -17,47 +24,39 @@ const SECTIONS = [
   { key: "integrations", label: "Integrações", icon: Plug },
   { key: "client_area", label: "Área do Cliente", icon: UserCircle2 },
   { key: "branding", label: "Branding", icon: Palette },
-  { key: "users", label: "Usuários", icon: Users },
+  { key: "users", label: "Usuários", icon: UsersIcon },
   { key: "webhooks", label: "Webhooks", icon: Webhook },
   { key: "api", label: "API & chaves", icon: Key },
 ] as const;
 
 export default function AdminConfiguracoes() {
-  const { data: settings = {} } = useSettings();
+  const { data: settings = {} } = useClinicSettings();
   const upsert = useUpsertSetting();
   const [section, setSection] = useState<typeof SECTIONS[number]["key"]>("general");
 
   function get(key: string): any { return (settings as any)[key] ?? {}; }
   async function save(key: string, value: Record<string, any>) {
-    try {
-      await upsert.mutateAsync({ key, value });
-      toast({ title: "Configurações salvas" });
-    } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+    try { await upsert.mutateAsync({ key, value }); toast({ title: "Configurações salvas" }); }
+    catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
   }
 
   return (
     <>
       <PageHeader title="Configurações" description="Gerencie preferências, integrações e usuários da clínica." />
 
-      {/* Tabs no topo (horizontal, scroll em mobile) */}
       <div className="admin-card mb-4 p-1.5 overflow-x-auto">
         <div className="flex items-center gap-1 min-w-max">
           {SECTIONS.map((s) => {
             const Icon = s.icon;
             const active = section === s.key;
             return (
-              <button
-                key={s.key}
-                onClick={() => setSection(s.key)}
+              <button key={s.key} onClick={() => setSection(s.key)}
                 className={cn(
                   "flex items-center gap-2 rounded-lg px-3.5 py-2 text-[13px] font-medium transition-colors whitespace-nowrap",
-                  active
-                    ? "bg-primary text-primary-foreground shadow-sm"
+                  active ? "bg-primary text-primary-foreground shadow-sm"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {s.label}
+                )}>
+                <Icon className="h-4 w-4" />{s.label}
               </button>
             );
           })}
@@ -65,20 +64,20 @@ export default function AdminConfiguracoes() {
       </div>
 
       <div>
-        {section === "general" && <SectionGeneral initial={get("general")} onSave={(v) => save("general", v)} />}
-        {section === "hours" && <SectionHours initial={get("hours")} onSave={(v) => save("hours", v)} />}
-        {section === "integrations" && <SectionIntegrations initial={get("integrations")} onSave={(v) => save("integrations", v)} />}
-        {section === "client_area" && <SectionClientArea initial={get("client_area")} onSave={(v) => save("client_area", v)} />}
-        {section === "branding" && <SectionBranding initial={get("branding")} onSave={(v) => save("branding", v)} />}
-        {section === "users" && <SectionInfo title="Usuários & permissões" body="Gerencie usuários administradores. Para adicionar novos usuários, use o painel de autenticação na sua área de Cloud." />}
-        {section === "webhooks" && <SectionInfo title="Webhooks" body="Em breve: cadastre URLs externas para receber eventos da clínica (agendamento criado, status atualizado, etc.) com assinatura HMAC." />}
-        {section === "api" && <SectionInfo title="API & chaves" body="Em breve: gere chaves de API para integrações externas com a clínica." />}
+        {section === "general" && <SectionGeneral initial={get("general")} onSave={(v: any) => save("general", v)} />}
+        {section === "hours" && <SectionHours />}
+        {section === "integrations" && <SectionIntegrations initial={get("integrations")} onSave={(v: any) => save("integrations", v)} />}
+        {section === "client_area" && <SectionClientArea initial={get("client_area")} onSave={(v: any) => save("client_area", v)} />}
+        {section === "branding" && <SectionBranding initial={get("branding")} onSave={(v: any) => save("branding", v)} />}
+        {section === "users" && <SectionUsers />}
+        {section === "webhooks" && <SectionWebhooks />}
+        {section === "api" && <SectionApiKeys />}
       </div>
     </>
   );
 }
 
-function SectionCard({ title, description, children, footer }: { title: string; description?: string; children: React.ReactNode; footer?: React.ReactNode; }) {
+function SectionCard({ title, description, children, footer }: any) {
   return (
     <section className="admin-card overflow-hidden">
       <header className="border-b border-[hsl(var(--admin-border))] px-5 py-4">
@@ -106,45 +105,115 @@ function SectionGeneral({ initial, onSave }: any) {
   );
 }
 
-function SectionHours({ initial, onSave }: any) {
-  const days = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-  const [v, setV] = useState<Record<string, { open: string; close: string; closed: boolean }>>(initial?.days || days.reduce((a: any, d) => ({ ...a, [d]: { open: "08:00", close: "18:00", closed: d === "Dom" } }), {}));
+/* ========== HORÁRIOS — grid 2 colunas, aproveita espaço total ========== */
+function SectionHours() {
+  const { data: hours = [] } = useClinicHours();
+  const upsertHours = useUpsertClinicHours();
+  const [local, setLocal] = useState<typeof hours>([]);
+
+  useEffect(() => { setLocal(hours); }, [hours]);
+
+  function setDay(weekday: number, patch: any) {
+    setLocal(local.map((d) => d.weekday === weekday ? { ...d, ...patch } : d));
+  }
+
+  async function saveAll() {
+    try {
+      await upsertHours.mutateAsync(local.map((d) => ({
+        weekday: d.weekday, is_open: d.is_open,
+        open_time: d.is_open ? (d.open_time ?? "08:00") : null,
+        close_time: d.is_open ? (d.close_time ?? "18:00") : null,
+      })));
+      toast({ title: "Horários atualizados" });
+    } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+  }
+
   return (
-    <SectionCard title="Horário de funcionamento" description="Define disponibilidade padrão da agenda." footer={<Button onClick={() => onSave({ days: v })}>Salvar alterações</Button>}>
-      {days.map((d) => (
-        <div key={d} className="flex items-center gap-3 py-1">
-          <span className="w-12 text-sm font-medium">{d}</span>
-          <Switch checked={!v[d]?.closed} onCheckedChange={(on) => setV({ ...v, [d]: { ...v[d], closed: !on } })} />
-          <Input type="time" disabled={v[d]?.closed} value={v[d]?.open ?? "08:00"} onChange={(e) => setV({ ...v, [d]: { ...v[d], open: e.target.value } })} className="h-9 w-32" />
-          <span className="text-muted-foreground">—</span>
-          <Input type="time" disabled={v[d]?.closed} value={v[d]?.close ?? "18:00"} onChange={(e) => setV({ ...v, [d]: { ...v[d], close: e.target.value } })} className="h-9 w-32" />
-        </div>
-      ))}
+    <SectionCard
+      title="Horário de funcionamento"
+      description="Define a disponibilidade padrão da clínica. Estes horários alimentam a agenda pública."
+      footer={<Button onClick={saveAll}>Salvar horários</Button>}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {local.map((d) => (
+          <div key={d.weekday} className={cn(
+            "rounded-xl border bg-background p-4 transition-colors",
+            d.is_open ? "border-[hsl(var(--admin-border))]" : "border-[hsl(var(--admin-border))] bg-muted/40 opacity-90"
+          )}>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <div className={cn("grid h-9 w-9 place-items-center rounded-lg text-xs font-bold",
+                  d.is_open ? "bg-primary/10 text-primary" : "bg-muted text-muted-foreground")}>
+                  {WEEKDAY_LABELS[d.weekday].slice(0, 3)}
+                </div>
+                <div>
+                  <p className="text-[13px] font-semibold">{WEEKDAY_LABELS[d.weekday]}</p>
+                  <p className="text-[11px] text-muted-foreground">{d.is_open ? "Aberto" : "Fechado o dia todo"}</p>
+                </div>
+              </div>
+              <Switch checked={d.is_open} onCheckedChange={(b) => setDay(d.weekday, { is_open: b })} />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Abre</Label>
+                <Input type="time" disabled={!d.is_open} value={d.open_time ?? "08:00"}
+                  onChange={(e) => setDay(d.weekday, { open_time: e.target.value })} className="h-9" />
+              </div>
+              <div>
+                <Label className="text-[10px] uppercase tracking-wider text-muted-foreground">Fecha</Label>
+                <Input type="time" disabled={!d.is_open} value={d.close_time ?? "18:00"}
+                  onChange={(e) => setDay(d.weekday, { close_time: e.target.value })} className="h-9" />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </SectionCard>
   );
 }
 
 function SectionIntegrations({ initial, onSave }: any) {
-  const [v, setV] = useState({ clinicorp_endpoint: "", clinicorp_clinic_id: "", auto_sync: false, ...initial });
+  const [v, setV] = useState({ clinicorp_endpoint: "", clinicorp_clinic_id: "", auto_sync: false, sync_interval: "15", ...initial });
+  const [syncing, setSyncing] = useState(false);
+
+  async function runSync() {
+    setSyncing(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("clinicorp-sync", { body: { action: "sync" } });
+      if (error) throw error;
+      toast({ title: data?.ok ? "Sincronização executada" : "Sem credenciais", description: data?.message ?? "" });
+    } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+    finally { setSyncing(false); }
+  }
+
   return (
     <SectionCard
-      title="Integrações"
-      description="Conecte-se a sistemas externos como Clinicorp."
-      footer={<div className="flex gap-2"><Button variant="outline">Testar conexão</Button><Button onClick={() => onSave(v)}>Salvar</Button></div>}
+      title="Integrações externas"
+      description="Conecte sistemas de gestão odontológica e demais ferramentas."
+      footer={<div className="flex gap-2"><Button variant="outline" onClick={runSync} disabled={syncing}>{syncing ? "Sincronizando…" : "Testar sincronização"}</Button><Button onClick={() => onSave(v)}>Salvar</Button></div>}
     >
       <div className="rounded-xl border border-[hsl(var(--admin-border))] p-5 bg-muted/30">
         <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="font-semibold">Clinicorp</p>
-            <p className="text-xs text-muted-foreground">Sincronização de agendamentos e pacientes.</p>
+          <div className="flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary"><Plug className="h-5 w-5" /></div>
+            <div>
+              <p className="font-semibold">Clinicorp</p>
+              <p className="text-xs text-muted-foreground">Sincronização bidirecional de agendamentos.</p>
+            </div>
           </div>
           <Badge variant="outline">Aguardando credenciais</Badge>
         </div>
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div><Label className="text-xs">Endpoint da API</Label><Input value={v.clinicorp_endpoint} onChange={(e) => setV({ ...v, clinicorp_endpoint: e.target.value })} placeholder="https://api.clinicorp.com" /></div>
           <div><Label className="text-xs">ID da clínica</Label><Input value={v.clinicorp_clinic_id} onChange={(e) => setV({ ...v, clinicorp_clinic_id: e.target.value })} /></div>
-          <div className="flex items-center gap-2"><Switch checked={v.auto_sync} onCheckedChange={(b) => setV({ ...v, auto_sync: b })} /><span className="text-sm">Sincronização automática (a cada 15min)</span></div>
-          <p className="text-[11px] text-muted-foreground">O token de acesso será solicitado de forma segura ao habilitar a integração.</p>
+          <div className="md:col-span-2 flex items-center justify-between rounded-lg border bg-background px-3 py-2.5">
+            <div>
+              <p className="text-[13px] font-medium">Sincronização automática</p>
+              <p className="text-[11px] text-muted-foreground">Buscar agenda a cada {v.sync_interval} min e bloquear horários ocupados no site.</p>
+            </div>
+            <Switch checked={v.auto_sync} onCheckedChange={(b) => setV({ ...v, auto_sync: b })} />
+          </div>
+          <p className="md:col-span-2 text-[11px] text-muted-foreground">O <strong>token de acesso</strong> e o <strong>clinic ID</strong> da Clinicorp serão solicitados de forma segura ao habilitar a integração. Sem eles a sincronização permanece inativa.</p>
         </div>
       </div>
     </SectionCard>
@@ -153,71 +222,51 @@ function SectionIntegrations({ initial, onSave }: any) {
 
 function SectionClientArea({ initial, onSave }: any) {
   const [v, setV] = useState({
-    enabled: false,
-    require_email_verification: true,
-    allow_self_registration: false,
-    show_appointments: true,
-    show_history: true,
-    show_documents: false,
-    show_invoices: true,
-    allow_reschedule: true,
-    allow_cancel: true,
+    enabled: false, require_email_verification: true, allow_self_registration: false,
+    show_appointments: true, show_history: true, show_documents: false, show_invoices: true,
+    allow_reschedule: true, allow_cancel: true, allow_booking: true,
     welcome_title: "Bem-vindo à sua área exclusiva",
     welcome_text: "Acompanhe seus agendamentos, histórico de tratamentos e mantenha seus dados sempre atualizados.",
-    portal_color: "#1e40af",
-    ...initial,
+    portal_color: "#1e40af", ...initial,
   });
 
   return (
     <div className="space-y-4">
-      <SectionCard
-        title="Ativação da Área do Cliente"
-        description="Permite que pacientes acessem um portal exclusivo para acompanhar agendamentos e histórico."
-        footer={<Button onClick={() => onSave(v)}>Salvar alterações</Button>}
-      >
+      <SectionCard title="Ativação da Área do Cliente" description="Permite que pacientes acessem um portal exclusivo para acompanhar agendamentos e histórico." footer={<Button onClick={() => onSave(v)}>Salvar alterações</Button>}>
         <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-muted/30 p-4 flex items-center justify-between">
           <div>
-            <p className="font-semibold text-sm flex items-center gap-2">
-              Portal do Paciente
+            <p className="font-semibold text-sm flex items-center gap-2">Portal do Paciente
               <Badge variant={v.enabled ? "default" : "outline"}>{v.enabled ? "Ativo" : "Desativado"}</Badge>
             </p>
-            <p className="text-xs text-muted-foreground mt-1">Quando ativo, pacientes podem fazer login em <code className="text-[11px] bg-background px-1.5 py-0.5 rounded">/area-cliente</code>.</p>
+            <p className="text-xs text-muted-foreground mt-1">URL: <code className="text-[11px] bg-background px-1.5 py-0.5 rounded">/area-cliente</code></p>
           </div>
           <Switch checked={v.enabled} onCheckedChange={(b) => setV({ ...v, enabled: b })} />
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
-          <ToggleRow label="Verificação de e-mail obrigatória" desc="Paciente precisa confirmar o e-mail antes de acessar." checked={v.require_email_verification} onChange={(b) => setV({ ...v, require_email_verification: b })} />
+          <ToggleRow label="Verificação de e-mail obrigatória" desc="Paciente precisa confirmar o e-mail." checked={v.require_email_verification} onChange={(b) => setV({ ...v, require_email_verification: b })} />
           <ToggleRow label="Cadastro próprio" desc="Permitir que pacientes criem suas próprias contas." checked={v.allow_self_registration} onChange={(b) => setV({ ...v, allow_self_registration: b })} />
         </div>
       </SectionCard>
 
-      <SectionCard
-        title="Funcionalidades disponíveis"
-        description="Selecione o que cada paciente pode visualizar e fazer no portal."
-        footer={<Button onClick={() => onSave(v)}>Salvar alterações</Button>}
-      >
+      <SectionCard title="Funcionalidades disponíveis" description="Selecione o que cada paciente pode fazer no portal." footer={<Button onClick={() => onSave(v)}>Salvar alterações</Button>}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <ToggleRow label="Meus agendamentos" desc="Lista de consultas futuras e passadas." checked={v.show_appointments} onChange={(b) => setV({ ...v, show_appointments: b })} />
           <ToggleRow label="Histórico de tratamentos" desc="Tratamentos já realizados e em andamento." checked={v.show_history} onChange={(b) => setV({ ...v, show_history: b })} />
-          <ToggleRow label="Documentos e exames" desc="Upload e download de documentos clínicos." checked={v.show_documents} onChange={(b) => setV({ ...v, show_documents: b })} />
+          <ToggleRow label="Agendar nova consulta" desc="Permite ao paciente agendar diretamente pelo portal." checked={v.allow_booking} onChange={(b) => setV({ ...v, allow_booking: b })} />
+          <ToggleRow label="Documentos e exames" desc="Upload e download de documentos." checked={v.show_documents} onChange={(b) => setV({ ...v, show_documents: b })} />
           <ToggleRow label="Financeiro / faturas" desc="Consultar pagamentos e boletos." checked={v.show_invoices} onChange={(b) => setV({ ...v, show_invoices: b })} />
           <ToggleRow label="Reagendar consulta" desc="Paciente pode propor novo horário." checked={v.allow_reschedule} onChange={(b) => setV({ ...v, allow_reschedule: b })} />
-          <ToggleRow label="Cancelar consulta" desc="Paciente pode cancelar diretamente pelo portal." checked={v.allow_cancel} onChange={(b) => setV({ ...v, allow_cancel: b })} />
+          <ToggleRow label="Cancelar consulta" desc="Paciente pode cancelar diretamente." checked={v.allow_cancel} onChange={(b) => setV({ ...v, allow_cancel: b })} />
         </div>
       </SectionCard>
 
-      <SectionCard
-        title="Personalização do portal"
-        description="Mensagem de boas-vindas e cor principal exibida ao paciente."
-        footer={<Button onClick={() => onSave(v)}>Salvar alterações</Button>}
-      >
+      <SectionCard title="Personalização do portal" description="Mensagem de boas-vindas e cor principal exibida ao paciente." footer={<Button onClick={() => onSave(v)}>Salvar alterações</Button>}>
         <div><Label className="text-xs">Título de boas-vindas</Label><Input value={v.welcome_title} onChange={(e) => setV({ ...v, welcome_title: e.target.value })} /></div>
         <div><Label className="text-xs">Texto de apresentação</Label><Textarea rows={3} value={v.welcome_text} onChange={(e) => setV({ ...v, welcome_text: e.target.value })} /></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div><Label className="text-xs">Cor de destaque do portal</Label><Input type="color" value={v.portal_color} onChange={(e) => setV({ ...v, portal_color: e.target.value })} className="h-10 w-full" /></div>
+          <div><Label className="text-xs">Cor de destaque</Label><Input type="color" value={v.portal_color} onChange={(e) => setV({ ...v, portal_color: e.target.value })} className="h-10 w-full" /></div>
           <div className="rounded-lg border border-[hsl(var(--admin-border))] bg-muted/30 px-3 py-2 text-xs text-muted-foreground flex items-center">
-            URL do portal: <code className="ml-2 bg-background px-1.5 py-0.5 rounded">/area-cliente</code>
+            URL: <code className="ml-2 bg-background px-1.5 py-0.5 rounded">/area-cliente</code>
           </div>
         </div>
       </SectionCard>
@@ -225,7 +274,7 @@ function SectionClientArea({ initial, onSave }: any) {
   );
 }
 
-function ToggleRow({ label, desc, checked, onChange }: { label: string; desc: string; checked: boolean; onChange: (b: boolean) => void; }) {
+function ToggleRow({ label, desc, checked, onChange }: any) {
   return (
     <div className="flex items-start justify-between gap-3 rounded-lg border border-[hsl(var(--admin-border))] bg-background px-3.5 py-3">
       <div className="min-w-0">
@@ -250,8 +299,381 @@ function SectionBranding({ initial, onSave }: any) {
   );
 }
 
-function SectionInfo({ title, body }: { title: string; body: string }) {
+/* ========== USUÁRIOS — criação em modal + permissões granulares ========== */
+function SectionUsers() {
+  const { data: users = [], isLoading } = useStaffUsers();
+  const create = useCreateStaffUser();
+  const updatePerms = useUpdateStaffPermissions();
+  const del = useDeleteStaffUser();
+  const [open, setOpen] = useState(false);
+  const [permsUser, setPermsUser] = useState<any | null>(null);
+  const [delUser, setDelUser] = useState<string | null>(null);
+
   return (
-    <SectionCard title={title}><p className="text-sm text-muted-foreground">{body}</p></SectionCard>
+    <SectionCard
+      title="Usuários e permissões"
+      description="Cadastre membros da equipe e defina o que cada um pode acessar no painel."
+      footer={<Button onClick={() => setOpen(true)}><Plus className="h-4 w-4 mr-2" />Novo usuário</Button>}
+    >
+      {isLoading ? <p className="text-sm text-muted-foreground">Carregando…</p> : users.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Nenhum usuário cadastrado.</p>
+      ) : (
+        <div className="space-y-2">
+          {users.map((u) => (
+            <div key={u.id} className="flex items-center gap-3 rounded-lg border border-[hsl(var(--admin-border))] bg-background p-3">
+              <Avatar className="h-10 w-10">
+                <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+                  {u.full_name.split(" ").map(n => n[0]).slice(0,2).join("").toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold truncate">{u.full_name} {u.is_admin && <Badge className="ml-1.5 text-[10px]">Admin</Badge>}</p>
+                <p className="text-xs text-muted-foreground truncate">{u.email} · {u.job_title || "—"}</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={() => setPermsUser(u)}>Permissões</Button>
+              <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setDelUser(u.user_id)}><Trash2 className="h-4 w-4" /></Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <CreateUserModal open={open} onOpenChange={setOpen} onCreate={async (payload) => {
+        try { await create.mutateAsync(payload); toast({ title: "Usuário criado" }); setOpen(false); }
+        catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+      }} loading={create.isPending} />
+
+      <PermissionsModal user={permsUser} onClose={() => setPermsUser(null)} onSave={async (payload) => {
+        try { await updatePerms.mutateAsync(payload); toast({ title: "Permissões atualizadas" }); setPermsUser(null); }
+        catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+      }} loading={updatePerms.isPending} />
+
+      <ConfirmDialog open={!!delUser} onOpenChange={(v) => !v && setDelUser(null)}
+        title="Excluir usuário?" description="O acesso ao painel será revogado imediatamente."
+        destructive confirmLabel="Sim, excluir"
+        onConfirm={async () => { if (delUser) { await del.mutateAsync(delUser); toast({ title: "Usuário excluído" }); setDelUser(null); } }} />
+    </SectionCard>
+  );
+}
+
+function CreateUserModal({ open, onOpenChange, onCreate, loading }: any) {
+  const [f, setF] = useState({ email: "", password: "", full_name: "", job_title: "", is_admin: false });
+  const [perms, setPerms] = useState<Record<string, { view: boolean; edit: boolean; delete: boolean }>>({});
+
+  useEffect(() => {
+    if (open) {
+      setF({ email: "", password: "", full_name: "", job_title: "", is_admin: false });
+      const def: any = {};
+      PERMISSION_MODULES.forEach((m) => def[m.key] = { view: true, edit: false, delete: false });
+      setPerms(def);
+    }
+  }, [open]);
+
+  return (
+    <EntityModal open={open} onOpenChange={onOpenChange} title="Novo usuário" description="Crie acesso para um membro da equipe." size="lg"
+      footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+        <Button disabled={loading} onClick={() => {
+          if (!f.email || !f.password || !f.full_name) { toast({ title: "Preencha todos os campos obrigatórios", variant: "destructive" }); return; }
+          if (f.password.length < 6) { toast({ title: "Senha precisa ter pelo menos 6 caracteres", variant: "destructive" }); return; }
+          onCreate({ ...f, permissions: perms });
+        }}>{loading ? "Criando…" : "Criar usuário"}</Button></div>}
+    >
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div><Label className="text-xs">Nome completo*</Label><Input value={f.full_name} onChange={(e) => setF({ ...f, full_name: e.target.value })} /></div>
+          <div><Label className="text-xs">Cargo</Label><Input value={f.job_title} onChange={(e) => setF({ ...f, job_title: e.target.value })} placeholder="Ex.: Recepcionista" /></div>
+          <div><Label className="text-xs">E-mail*</Label><Input type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} /></div>
+          <div><Label className="text-xs">Senha provisória*</Label><Input type="password" value={f.password} onChange={(e) => setF({ ...f, password: e.target.value })} placeholder="mín. 6 caracteres" /></div>
+        </div>
+        <div className="rounded-lg border border-[hsl(var(--admin-border))] bg-muted/30 p-3 flex items-center justify-between">
+          <div>
+            <p className="text-[13px] font-medium">Acesso de administrador</p>
+            <p className="text-[11px] text-muted-foreground">Concede acesso total a todos os módulos.</p>
+          </div>
+          <Switch checked={f.is_admin} onCheckedChange={(b) => setF({ ...f, is_admin: b })} />
+        </div>
+        {!f.is_admin && (
+          <div>
+            <Label className="text-xs uppercase tracking-wider text-muted-foreground">Permissões por módulo</Label>
+            <div className="mt-2 rounded-lg border border-[hsl(var(--admin-border))] overflow-hidden">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+                  <tr><th className="text-left px-3 py-2">Módulo</th><th className="px-3 py-2">Ver</th><th className="px-3 py-2">Editar</th><th className="px-3 py-2">Excluir</th></tr>
+                </thead>
+                <tbody>
+                  {PERMISSION_MODULES.map((m) => (
+                    <tr key={m.key} className="border-t border-[hsl(var(--admin-border))]">
+                      <td className="px-3 py-2 font-medium">{m.label}</td>
+                      {(["view", "edit", "delete"] as const).map((act) => (
+                        <td key={act} className="text-center px-3 py-2">
+                          <Checkbox checked={perms[m.key]?.[act] ?? false} onCheckedChange={(v) => setPerms({ ...perms, [m.key]: { ...perms[m.key], [act]: !!v } })} />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+    </EntityModal>
+  );
+}
+
+function PermissionsModal({ user, onClose, onSave, loading }: any) {
+  const [is_admin, setIsAdmin] = useState(false);
+  const [perms, setPerms] = useState<Record<string, any>>({});
+  useEffect(() => {
+    if (user) {
+      setIsAdmin(user.is_admin);
+      const def: any = {};
+      PERMISSION_MODULES.forEach((m) => def[m.key] = user.permissions?.[m.key] ?? { view: true, edit: false, delete: false });
+      setPerms(def);
+    }
+  }, [user]);
+  return (
+    <EntityModal open={!!user} onOpenChange={(v) => !v && onClose()} title={`Permissões — ${user?.full_name ?? ""}`} size="lg"
+      footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={onClose}>Cancelar</Button>
+        <Button disabled={loading} onClick={() => onSave({ user_id: user.user_id, is_admin, permissions: perms })}>{loading ? "Salvando…" : "Salvar"}</Button></div>}
+    >
+      <div className="space-y-4">
+        <div className="rounded-lg border border-[hsl(var(--admin-border))] bg-muted/30 p-3 flex items-center justify-between">
+          <div>
+            <p className="text-[13px] font-medium">Acesso de administrador</p>
+            <p className="text-[11px] text-muted-foreground">Concede acesso total. Se ativo, ignora as permissões abaixo.</p>
+          </div>
+          <Switch checked={is_admin} onCheckedChange={setIsAdmin} />
+        </div>
+        <div className="rounded-lg border border-[hsl(var(--admin-border))] overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
+              <tr><th className="text-left px-3 py-2">Módulo</th><th className="px-3 py-2">Ver</th><th className="px-3 py-2">Editar</th><th className="px-3 py-2">Excluir</th></tr>
+            </thead>
+            <tbody>
+              {PERMISSION_MODULES.map((m) => (
+                <tr key={m.key} className="border-t border-[hsl(var(--admin-border))]">
+                  <td className="px-3 py-2 font-medium">{m.label}</td>
+                  {(["view", "edit", "delete"] as const).map((act) => (
+                    <td key={act} className="text-center px-3 py-2">
+                      <Checkbox disabled={is_admin} checked={is_admin || (perms[m.key]?.[act] ?? false)} onCheckedChange={(v) => setPerms({ ...perms, [m.key]: { ...perms[m.key], [act]: !!v } })} />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </EntityModal>
+  );
+}
+
+/* ========== WEBHOOKS ========== */
+const EVENTS = ["appointment.created", "appointment.updated", "appointment.cancelled", "lead.created", "review.created"];
+
+function SectionWebhooks() {
+  const { data: hooks = [] } = useWebhooks();
+  const upsert = useUpsertWebhook();
+  const del = useDeleteWebhook();
+  const [open, setOpen] = useState<any>(null);
+  const [delId, setDelId] = useState<string | null>(null);
+  const [testing, setTesting] = useState<string | null>(null);
+  const [showSecret, setShowSecret] = useState<string | null>(null);
+
+  function newSecret() {
+    const bytes = new Uint8Array(24);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes).map((b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  async function testWebhook(id: string) {
+    setTesting(id);
+    try {
+      const { data, error } = await supabase.functions.invoke("webhook-test", { body: { id } });
+      if (error) throw error;
+      toast({ title: data?.ok ? `OK — HTTP ${data.status}` : `Falhou — HTTP ${data?.status ?? 0}`, description: (data?.response ?? data?.error ?? "").slice(0, 120) });
+    } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+    finally { setTesting(null); }
+  }
+
+  return (
+    <SectionCard
+      title="Webhooks"
+      description="Receba notificações em tempo real quando eventos importantes acontecem na clínica. Cada disparo inclui assinatura HMAC SHA-256 no header X-Levii-Signature."
+      footer={<Button onClick={() => setOpen({ url: "", events: [], active: true, secret: newSecret() })}><Plus className="h-4 w-4 mr-2" />Novo webhook</Button>}
+    >
+      {hooks.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Nenhum webhook configurado.</p>
+      ) : (
+        <div className="space-y-2">
+          {hooks.map((h) => (
+            <div key={h.id} className="rounded-lg border border-[hsl(var(--admin-border))] bg-background p-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <code className="text-[12px] font-mono bg-muted px-1.5 py-0.5 rounded truncate max-w-md">{h.url}</code>
+                    <Badge variant={h.active ? "default" : "outline"} className="text-[10px]">{h.active ? "Ativo" : "Inativo"}</Badge>
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap gap-1">
+                    {h.events.map((e: string) => <Badge key={e} variant="secondary" className="text-[10px]">{e}</Badge>)}
+                  </div>
+                  <div className="mt-2 flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <span>Secret:</span>
+                    <code className="font-mono bg-muted px-1.5 py-0.5 rounded">{showSecret === h.id ? h.secret : "•".repeat(24)}</code>
+                    <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => setShowSecret(showSecret === h.id ? null : h.id)}>{showSecret === h.id ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}</Button>
+                    <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => { navigator.clipboard.writeText(h.secret); toast({ title: "Secret copiado" }); }}><Copy className="h-3 w-3" /></Button>
+                  </div>
+                </div>
+                <div className="flex gap-1">
+                  <Button size="sm" variant="outline" disabled={testing === h.id} onClick={() => testWebhook(h.id)}><Send className="h-3.5 w-3.5 mr-1" />{testing === h.id ? "…" : "Testar"}</Button>
+                  <Button size="sm" variant="ghost" onClick={() => setOpen(h)}>Editar</Button>
+                  <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setDelId(h.id)}><Trash2 className="h-4 w-4" /></Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <EntityModal open={!!open} onOpenChange={(v) => !v && setOpen(null)} title={open?.id ? "Editar webhook" : "Novo webhook"} size="md"
+        footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setOpen(null)}>Cancelar</Button>
+          <Button onClick={async () => {
+            if (!open?.url || !open?.events?.length) { toast({ title: "URL e eventos são obrigatórios", variant: "destructive" }); return; }
+            try { await upsert.mutateAsync(open); toast({ title: "Webhook salvo" }); setOpen(null); }
+            catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+          }}>Salvar</Button></div>}
+      >
+        {open && (
+          <div className="space-y-3">
+            <div><Label className="text-xs">URL de destino*</Label><Input value={open.url} onChange={(e) => setOpen({ ...open, url: e.target.value })} placeholder="https://meu-sistema.com/webhook" /></div>
+            <div>
+              <Label className="text-xs">Eventos*</Label>
+              <div className="mt-2 grid grid-cols-1 gap-2">
+                {EVENTS.map((ev) => (
+                  <label key={ev} className="flex items-center gap-2 rounded-lg border border-[hsl(var(--admin-border))] bg-background px-3 py-2 cursor-pointer">
+                    <Checkbox checked={open.events.includes(ev)} onCheckedChange={(v) => setOpen({ ...open, events: v ? [...open.events, ev] : open.events.filter((x: string) => x !== ev) })} />
+                    <code className="text-[12px] font-mono">{ev}</code>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="flex items-center justify-between rounded-lg border bg-muted/30 px-3 py-2">
+              <span className="text-sm">Ativo</span>
+              <Switch checked={open.active} onCheckedChange={(b) => setOpen({ ...open, active: b })} />
+            </div>
+            <div>
+              <Label className="text-xs">Secret HMAC</Label>
+              <div className="flex gap-2">
+                <Input value={open.secret} readOnly className="font-mono text-xs" />
+                <Button variant="outline" type="button" onClick={() => setOpen({ ...open, secret: newSecret() })}>Regenerar</Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </EntityModal>
+
+      <ConfirmDialog open={!!delId} onOpenChange={(v) => !v && setDelId(null)}
+        title="Remover webhook?" description="Esta URL deixará de receber eventos imediatamente." destructive confirmLabel="Remover"
+        onConfirm={async () => { if (delId) { await del.mutateAsync(delId); toast({ title: "Removido" }); setDelId(null); } }} />
+    </SectionCard>
+  );
+}
+
+/* ========== API KEYS ========== */
+function SectionApiKeys() {
+  const { data: keys = [] } = useApiKeys();
+  const del = useDeleteApiKey();
+  const [open, setOpen] = useState(false);
+  const [created, setCreated] = useState<string | null>(null);
+  const [delId, setDelId] = useState<string | null>(null);
+  const [form, setForm] = useState({ label: "", scopes: ["read"] as string[] });
+  const [loading, setLoading] = useState(false);
+
+  async function generate() {
+    if (!form.label) { toast({ title: "Informe um rótulo", variant: "destructive" }); return; }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("api-keys-create", { body: form });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      setCreated(data.key);
+      setOpen(false);
+    } catch (e: any) { toast({ title: "Erro", description: e.message, variant: "destructive" }); }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <SectionCard
+      title="API & chaves"
+      description="Crie chaves de API para integrar sistemas externos com a clínica. Endpoint base: /functions/v1/public-api"
+      footer={<Button onClick={() => { setForm({ label: "", scopes: ["read"] }); setOpen(true); }}><Plus className="h-4 w-4 mr-2" />Nova chave</Button>}
+    >
+      <div className="rounded-lg border border-[hsl(var(--admin-border))] bg-muted/30 p-3 text-xs space-y-1">
+        <p className="font-semibold">Endpoints disponíveis:</p>
+        <code className="block font-mono">GET  /public-api/appointments — lista agendamentos (escopo: read)</code>
+        <code className="block font-mono">POST /public-api/leads — criar lead (escopo: write)</code>
+        <code className="block font-mono">GET  /public-api/reviews — lista avaliações (escopo: read)</code>
+        <p className="text-muted-foreground mt-1">Envie a chave no header <code>x-api-key</code> ou <code>Authorization: Bearer</code>.</p>
+      </div>
+
+      {keys.length === 0 ? (
+        <p className="text-sm text-muted-foreground">Nenhuma chave gerada ainda.</p>
+      ) : (
+        <div className="space-y-2">
+          {keys.map((k) => (
+            <div key={k.id} className="flex items-center gap-3 rounded-lg border border-[hsl(var(--admin-border))] bg-background p-3">
+              <Key className="h-4 w-4 text-primary" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold truncate">{k.label}</p>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <code className="text-[11px] font-mono text-muted-foreground">{k.key_prefix}…</code>
+                  {k.scopes.map((s) => <Badge key={s} variant="secondary" className="text-[10px]">{s}</Badge>)}
+                </div>
+              </div>
+              <span className="text-[11px] text-muted-foreground hidden md:block">{k.last_used_at ? `Usada ${new Date(k.last_used_at).toLocaleDateString("pt-BR")}` : "Nunca usada"}</span>
+              <Button size="sm" variant="ghost" className="text-destructive" onClick={() => setDelId(k.id)}><Trash2 className="h-4 w-4" /></Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <EntityModal open={open} onOpenChange={setOpen} title="Nova chave de API" size="sm"
+        footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+          <Button disabled={loading} onClick={generate}>{loading ? "Gerando…" : "Gerar chave"}</Button></div>}
+      >
+        <div className="space-y-3">
+          <div><Label className="text-xs">Rótulo*</Label><Input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} placeholder="Ex.: Integração CRM" /></div>
+          <div>
+            <Label className="text-xs">Escopos</Label>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {["read", "write"].map((s) => (
+                <label key={s} className="flex items-center gap-2 rounded-lg border border-[hsl(var(--admin-border))] bg-background px-3 py-2 cursor-pointer">
+                  <Checkbox checked={form.scopes.includes(s)} onCheckedChange={(v) => setForm({ ...form, scopes: v ? [...form.scopes, s] : form.scopes.filter((x) => x !== s) })} />
+                  <code className="text-[12px] font-mono">{s}</code>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      </EntityModal>
+
+      <EntityModal open={!!created} onOpenChange={(v) => !v && setCreated(null)} title="Chave gerada com sucesso" description="Copie agora — esta é a única vez que você verá a chave completa.">
+        <div className="space-y-3">
+          <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 flex items-start gap-2">
+            <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
+            <p>Guarde esta chave em local seguro. Por segurança, não conseguiremos exibi-la novamente.</p>
+          </div>
+          <div className="flex gap-2">
+            <Input readOnly value={created ?? ""} className="font-mono text-xs" />
+            <Button onClick={() => { navigator.clipboard.writeText(created ?? ""); toast({ title: "Copiado" }); }}><Copy className="h-4 w-4 mr-1" />Copiar</Button>
+          </div>
+          <Button variant="outline" className="w-full" onClick={() => setCreated(null)}>Fechar</Button>
+        </div>
+      </EntityModal>
+
+      <ConfirmDialog open={!!delId} onOpenChange={(v) => !v && setDelId(null)}
+        title="Revogar chave?" description="Sistemas que usam esta chave perderão acesso imediatamente." destructive confirmLabel="Revogar"
+        onConfirm={async () => { if (delId) { await del.mutateAsync(delId); toast({ title: "Chave revogada" }); setDelId(null); } }} />
+    </SectionCard>
   );
 }
