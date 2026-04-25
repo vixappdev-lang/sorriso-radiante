@@ -301,15 +301,24 @@ Deno.serve(async (req) => {
     let reply = "";
     let aiUsed = false;
     let intentKey: string | null = null;
+    let nextFlowKey: string | null | undefined = undefined;
+
+    // 4.0 PRIORIDADE: Templates (fluxos encadeados) — sem delay, sem IA.
+    // Continua o flow ativo ou inicia um novo se trigger casar.
+    const tplResult = await resolveTemplate(supabase, message, conv!.current_flow_key ?? null, contactName);
 
     // 4.1 Saudação inicial padrão LyneCloud (primeira mensagem da conversa)
-    if (isFirstContact) {
+    if (isFirstContact && !tplResult) {
       const nome = contactName ? `, ${String(contactName).split(" ")[0]}` : "";
       const greetingTpl =
         (cfg as any).greeting_message ||
         `Olá${nome}! 👋 Aqui é da *LyneCloud*, em que podemos lhe ajudar hoje?`;
       reply = greetingTpl.replace(/\{\{nome\}\}/g, contactName || "");
       intentKey = "first_contact_greeting";
+    } else if (tplResult) {
+      reply = tplResult.reply;
+      intentKey = `tpl:${tplResult.flow_key}#${tplResult.step_id}`;
+      nextFlowKey = tplResult.next_flow_key;
     } else if (matched && matched.action === "reply" && matched.response_template) {
       reply = String(matched.response_template).replace(/\{\{nome\}\}/g, contactName || "");
       intentKey = matched.key;
