@@ -176,13 +176,13 @@ export default function AdminLeads() {
       {leads.length === 0 ? (
         <EmptyState icon={Megaphone} title="Nenhum lead ainda" description="Adicione contatos manualmente ou aguarde leads chegarem do site." action={<Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Novo lead</Button>} />
       ) : view === "kanban" ? (
-        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {COLUMNS.map((col) => (
               <KanbanColumn key={col.key} col={col} leads={grouped[col.key] ?? []} onCardClick={openEdit} brl={brl} />
             ))}
           </div>
-          <DragOverlay>
+          <DragOverlay dropAnimation={null}>
             {draggingLead && <LeadCard lead={draggingLead} brl={brl} dragging />}
           </DragOverlay>
         </DndContext>
