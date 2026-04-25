@@ -3,8 +3,9 @@ import {
   Loader2, Settings, Activity, Send, Save, RefreshCw, ListChecks,
   MessageSquare, Megaphone, Server, CheckCircle2, XCircle, Plus, Trash2,
   Download, Power, QrCode as QrIcon, Wifi, WifiOff, AlertCircle, Copy as CopyIcon, Sparkles,
-  Bot, Brain, MessageCircle, ChevronRight, UserCheck, Zap,
+  Bot, Brain, MessageCircle, ChevronRight, UserCheck, Zap, FileText,
 } from "lucide-react";
+import WhatsAppTemplatesTab from "@/admin/components/WhatsAppTemplatesTab";
 import PageHeader from "@/admin/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
