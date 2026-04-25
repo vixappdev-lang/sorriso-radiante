@@ -332,7 +332,7 @@ export default function AdminAgenda() {
   );
 }
 
-function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }: any) {
+function DayTimeline({ appts, paymentMap, isLoading, onOpen, onSetStatus, onCancel, busyId }: any) {
   if (isLoading) return <div className="admin-card p-10 grid place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>;
   if (appts.length === 0) return <div className="admin-card p-5"><EmptyState icon={CalIcon} title="Sem agendamentos neste dia" description="Selecione outro dia, crie um encaixe ou ajuste os filtros." /></div>;
 
