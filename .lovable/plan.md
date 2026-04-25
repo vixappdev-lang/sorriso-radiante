@@ -1,140 +1,156 @@
 
-# Rota /apresentacao — Dossiê Comercial Premium
+# Plano — Painel LyneCloud (correções + novas features pesadas)
 
-Criar uma rota nova, totalmente isolada, que funciona como proposta comercial enterprise para clínicas odontológicas. Zero impacto no projeto existente.
+Trabalho dividido em 6 frentes. Cada uma é entregável independente, sem mexer no design existente.
 
-## Garantias de não-regressão
+---
 
-- **Nenhum arquivo existente será modificado** — exceto:
-  - `src/App.tsx` (apenas adicionar 1 import + 1 `<Route>` para `/apresentacao`)
-  - `vercel.json` já tem fallback SPA universal (`/(.*) → /index.html`), nenhuma alteração necessária
-- Painel admin, site público, Cloud, edge functions, hooks, componentes UI: **intocados**
-- Tudo encapsulado em namespace próprio (`pres-*` classes / `ApresentacaoLayout`) para não vazar estilos
+## 1. UI global — scrollbar transparente em todo o painel
 
-## Arquivos novos
+Em `src/index.css`, adicionar regra escopo `.admin-shell` (não vaza pro site):
 
-```text
-src/pages/Apresentacao.tsx              ← orquestra todas as seções
-src/pages/apresentacao/
-├── PresHero.tsx                        ← hero impactante dark + CTA
-├── PresProblema.tsx                    ← 10 dores reais das clínicas
-├── PresSolucao.tsx                     ← 3 pilares (Site + Agenda + Painel)
-├── PresShowcase.tsx                    ← prints REAIS do admin em mockup browser
-├── PresGoogle.tsx                      ← autoridade Google + SEO local
-├── PresTrafego.tsx                     ← tráfego pago local + ROI
-├── PresBeneficios.tsx                  ← 9 benefícios mensuráveis
-├── PresProximosPassos.tsx              ← fluxo de implantação
-├── PresCTAFinal.tsx                    ← CTA de fechamento + contato
-└── PresStyles.css                      ← tokens isolados namespace .pres-shell
-```
+- `*::-webkit-scrollbar { width: 0; height: 0; }` (Chrome/Safari/Edge)
+- `* { scrollbar-width: none; }` (Firefox)
+- Mantém scroll funcional, só esconde o trilho. Aplicado também aos `<aside>`, `nav`, `main`, drawers e modais do admin.
 
-## Captura dos prints reais (passo crítico)
+---
 
-Usar `browser--navigate_to_sandbox` + `browser--screenshot` para capturar as 11 áreas do admin atual logado:
+## 2. Leads / Captação — Kanban funcional
 
-1. `/admin/dashboard` → `pres-shot-dashboard.png`
-2. `/admin/agenda` → `pres-shot-agenda.png`
-3. `/admin/pacientes` → `pres-shot-pacientes.png`
-4. `/admin/tratamentos` → `pres-shot-tratamentos.png`
-5. `/admin/profissionais` → `pres-shot-profissionais.png`
-6. `/admin/financeiro` → `pres-shot-financeiro.png`
-7. `/admin/leads` → `pres-shot-leads.png`
-8. `/admin/whatsapp` → `pres-shot-whatsapp.png`
-9. `/admin/site` → `pres-shot-site.png`
-10. `/admin/relatorios` → `pres-shot-relatorios.png`
-11. `/admin/configuracoes` → `pres-shot-configuracoes.png`
+Problema raiz: o `useDraggable` do dnd-kit aplica `transform` no card mas o `KanbanColumn` é um `flex flex-col` com `overflow-y-auto`, e como o sensor está no botão `<GripVertical>` (que tem `onClick stopPropagation`), o gesto de pointer não chega aos `listeners` do dnd-kit em mobile/desktop. Além disso, o status do card é cache otimista do React Query e ao soltar o backend grava mas o UI reverte se a invalidação chega antes do retorno.
 
-Cada print salvo em `public/apresentacao/` para servir como asset estático. Cada imagem dentro do dossiê é exibida em **mockup de janela macOS** (traffic lights + chrome) com sombra premium.
+**Correções:**
+- Remover o "handle" e fazer **o card inteiro** ser arrastável (com `useSortable` para poder reordenar dentro da coluna também).
+- Trocar `PointerSensor` por `MouseSensor + TouchSensor` separados, com `activationConstraint: { delay: 120, tolerance: 6 }` no touch (melhor em mobile) e `distance: 4` no mouse.
+- Aplicar **update otimista** no React Query antes do `await` (evita o "card volta") e fazer o `mutate` enviar **só** `{ id, status, last_touch_at }` (não reenviar `name` que pode sobrescrever dados).
+- Garantir `cancelDrop` quando solto fora de coluna.
+- Adicionar feedback visual: coluna alvo ganha borda azul + shadow durante hover; card no overlay com leve rotação.
+- Botão de WhatsApp e link clicável dentro do card precisam de `onPointerDown stopPropagation` para não disparar drag.
 
-Se o login bloquear a captura: usar a sessão admin já existente do usuário no preview (cookies de sessão), ou fazer fallback usando rota direta após bypass de RequireAdmin via preview-only.
+Resultado: arrastar do desktop e mobile funciona 100%, status atualiza imediatamente sem bug de reversão.
 
-## Estrutura visual do dossiê (Apresentacao.tsx)
+---
 
-```text
-┌─────────────────────────────────────────────────┐
-│ [Hero dark]  Sua clínica perde pacientes hoje. │  ← full-bleed dark, mesh gradient
-│              Veja a estrutura que muda isso.    │     CTA primário + secundário
-│              [Solicitar demo] [Ver solução]     │     KPIs de credibilidade abaixo
-├─────────────────────────────────────────────────┤
-│ PROBLEMA — 10 dores em grid 2×5 (cards red-tint)│
-├─────────────────────────────────────────────────┤
-│ SOLUÇÃO — 3 pilares full-width                  │
-│  Site Premium | Agenda Inteligente | Painel CRM │
-├─────────────────────────────────────────────────┤
-│ SHOWCASE — Prints reais em mockup browser       │
-│  Tabs: Dashboard / Agenda / Pacientes / ...     │
-│  Imagem grande + bullets de valor ao lado       │
-├─────────────────────────────────────────────────┤
-│ GOOGLE — autoridade local + Maps + reviews      │
-│  Split: texto persuasivo | mock SERP local      │
-├─────────────────────────────────────────────────┤
-│ TRÁFEGO PAGO — funil + ROI + integração         │
-│  Diagrama: Anúncio → LP → Agenda → Paciente     │
-├─────────────────────────────────────────────────┤
-│ BENEFÍCIOS — 9 cards com ícone + métrica        │
-├─────────────────────────────────────────────────┤
-│ PRÓXIMOS PASSOS — timeline horizontal 5 etapas  │
-├─────────────────────────────────────────────────┤
-│ CTA FINAL — dark, gradiente, botão WhatsApp     │
-└─────────────────────────────────────────────────┘
-```
+## 3. Agenda — refinar cards (sem bagunçar layout)
 
-## Design system isolado (PresStyles.css)
+Atual: cards com cores `bg-amber-50 / bg-blue-50` muito claras → texto some no celular.
 
-Namespace `.pres-shell` para evitar colisão com tokens existentes:
+**Mudanças no `STATUS_BG` e no `DayTimeline`:**
+- Subir saturação dos backgrounds (ex: `bg-amber-100` no lugar de `50`) e aplicar **borda lateral colorida grossa** (4px) usando o accent do status.
+- Texto principal sempre `text-slate-900`; subtítulo `text-slate-600` (em vez de `opacity-75` que perde contraste).
+- Hora ganha um chip `bg-white/80 backdrop-blur` para destacar.
+- Mantém hover-translate e shadow já existentes.
+- Mobile: aumentar `min-h-[80px]` e empilhar info em 2 linhas com gap claro.
 
-- **Tipografia**: `Inter Tight` (já carregado) para títulos, `Inter` para corpo. Tracking apertado `-0.03em` em headlines, `tabular-nums` em KPIs.
-- **Paleta**: reutiliza `--primary` (azul corporativo) + `--accent-gold` da plataforma. Adiciona apenas:
-  - `--pres-bg-dark: 222 35% 6%` (hero/CTA)
-  - `--pres-surface: 220 30% 98.5%` (seções claras alternadas)
-  - `--pres-border: 220 16% 88%`
-- **Hierarquia**:
-  - H1 hero: `clamp(2.75rem, 6vw, 5rem)`, weight 600, tracking `-0.04em`
-  - H2 seções: `clamp(2rem, 4vw, 3.25rem)`, weight 600
-  - Eyebrow: uppercase 0.18em, primary, 12px
-- **Cards**: `rounded-2xl`, border 1px sutil, sombra em camadas (1px hairline + 8px 24px difuso)
-- **Mockup browser**: chrome cinza claro, 3 dots coloridos, barra URL fake `clinicaleeii.com/admin/...`, sombra `0 40px 80px -30px rgba(0,0,0,0.25)`
-- **Animações**: `framer-motion` (já no projeto) — fade-up sutil em scroll, sem exagero. `IntersectionObserver` para revelar.
-- **Responsivo**: mobile-first, breakpoints `sm/md/lg/xl`. Grid colapsa para 1 coluna no mobile, mockups com `aspect-video` mantendo proporção.
+WeekGrid e MonthCalendar recebem o mesmo refinamento de contraste.
 
-## Conteúdo persuasivo (cópia)
+---
 
-Cópia escrita diretamente nos componentes seguindo princípios de copy enterprise:
-- Headlines focam em **perda** (loss aversion) antes de ganho
-- Métricas concretas onde possível (ex: "até 38% menos faltas com confirmação automática")
-- Prova social via prints reais funciona como demonstração
-- Cada seção termina com micro-CTA contextual
+## 4. Pacientes — CRUD completo + gerenciamento profundo
 
-Sem inventar números absolutos — usar faixas realistas e verbos condicionais ("pode reduzir", "tende a aumentar").
+A página hoje só lista pacientes derivados de `appointments`. Vai virar um módulo completo, mas mantendo a tabela atual.
 
-## Roteamento
+**Novidades (dentro do mesmo arquivo + um drawer maior):**
+- Botão **"+ Novo paciente"** no header → abre drawer de criação que insere em `patient_accounts` (campos: nome, telefone, email, CPF, data nascimento, endereço estruturado, foto via storage `patient-avatars`, observações).
+- Tabela passa a unir **`patient_accounts` + pacientes derivados de appointments** (dedup por telefone), exibindo badge "Cadastrado" vs "Só agendou".
+- Drawer de detalhes ganha:
+  - Aba **Cadastro** (editar todos os campos, upload de foto, salvar).
+  - Aba **Odontograma** (nova tabela `patient_odontogram` — esquema dental SVG simples 32 dentes, clique marca status: hígido / cariado / restaurado / extraído / a tratar; salva em jsonb).
+  - Aba **Orçamento rápido** (nova tabela `patient_quotes`: monta linhas a partir de `treatments_overrides` com qtd e desconto; gera total e link público de aceite — slug + token).
+  - Aba **Histórico** (já existe, mantém).
+  - Aba **Financeiro** (já existe, ganha botão "Gerar cobrança" que cria em `financial_entries`).
+  - Aba **Notas** (já existe).
+- Editar / excluir paciente direto na tabela (com `ConfirmDialog`).
 
-Em `src/App.tsx`, adicionar **acima** do catch-all `*`:
-```tsx
-import Apresentacao from "./pages/Apresentacao.tsx";
-// ...
-<Route path="/apresentacao" element={<Apresentacao />} />
-```
+---
 
-SEO via `<SEO>` component existente: title "Dossiê Comercial — Clínica Levii", description persuasiva, canonical `/apresentacao`.
+## 5. Quatro features clínicas pedidas
 
-## Vercel
+### 5.1 Pré-pagamento no agendamento
+Tabela nova `appointment_payments` (id, appointment_id, amount_cents, status, provider, link, paid_at).
+- No fluxo `create-appointment` (edge function existente) e em "Novo encaixe", se o tratamento tiver `requires_prepayment = true` (campo novo em `treatments_overrides`), gera um link de pagamento Pix simulado/configurável e bloqueia confirmação até `status='paid'`.
+- Painel mostra badge "Pré-pago" no card da agenda.
+- Para MVP funcional: gerar QR Pix estático com chave configurável em `clinic_settings` (`pix_key`, `pix_merchant`) usando lib `pix-utils` no client.
 
-`vercel.json` já tem `{ "source": "/(.*)", "destination": "/index.html" }` — `/apresentacao` funciona out-of-the-box em deep link, refresh e share. **Nenhuma alteração necessária**, mas vou confirmar e documentar isso para o usuário.
+### 5.2 Odontograma + Orçamento rápido
+Coberto na aba do paciente (item 4). Tabelas `patient_odontogram` e `patient_quotes` + link público `/orcamento/:token` (página standalone com aceite que muda status para `accepted` e dispara WhatsApp de confirmação).
 
-## Ordem de execução
+### 5.3 Split de comissão automático
+Tabela `commission_rules` (professional_slug, treatment_slug nullable, percent, fixed_cents).
+Tabela `commission_entries` (financial_entry_id FK, professional_slug, amount_cents, status pending/paid).
+- Trigger `on_financial_entry_paid`: quando uma entry tipo `income` é marcada `paid`, calcula a comissão pela rule mais específica e cria linha em `commission_entries`.
+- Nova aba em `/admin/financeiro` chamada **Comissões** lista por profissional, com botão "Marcar paga" e exporta CSV mensal.
 
-1. Capturar 11 prints reais do admin via browser tools → salvar em `public/apresentacao/`
-2. Criar `PresStyles.css` com namespace isolado
-3. Criar 9 componentes de seção em `src/pages/apresentacao/`
-4. Criar `Apresentacao.tsx` orquestrador
-5. Registrar rota em `App.tsx`
-6. Validar visualmente em desktop + mobile via screenshot
-7. Confirmar que admin/site público/booking continuam idênticos
+### 5.4 Estoque básico
+Tabelas `stock_items` (sku, nome, unidade, quantidade_atual, qtd_minima, custo_unitario_cents) e `stock_movements` (item_id, tipo entrada/saida/ajuste, qtd, motivo, appointment_id nullable, created_at).
+- Sub-rota nova `/admin/estoque` (entra no sidebar abaixo de Tratamentos).
+- Lista com KPIs (itens, abaixo do mínimo, valor total em estoque), botão "Nova entrada" e "Saída", histórico de movimentações.
+- Trigger atualiza `quantidade_atual` automaticamente em insert na tabela de movimentos.
 
-## Fora do escopo (explícito)
+---
 
-- Não criar tabelas, edge functions, migrations
-- Não alterar `index.css`, `tailwind.config.ts`, painel, hooks, Cloud
-- Não tocar autenticação, RLS, schema
-- Não modificar nenhum componente UI compartilhado
+## 6. WhatsApp — bot conversacional com IA
+
+Adicionar 4ª aba **"Bot/Atendimento"** dentro de `AdminWhatsApp.tsx` (junto com Eventos / Campanhas / Logs).
+
+**Backend:**
+- Tabela `whatsapp_bot_config` (id, enabled, persona, system_prompt, fallback_message, business_hours_only, model).
+- Tabela `whatsapp_bot_intents` (key, label, trigger_examples text[], response_template, action enum: reply/handoff/schedule/quote).
+- Tabela `whatsapp_conversations` (phone, last_message_at, status active/handed_off/closed, ai_enabled).
+- Tabela `whatsapp_messages` (conversation_id, direction in/out, body, intent_matched, ai_used).
+
+**Edge function nova `whatsapp-bot-reply`:**
+- Recebe webhook do provider (Baileys/ChatPro encaminham mensagens recebidas).
+- Carrega histórico (últimas 10 msg) + system_prompt + intents.
+- Chama Lovable AI Gateway (`google/gemini-2.5-flash` por padrão) com tool-calling: ferramentas `agendar_consulta`, `enviar_orcamento`, `transferir_humano`, `responder`.
+- Responde via `whatsapp-gateway` existente.
+
+**Front da nova aba:**
+- Card de status (bot ligado/desligado, modelo, última msg processada).
+- Editor de **persona/system prompt** com 3 templates prontos:
+  1. *"Atendente humanizada de clínica"* — saúda, identifica intenção (agendar, dúvida, urgência, preço), pede dados, encaminha pro humano se complexo.
+  2. *"Recepcionista comercial"* — foco em conversão, sempre tenta marcar avaliação.
+  3. *"Pós-venda gentil"* — confirmação, lembrete, pesquisa de satisfação.
+- Lista de **intents** com triggers (oi, bom dia, preço, horário, endereço, urgência, cancelar) e resposta — todos pré-preenchidos e editáveis.
+- **Toggle "modo humano-like"**: adiciona `delay 1-3s` e "digitando…" antes de responder.
+- Aba **Conversas ao vivo**: lista as conversas em curso, permite admin assumir manualmente (desliga ai_enabled da conversa).
+- Botão **"Restaurar templates padrão"**.
+
+**Webhook receiver:**
+- Server.js da VPS (`vps-whatsapp/server.js`) ganha `sock.ev.on("messages.upsert")` que chama `https://<projeto>.supabase.co/functions/v1/whatsapp-bot-reply` com payload normalizado.
+
+---
+
+## 7. Endurecimento do backend
+
+Para não "reverter sozinho":
+
+- **React Query**: `staleTime: 60_000` + `refetchOnWindowFocus: false` em todos os hooks admin (já tem em alguns), e mutations com `onMutate` (otimista) + `onError` (rollback) em vez de só `onSuccess invalidate`.
+- **Migrations**: adicionar triggers `touch_updated_at` em todas as tabelas novas, índices em FKs (`appointment_id`, `patient_phone`, `professional_slug`).
+- **Validação Zod** server-side nas edge functions novas (`whatsapp-bot-reply`, etc.).
+- **Logs**: tabela `admin_audit_log` (user_id, action, entity, payload, created_at) — trigger em update/delete em `appointments`, `financial_entries`, `commission_entries`. Ajuda a rastrear "quem mudou o quê".
+- **RLS**: todas as novas tabelas com `has_role(auth.uid(), 'admin')` para staff e leitura própria onde aplicável.
+
+---
+
+## Detalhes técnicos resumidos (devs)
+
+- Migrations criam: `appointment_payments`, `patient_odontogram`, `patient_quotes`, `commission_rules`, `commission_entries`, `stock_items`, `stock_movements`, `whatsapp_bot_config`, `whatsapp_bot_intents`, `whatsapp_conversations`, `whatsapp_messages`, `admin_audit_log`. Mais coluna `requires_prepayment boolean default false` em `treatments_overrides`.
+- Nova rota `/admin/estoque` registrada em `App.tsx` + item no `NAV_ITEMS` do `AdminSidebar`.
+- Nova rota pública `/orcamento/:token` para aceite de orçamento.
+- Edge functions novas: `whatsapp-bot-reply` (com `verify_jwt = false`).
+- Pix: usar `pix-utils` (npm) — geração 100% client/edge, sem PSP.
+- Tudo em `src/admin/pages/` segue padrão dos arquivos existentes (KpiCard, PageHeader, EntityDrawer, DataTable, ConfirmDialog).
+
+---
+
+## Ordem de implementação
+
+1. Scrollbar transparente + correção do Kanban (rápido, desbloqueia uso).
+2. Refino visual da Agenda.
+3. Pacientes CRUD + odontograma + orçamento.
+4. Migrations das 4 features clínicas + estoque + comissão + pré-pagamento.
+5. WhatsApp bot completo.
+6. Auditoria + endurecimento do React Query.
+
+Sem mexer no design atual: só adições e ajustes de contraste. Ao terminar, rodo `tsc --noEmit` e testo o fluxo de drag, criação de paciente e disparo do bot.
