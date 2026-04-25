@@ -52,38 +52,51 @@ export default function WhatsAppTemplatesTab() {
     });
   }, [search, activeCat]);
 
+  function buildBaseRow(t: WhatsAppTemplate) {
+    return {
+      key: t.key,
+      category: t.category,
+      title: t.title,
+      description: t.description,
+      content: t.content,
+      variables: t.variables,
+      trigger_keywords: t.trigger_keywords,
+      requires_config: !!t.requires_config,
+      config_fields: (t.config_fields ?? []) as any,
+      built_in: true,
+    };
+  }
+
   async function toggle(t: WhatsAppTemplate, enabled: boolean) {
     const cur = stored[t.key];
     if (cur) {
       await supabase.from("whatsapp_templates").update({ enabled }).eq("key", t.key);
     } else {
       await supabase.from("whatsapp_templates").insert({
-        key: t.key,
-        category: t.category,
-        title: t.title,
-        content: t.content,
-        trigger_keywords: t.trigger_keywords,
-        config: {},
+        ...buildBaseRow(t),
+        config_values: {},
         enabled,
-      });
+      } as any);
     }
     load();
   }
 
   async function saveTemplate(t: WhatsAppTemplate, patch: { content?: string; config?: Record<string, string>; trigger_keywords?: string[] }) {
     const cur = stored[t.key];
+    const dbPatch: any = {};
+    if (patch.content !== undefined) dbPatch.content = patch.content;
+    if (patch.config !== undefined) dbPatch.config_values = patch.config;
+    if (patch.trigger_keywords !== undefined) dbPatch.trigger_keywords = patch.trigger_keywords;
     if (cur) {
-      await supabase.from("whatsapp_templates").update(patch as any).eq("key", t.key);
+      await supabase.from("whatsapp_templates").update(dbPatch).eq("key", t.key);
     } else {
       await supabase.from("whatsapp_templates").insert({
-        key: t.key,
-        category: t.category,
-        title: t.title,
+        ...buildBaseRow(t),
         content: patch.content ?? t.content,
         trigger_keywords: patch.trigger_keywords ?? t.trigger_keywords,
-        config: patch.config ?? {},
+        config_values: patch.config ?? {},
         enabled: true,
-      });
+      } as any);
     }
     load();
   }
