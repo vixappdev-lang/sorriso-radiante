@@ -277,14 +277,20 @@ function ChatProIntegrationCard() {
         if (error) throw error;
         setCfg((c: any) => ({ ...c, id: data.id }));
       }
-      // ativa provider chatpro
-      await supabase.from("whatsapp_providers" as any).upsert({
+      // ativa provider chatpro (manual upsert)
+      const { data: existingProv } = await supabase.from("whatsapp_providers" as any).select("id").eq("type", "chatpro").maybeSingle();
+      const provPayload: any = {
         type: "chatpro",
         label: "ChatPro",
         is_active: true,
         status: "configured",
         config: { endpoint: payload.endpoint, instance_code: payload.instance_code },
-      } as any, { onConflict: "type" } as any);
+      };
+      if (existingProv?.id) {
+        await supabase.from("whatsapp_providers" as any).update(provPayload).eq("id", existingProv.id);
+      } else {
+        await supabase.from("whatsapp_providers" as any).insert(provPayload);
+      }
       // desativa baileys
       await supabase.from("whatsapp_providers" as any).update({ is_active: false } as any).eq("type", "baileys_vps");
       toast({ title: "ChatPro salvo e ativado" });
