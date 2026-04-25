@@ -1339,6 +1339,7 @@ export type Database = {
           created_at: string
           enabled: boolean
           fallback_message: string
+          greeting_message: string
           human_like_delay: boolean
           id: string
           model: string
@@ -1351,6 +1352,7 @@ export type Database = {
           created_at?: string
           enabled?: boolean
           fallback_message?: string
+          greeting_message?: string
           human_like_delay?: boolean
           id?: string
           model?: string
@@ -1363,6 +1365,7 @@ export type Database = {
           created_at?: string
           enabled?: boolean
           fallback_message?: string
+          greeting_message?: string
           human_like_delay?: boolean
           id?: string
           model?: string
