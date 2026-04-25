@@ -189,6 +189,7 @@ function SectionIntegrations({ initial, onSave }: any) {
   return (
     <div className="space-y-4">
       <ChatProIntegrationCard />
+      <ChatProWebhookCard />
 
       <SectionCard
         title="Clinicorp"
