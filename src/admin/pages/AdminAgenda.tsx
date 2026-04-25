@@ -61,6 +61,21 @@ export default function AdminAgenda() {
   const { data: bookingLinks = [] } = useBookingLinks();
   const defaultLink = bookingLinks.find((l) => l.slug === "geral") || bookingLinks[0];
 
+  // Pré-pagamentos: mapa appointment_id -> status do pagamento
+  const { data: payments = [] } = useQuery({
+    queryKey: ["appointment_payments"],
+    queryFn: async () => {
+      const { data } = await supabase.from("appointment_payments").select("appointment_id, status, amount_cents");
+      return data || [];
+    },
+    staleTime: 30_000,
+  });
+  const paymentMap = useMemo(() => {
+    const m = new Map<string, { status: string; amount_cents: number }>();
+    payments.forEach((p: any) => { if (p.appointment_id) m.set(p.appointment_id, { status: p.status, amount_cents: p.amount_cents }); });
+    return m;
+  }, [payments]);
+
   const [form, setForm] = useState({ name: "", phone: "", email: "", treatment: TREATMENTS[0]?.name ?? "", professional: DENTISTS[0]?.name ?? "", date: iso(new Date()), time: "09:00", notes: "" });
   const [block, setBlock] = useState({ block_date: iso(new Date()), start_time: "12:00", end_time: "13:00", professional_slug: "", reason: "" });
 
