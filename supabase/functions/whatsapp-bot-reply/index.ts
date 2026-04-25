@@ -269,15 +269,17 @@ Deno.serve(async (req) => {
         content: m.body,
       }));
       try {
-        reply = await callAiGateway(
-          aiMessages,
-          cfg.system_prompt || cfg.persona || "Você é uma atendente humanizada da LyneCloud (clínica odontológica). Responda de forma curta, gentil e prestativa em português brasileiro. Use no máximo 2 frases curtas. Use emojis com moderação.",
-          cfg.model || "google/gemini-2.5-flash",
-        );
+        const sysPrompt = cfg.system_prompt || cfg.persona || "Você é uma atendente humanizada da LyneCloud (clínica odontológica). Responda de forma curta, gentil e prestativa em português brasileiro. Use no máximo 2 frases curtas. Use emojis com moderação.";
+        const provider = (cfg as any).ai_provider || "openai";
+        const model = (cfg as any).ai_model || cfg.model || "";
+        const fallback = (cfg as any).ai_fallback_enabled !== false;
+        const result = await callAiWithFallback(provider, model, aiMessages, sysPrompt, fallback);
+        reply = result.text;
         aiUsed = true;
+        intentKey = `ai:${result.provider}`;
         if (matched) intentKey = matched.key;
       } catch (e: any) {
-        console.error("AI error:", e.message);
+        console.error("AI error (todos provedores):", e.message);
         reply = cfg.fallback_message || "Vou te transferir para um humano em instantes 💙";
       }
     }
