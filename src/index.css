@@ -486,6 +486,232 @@
     -webkit-backdrop-filter: blur(12px) saturate(140%);
   }
 
+  /* =========================================================
+     ADMIN DARK — overrides para classes hardcoded
+     Cobertura ampla das páginas existentes sem reescrever tudo.
+     ========================================================= */
+
+  /* Backgrounds brancos e cinzas claros → superfície dark */
+  .admin-shell.admin-dark .bg-white,
+  .admin-shell.admin-dark .bg-white\/85,
+  .admin-shell.admin-dark .bg-white\/70,
+  .admin-shell.admin-dark .bg-white\/80 {
+    background-color: hsl(var(--admin-card)) !important;
+  }
+  .admin-shell.admin-dark .supports-\[backdrop-filter\]\:bg-white\/70 {
+    background-color: hsl(222 28% 8% / 0.85) !important;
+  }
+  .admin-shell.admin-dark .bg-slate-50,
+  .admin-shell.admin-dark .bg-slate-50\/40,
+  .admin-shell.admin-dark .bg-slate-50\/50 {
+    background-color: hsl(222 24% 12%) !important;
+  }
+  .admin-shell.admin-dark .bg-slate-100,
+  .admin-shell.admin-dark .bg-gray-100,
+  .admin-shell.admin-dark .bg-zinc-100 {
+    background-color: hsl(222 22% 16%) !important;
+  }
+  .admin-shell.admin-dark .bg-slate-200 {
+    background-color: hsl(222 18% 22%) !important;
+  }
+  .admin-shell.admin-dark .bg-slate-900 {
+    background-color: hsl(215 85% 60%) !important;
+    color: hsl(222 30% 8%) !important;
+  }
+  .admin-shell.admin-dark .bg-muted,
+  .admin-shell.admin-dark .bg-muted\/30,
+  .admin-shell.admin-dark .bg-muted\/40,
+  .admin-shell.admin-dark .bg-muted\/50,
+  .admin-shell.admin-dark .bg-muted\/60,
+  .admin-shell.admin-dark .bg-muted\/80 {
+    background-color: hsl(222 22% 14%) !important;
+  }
+
+  /* Bordas claras → bordas dark */
+  .admin-shell.admin-dark .border-slate-100,
+  .admin-shell.admin-dark .border-slate-200,
+  .admin-shell.admin-dark .border-gray-200,
+  .admin-shell.admin-dark .border-zinc-200,
+  .admin-shell.admin-dark .border-input {
+    border-color: hsl(var(--admin-border)) !important;
+  }
+  .admin-shell.admin-dark .border-slate-300 {
+    border-color: hsl(var(--admin-border-strong)) !important;
+  }
+  .admin-shell.admin-dark .border-slate-900 {
+    border-color: hsl(215 85% 60%) !important;
+  }
+  .admin-shell.admin-dark .ring-white {
+    --tw-ring-color: hsl(var(--admin-card)) !important;
+  }
+  .admin-shell.admin-dark .ring-slate-100,
+  .admin-shell.admin-dark .ring-slate-200 {
+    --tw-ring-color: hsl(var(--admin-border)) !important;
+  }
+
+  /* Textos escuros → claros (apenas onde fazem sentido em fundo dark) */
+  .admin-shell.admin-dark .text-slate-500,
+  .admin-shell.admin-dark .text-slate-600,
+  .admin-shell.admin-dark .text-slate-700,
+  .admin-shell.admin-dark .text-slate-800,
+  .admin-shell.admin-dark .text-slate-900,
+  .admin-shell.admin-dark .text-gray-700,
+  .admin-shell.admin-dark .text-gray-800,
+  .admin-shell.admin-dark .text-gray-900 {
+    color: hsl(var(--admin-text)) !important;
+  }
+  .admin-shell.admin-dark .text-slate-400,
+  .admin-shell.admin-dark .text-slate-500\/70,
+  .admin-shell.admin-dark .text-gray-500 {
+    color: hsl(var(--admin-text-muted)) !important;
+  }
+  .admin-shell.admin-dark .text-foreground\/70,
+  .admin-shell.admin-dark .text-foreground\/80,
+  .admin-shell.admin-dark .text-foreground\/90,
+  .admin-shell.admin-dark .text-foreground\/85 {
+    color: hsl(var(--admin-text)) !important;
+  }
+
+  /* Mantém .text-white explícito (sidebars escuras já tratadas) */
+
+  /* Selects nativos no dark */
+  .admin-shell.admin-dark select {
+    color-scheme: dark;
+  }
+
+  /* Recharts tooltip + grid no dark */
+  .admin-shell.admin-dark .recharts-cartesian-grid-horizontal line,
+  .admin-shell.admin-dark .recharts-cartesian-grid-vertical line {
+    stroke: hsl(220 14% 22%) !important;
+  }
+  .admin-shell.admin-dark .recharts-cartesian-axis-tick text,
+  .admin-shell.admin-dark .recharts-text {
+    fill: hsl(var(--admin-text-muted)) !important;
+  }
+  .admin-shell.admin-dark .recharts-default-tooltip {
+    background-color: hsl(222 26% 11%) !important;
+    border: 1px solid hsl(220 14% 24%) !important;
+    border-radius: 12px !important;
+    color: hsl(var(--admin-text)) !important;
+    box-shadow: 0 12px 32px -16px hsl(0 0% 0% / 0.6) !important;
+  }
+  .admin-shell.admin-dark .recharts-tooltip-label,
+  .admin-shell.admin-dark .recharts-tooltip-item,
+  .admin-shell.admin-dark .recharts-tooltip-item-name,
+  .admin-shell.admin-dark .recharts-tooltip-item-value {
+    color: hsl(var(--admin-text)) !important;
+  }
+  .admin-shell.admin-dark .recharts-tooltip-cursor {
+    fill: hsl(220 14% 22% / 0.4) !important;
+    stroke: hsl(220 14% 28%) !important;
+  }
+
+  /* Ícones "ghost" cinzas/claros — se aparecerem como sombras na dark */
+  .admin-shell.admin-dark [class*="text-muted-foreground"] {
+    color: hsl(var(--admin-text-muted)) !important;
+  }
+
+  /* Tabs do shadcn */
+  .admin-shell.admin-dark [data-state="active"][role="tab"] {
+    background-color: hsl(222 26% 14%) !important;
+    color: hsl(var(--admin-text)) !important;
+    box-shadow: 0 1px 0 hsl(0 0% 100% / 0.04) inset, 0 1px 2px hsl(0 0% 0% / 0.4) !important;
+  }
+
+  /* Switch checked verde */
+  .admin-shell.admin-dark [data-state="checked"] {
+    background-color: hsl(152 60% 45%) !important;
+  }
+
+  /* Avatares ring branco viram ring sutil */
+  .admin-shell.admin-dark .ring-2.ring-white {
+    --tw-ring-color: hsl(220 14% 18%) !important;
+  }
+
+  /* WhatsApp preview no dark — reforça o esquema dark do WhatsApp */
+  .admin-shell.admin-dark .bg-\[\#dcf8c6\] { background-color: #005c4b !important; color: hsl(0 0% 96%) !important; }
+  .admin-shell.admin-dark .bg-\[\#e5ddd5\] { background-color: #0b141a !important; }
+
+  /* Notification dot ring */
+  .admin-shell.admin-dark .ring-2.ring-white { --tw-ring-color: hsl(var(--admin-card)) !important; }
+
+  /* Hover suaves de cards/botões cinzas claros */
+  .admin-shell.admin-dark .hover\:bg-slate-50:hover,
+  .admin-shell.admin-dark .hover\:bg-slate-100:hover,
+  .admin-shell.admin-dark .hover\:bg-muted:hover,
+  .admin-shell.admin-dark .hover\:bg-muted\/40:hover,
+  .admin-shell.admin-dark .hover\:bg-muted\/80:hover {
+    background-color: hsl(222 22% 16%) !important;
+  }
+  .admin-shell.admin-dark .hover\:border-slate-300:hover {
+    border-color: hsl(var(--admin-border-strong)) !important;
+  }
+
+  /* Backgrounds gradient suaves emerald/amber/violet/blue/rose com /5 e /10 ficam OK,
+     mas amber-50 / emerald-50 puros viram superfícies dark com tint */
+  .admin-shell.admin-dark .bg-amber-50,
+  .admin-shell.admin-dark .bg-amber-50\/50 {
+    background-color: hsl(38 60% 14%) !important;
+  }
+  .admin-shell.admin-dark .bg-emerald-50,
+  .admin-shell.admin-dark .bg-emerald-50\/50 {
+    background-color: hsl(152 50% 12%) !important;
+  }
+  .admin-shell.admin-dark .bg-blue-50 { background-color: hsl(215 60% 14%) !important; }
+  .admin-shell.admin-dark .bg-rose-50 { background-color: hsl(350 60% 14%) !important; }
+  .admin-shell.admin-dark .bg-violet-50 { background-color: hsl(262 50% 16%) !important; }
+  .admin-shell.admin-dark .bg-sky-50 { background-color: hsl(200 60% 14%) !important; }
+
+  /* Borders coloridos /200 → /600 (mais visíveis em dark) */
+  .admin-shell.admin-dark .border-amber-200 { border-color: hsl(38 60% 30%) !important; }
+  .admin-shell.admin-dark .border-emerald-200 { border-color: hsl(152 50% 28%) !important; }
+  .admin-shell.admin-dark .border-blue-200 { border-color: hsl(215 60% 32%) !important; }
+  .admin-shell.admin-dark .border-rose-200 { border-color: hsl(350 60% 32%) !important; }
+  .admin-shell.admin-dark .border-violet-200 { border-color: hsl(262 50% 32%) !important; }
+
+  /* Dialog/Sheet do Radix em portal (renderizam fora do .admin-shell) */
+  html[data-admin-theme="dark"] [role="dialog"],
+  html[data-admin-theme="dark"] [data-radix-dialog-content],
+  html[data-admin-theme="dark"] [data-radix-sheet-content] {
+    background-color: hsl(222 26% 10%) !important;
+    color: hsl(210 20% 96%) !important;
+    border-color: hsl(220 14% 22%) !important;
+  }
+  html[data-admin-theme="dark"] [role="dialog"] .bg-white,
+  html[data-admin-theme="dark"] [role="dialog"] .bg-slate-50 {
+    background-color: hsl(222 24% 12%) !important;
+  }
+  html[data-admin-theme="dark"] [role="dialog"] input,
+  html[data-admin-theme="dark"] [role="dialog"] textarea,
+  html[data-admin-theme="dark"] [role="dialog"] select {
+    background-color: hsl(222 24% 12%) !important;
+    color: hsl(210 20% 96%) !important;
+    border-color: hsl(220 14% 24%) !important;
+  }
+  html[data-admin-theme="dark"] [role="dialog"] .border-slate-100,
+  html[data-admin-theme="dark"] [role="dialog"] .border-slate-200,
+  html[data-admin-theme="dark"] [role="dialog"] .border-input {
+    border-color: hsl(220 14% 22%) !important;
+  }
+  html[data-admin-theme="dark"] [role="dialog"] .text-slate-500,
+  html[data-admin-theme="dark"] [role="dialog"] .text-slate-600,
+  html[data-admin-theme="dark"] [role="dialog"] .text-slate-700,
+  html[data-admin-theme="dark"] [role="dialog"] .text-slate-800,
+  html[data-admin-theme="dark"] [role="dialog"] .text-slate-900 {
+    color: hsl(210 20% 96%) !important;
+  }
+  html[data-admin-theme="dark"] [role="dialog"] .text-slate-400,
+  html[data-admin-theme="dark"] [role="dialog"] .text-slate-500\/70 {
+    color: hsl(220 12% 64%) !important;
+  }
+
+  /* Sonner/Toast no dark */
+  html[data-admin-theme="dark"] [data-sonner-toaster] [data-sonner-toast] {
+    background: hsl(222 26% 12%) !important;
+    color: hsl(210 20% 96%) !important;
+    border-color: hsl(220 14% 24%) !important;
+  }
+
   /* ===== App namespace (Área do Cliente, Booking, Review) ===== */
   .app-shell,
   .app-shell * {

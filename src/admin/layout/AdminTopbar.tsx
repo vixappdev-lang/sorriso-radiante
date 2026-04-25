@@ -32,7 +32,7 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
   }
 
   return (
-    <header className="admin-topbar sticky top-0 z-30 border-b border-[hsl(var(--admin-border))] bg-white/85 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+    <header className="admin-topbar sticky top-0 z-30 border-b border-[hsl(var(--admin-border))] bg-[hsl(var(--admin-card))]/85 backdrop-blur supports-[backdrop-filter]:bg-[hsl(var(--admin-card))]/70">
       <div className="flex h-14 items-center gap-3 px-4 sm:px-6">
         <Button variant="ghost" size="icon" className="lg:hidden" onClick={onOpenSidebar} aria-label="Abrir menu">
           <Menu className="h-5 w-5" />
