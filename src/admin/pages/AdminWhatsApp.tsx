@@ -3,6 +3,7 @@ import {
   Loader2, Settings, Activity, Send, Save, RefreshCw, ListChecks,
   MessageSquare, Megaphone, Server, CheckCircle2, XCircle, Plus, Trash2,
   Download, Power, QrCode as QrIcon, Wifi, WifiOff, AlertCircle, Copy as CopyIcon, Sparkles,
+  Bot, Brain, MessageCircle, ChevronRight, UserCheck, Zap,
 } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -157,13 +158,17 @@ export default function AdminWhatsApp() {
         />
       </div>
 
-      <Tabs defaultValue="events">
+      <Tabs defaultValue="bot">
         <TabsList className="bg-white border h-10 p-1">
+          <TabsTrigger value="bot" className="text-[13px] gap-1.5"><Bot className="h-3.5 w-3.5" /> Bot/Atendimento</TabsTrigger>
           <TabsTrigger value="events" className="text-[13px] gap-1.5"><MessageSquare className="h-3.5 w-3.5" /> Eventos</TabsTrigger>
           <TabsTrigger value="campaigns" className="text-[13px] gap-1.5"><Megaphone className="h-3.5 w-3.5" /> Campanhas</TabsTrigger>
           <TabsTrigger value="logs" className="text-[13px] gap-1.5"><ListChecks className="h-3.5 w-3.5" /> Logs</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="bot" className="mt-5">
+          <BotTab />
+        </TabsContent>
         <TabsContent value="events" className="mt-5">
           <EventsTab />
         </TabsContent>
