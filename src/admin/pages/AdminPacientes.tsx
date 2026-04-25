@@ -273,13 +273,13 @@ export default function AdminPacientes() {
             </div>
 
             <Tabs defaultValue="resumo">
-              <TabsList className="grid grid-cols-6 w-full">
-                <TabsTrigger value="resumo" className="text-[10px] px-1"><UserIcon className="h-3 w-3" /></TabsTrigger>
-                <TabsTrigger value="odontograma" className="text-[10px] px-1"><Smile className="h-3 w-3" /></TabsTrigger>
-                <TabsTrigger value="orcamento" className="text-[10px] px-1"><ClipboardList className="h-3 w-3" /></TabsTrigger>
-                <TabsTrigger value="historico" className="text-[10px] px-1"><History className="h-3 w-3" /></TabsTrigger>
-                <TabsTrigger value="financeiro" className="text-[10px] px-1"><DollarSign className="h-3 w-3" /></TabsTrigger>
-                <TabsTrigger value="obs" className="text-[10px] px-1"><StickyNote className="h-3 w-3" /></TabsTrigger>
+              <TabsList className="grid grid-cols-6 w-full bg-muted/60 p-1 h-auto gap-1">
+                <TabsTrigger value="resumo" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><UserIcon className="h-3 w-3" /> Resumo</TabsTrigger>
+                <TabsTrigger value="odontograma" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><Smile className="h-3 w-3" /> Dentes</TabsTrigger>
+                <TabsTrigger value="orcamento" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><ClipboardList className="h-3 w-3" /> Orçam.</TabsTrigger>
+                <TabsTrigger value="historico" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><History className="h-3 w-3" /> Histórico</TabsTrigger>
+                <TabsTrigger value="financeiro" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><DollarSign className="h-3 w-3" /> Financ.</TabsTrigger>
+                <TabsTrigger value="obs" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><StickyNote className="h-3 w-3" /> Obs</TabsTrigger>
               </TabsList>
 
               <TabsContent value="resumo" className="mt-4 space-y-3">
@@ -386,11 +386,11 @@ export default function AdminPacientes() {
         footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setNewPatientOpen(false)}>Cancelar</Button><Button onClick={createPatient}>Cadastrar paciente</Button></div>}
       >
         <Tabs defaultValue="pessoal">
-          <TabsList className="grid grid-cols-4 w-full">
-            <TabsTrigger value="pessoal" className="text-xs">Pessoal</TabsTrigger>
-            <TabsTrigger value="endereco" className="text-xs">Endereço</TabsTrigger>
-            <TabsTrigger value="clinico" className="text-xs">Clínico</TabsTrigger>
-            <TabsTrigger value="extra" className="text-xs">Extras</TabsTrigger>
+          <TabsList className="grid grid-cols-4 w-full bg-muted/60 p-1 h-auto">
+            <TabsTrigger value="pessoal" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md font-medium">Pessoal</TabsTrigger>
+            <TabsTrigger value="endereco" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md font-medium">Endereço</TabsTrigger>
+            <TabsTrigger value="clinico" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md font-medium">Clínico</TabsTrigger>
+            <TabsTrigger value="extra" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md font-medium">Extras</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pessoal" className="mt-4 space-y-3">

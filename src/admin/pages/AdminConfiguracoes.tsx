@@ -187,34 +187,237 @@ function SectionIntegrations({ initial, onSave }: any) {
   }
 
   return (
+    <div className="space-y-4">
+      <ChatProIntegrationCard />
+
+      <SectionCard
+        title="Clinicorp"
+        description="Sincronização bidirecional de agendamentos."
+        footer={<div className="flex gap-2"><Button variant="outline" onClick={runSync} disabled={syncing}>{syncing ? "Sincronizando…" : "Testar sincronização"}</Button><Button onClick={() => onSave(v)}>Salvar</Button></div>}
+      >
+        <div className="rounded-xl border border-[hsl(var(--admin-border))] p-5 bg-muted/30">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary"><Plug className="h-5 w-5" /></div>
+              <div>
+                <p className="font-semibold">Clinicorp</p>
+                <p className="text-xs text-muted-foreground">Sincronização bidirecional de agendamentos.</p>
+              </div>
+            </div>
+            <Badge variant="outline">Aguardando credenciais</Badge>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div><Label className="text-xs">Endpoint da API</Label><Input value={v.clinicorp_endpoint} onChange={(e) => setV({ ...v, clinicorp_endpoint: e.target.value })} placeholder="https://api.clinicorp.com" /></div>
+            <div><Label className="text-xs">ID da clínica</Label><Input value={v.clinicorp_clinic_id} onChange={(e) => setV({ ...v, clinicorp_clinic_id: e.target.value })} /></div>
+            <div className="md:col-span-2 flex items-center justify-between rounded-lg border bg-background px-3 py-2.5">
+              <div>
+                <p className="text-[13px] font-medium">Sincronização automática</p>
+                <p className="text-[11px] text-muted-foreground">Buscar agenda a cada {v.sync_interval} min e bloquear horários ocupados no site.</p>
+              </div>
+              <Switch checked={v.auto_sync} onCheckedChange={(b) => setV({ ...v, auto_sync: b })} />
+            </div>
+          </div>
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
+
+function ChatProIntegrationCard() {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [testing, setTesting] = useState(false);
+  const [statusInfo, setStatusInfo] = useState<{ connected: boolean; message?: string } | null>(null);
+  const [showToken, setShowToken] = useState(false);
+  const [cfg, setCfg] = useState<any>({
+    id: null,
+    endpoint: "",
+    instance_code: "",
+    token: "",
+    is_active: true,
+    message_template: "",
+  });
+  const [testNumber, setTestNumber] = useState("");
+  const [testMessage, setTestMessage] = useState("Olá! Esta é uma mensagem de teste do LyneCloud 🦷");
+
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from("chatpro_config")
+        .select("*")
+        .order("updated_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (data) setCfg({ ...data });
+      setLoading(false);
+    })();
+  }, []);
+
+  async function save() {
+    if (!cfg.endpoint || !cfg.token || !cfg.instance_code) {
+      toast({ title: "Preencha endpoint, instance code e token", variant: "destructive" });
+      return;
+    }
+    setSaving(true);
+    try {
+      const payload = {
+        endpoint: cfg.endpoint.trim().replace(/\/$/, ""),
+        instance_code: cfg.instance_code.trim(),
+        token: cfg.token.trim(),
+        is_active: !!cfg.is_active,
+        message_template: cfg.message_template || undefined,
+        updated_at: new Date().toISOString(),
+      };
+      if (cfg.id) {
+        const { error } = await supabase.from("chatpro_config").update(payload).eq("id", cfg.id);
+        if (error) throw error;
+      } else {
+        const { data, error } = await supabase.from("chatpro_config").insert(payload).select("id").single();
+        if (error) throw error;
+        setCfg((c: any) => ({ ...c, id: data.id }));
+      }
+      // ativa provider chatpro (manual upsert)
+      const existingProvRes: any = await supabase.from("whatsapp_providers" as any).select("id").eq("type", "chatpro").maybeSingle();
+      const existingProv = existingProvRes?.data as { id: string } | null;
+      const provPayload: any = {
+        type: "chatpro",
+        label: "ChatPro",
+        is_active: true,
+        status: "configured",
+        config: { endpoint: payload.endpoint, instance_code: payload.instance_code },
+      };
+      if (existingProv?.id) {
+        await supabase.from("whatsapp_providers" as any).update(provPayload).eq("id", existingProv.id);
+      } else {
+        await supabase.from("whatsapp_providers" as any).insert(provPayload);
+      }
+      // desativa baileys
+      await supabase.from("whatsapp_providers" as any).update({ is_active: false } as any).eq("type", "baileys_vps");
+      toast({ title: "ChatPro salvo e ativado" });
+    } catch (e: any) {
+      toast({ title: "Erro ao salvar", description: e.message, variant: "destructive" });
+    } finally { setSaving(false); }
+  }
+
+  async function checkStatus() {
+    setTesting(true);
+    try {
+      const base = cfg.endpoint.replace(/\/$/, "");
+      const resp = await fetch(`${base}/api/v1/status`, { headers: { Authorization: cfg.token } });
+      const text = await resp.text();
+      let data: any; try { data = JSON.parse(text); } catch { data = { raw: text }; }
+      const ok = resp.ok && (data?.status === "connected" || data?.connected === true || data?.state === "open" || resp.status === 200);
+      setStatusInfo({ connected: ok, message: data?.message || data?.status || (ok ? "Conectado" : "Verifique credenciais") });
+      toast({ title: ok ? "ChatPro conectado" : "Falha ao conectar", description: data?.message || data?.status || "" , variant: ok ? "default" : "destructive" });
+    } catch (e: any) {
+      setStatusInfo({ connected: false, message: e.message });
+      toast({ title: "Erro de conexão", description: e.message, variant: "destructive" });
+    } finally { setTesting(false); }
+  }
+
+  async function sendTest() {
+    if (!testNumber) { toast({ title: "Informe um número" }); return; }
+    setTesting(true);
+    try {
+      const digits = testNumber.replace(/\D/g, "");
+      const e164 = digits.startsWith("55") ? digits : (digits.length === 10 || digits.length === 11 ? "55" + digits : digits);
+      const base = cfg.endpoint.replace(/\/$/, "");
+      const resp = await fetch(`${base}/api/v1/send_message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: cfg.token },
+        body: JSON.stringify({ number: e164, message: testMessage }),
+      });
+      const text = await resp.text();
+      let data: any; try { data = JSON.parse(text); } catch { data = { raw: text }; }
+      toast({ title: resp.ok ? "Mensagem enviada ✅" : "Falha ao enviar", description: data?.message || JSON.stringify(data).slice(0, 120), variant: resp.ok ? "default" : "destructive" });
+    } catch (e: any) {
+      toast({ title: "Erro", description: e.message, variant: "destructive" });
+    } finally { setTesting(false); }
+  }
+
+  const isConfigured = !!(cfg.endpoint && cfg.token && cfg.instance_code && cfg.id);
+
+  return (
     <SectionCard
-      title="Integrações externas"
-      description="Conecte sistemas de gestão odontológica e demais ferramentas."
-      footer={<div className="flex gap-2"><Button variant="outline" onClick={runSync} disabled={syncing}>{syncing ? "Sincronizando…" : "Testar sincronização"}</Button><Button onClick={() => onSave(v)}>Salvar</Button></div>}
+      title="ChatPro · WhatsApp"
+      description="Conecte sua conta ChatPro para enviar mensagens automáticas, lembretes e receber respostas."
+      footer={
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={checkStatus} disabled={testing || !cfg.endpoint || !cfg.token}>
+            {testing ? "Verificando…" : "Verificar status"}
+          </Button>
+          <Button onClick={save} disabled={saving || loading}>{saving ? "Salvando…" : (cfg.id ? "Atualizar credenciais" : "Salvar e ativar")}</Button>
+        </div>
+      }
     >
       <div className="rounded-xl border border-[hsl(var(--admin-border))] p-5 bg-muted/30">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div className="flex items-center gap-3">
-            <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary"><Plug className="h-5 w-5" /></div>
+            <div className="grid h-10 w-10 place-items-center rounded-lg bg-emerald-500/10 text-emerald-600"><Send className="h-5 w-5" /></div>
             <div>
-              <p className="font-semibold">Clinicorp</p>
-              <p className="text-xs text-muted-foreground">Sincronização bidirecional de agendamentos.</p>
+              <p className="font-semibold">ChatPro Gateway</p>
+              <p className="text-xs text-muted-foreground">SaaS oficial — paga por mensagem, sem precisar de servidor.</p>
             </div>
           </div>
-          <Badge variant="outline">Aguardando credenciais</Badge>
+          {statusInfo ? (
+            <Badge variant={statusInfo.connected ? "default" : "outline"} className={cn(statusInfo.connected ? "bg-emerald-600 text-white" : "border-amber-300 text-amber-700 bg-amber-50")}>
+              {statusInfo.connected ? <CheckCircle2 className="h-3 w-3 mr-1" /> : <XCircle className="h-3 w-3 mr-1" />}
+              {statusInfo.connected ? "Conectado" : (statusInfo.message || "Desconectado")}
+            </Badge>
+          ) : (
+            <Badge variant="outline">{isConfigured ? "Configurado" : "Aguardando credenciais"}</Badge>
+          )}
         </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div><Label className="text-xs">Endpoint da API</Label><Input value={v.clinicorp_endpoint} onChange={(e) => setV({ ...v, clinicorp_endpoint: e.target.value })} placeholder="https://api.clinicorp.com" /></div>
-          <div><Label className="text-xs">ID da clínica</Label><Input value={v.clinicorp_clinic_id} onChange={(e) => setV({ ...v, clinicorp_clinic_id: e.target.value })} /></div>
-          <div className="md:col-span-2 flex items-center justify-between rounded-lg border bg-background px-3 py-2.5">
-            <div>
-              <p className="text-[13px] font-medium">Sincronização automática</p>
-              <p className="text-[11px] text-muted-foreground">Buscar agenda a cada {v.sync_interval} min e bloquear horários ocupados no site.</p>
-            </div>
-            <Switch checked={v.auto_sync} onCheckedChange={(b) => setV({ ...v, auto_sync: b })} />
+          <div className="md:col-span-2">
+            <Label className="text-xs">Endpoint da API*</Label>
+            <Input value={cfg.endpoint} onChange={(e) => setCfg({ ...cfg, endpoint: e.target.value })} placeholder="https://v5.chatpro.com.br" />
+            <p className="text-[10px] text-muted-foreground mt-1">URL base do seu servidor ChatPro (sem barra no final).</p>
           </div>
-          <p className="md:col-span-2 text-[11px] text-muted-foreground">O <strong>token de acesso</strong> e o <strong>clinic ID</strong> da Clinicorp serão solicitados de forma segura ao habilitar a integração. Sem eles a sincronização permanece inativa.</p>
+          <div>
+            <Label className="text-xs">Instance Code*</Label>
+            <Input value={cfg.instance_code} onChange={(e) => setCfg({ ...cfg, instance_code: e.target.value })} placeholder="chatpro-XXXXXX" />
+          </div>
+          <div>
+            <Label className="text-xs">Token*</Label>
+            <div className="relative">
+              <Input
+                type={showToken ? "text" : "password"}
+                value={cfg.token}
+                onChange={(e) => setCfg({ ...cfg, token: e.target.value })}
+                placeholder="seu-token-secreto"
+                className="pr-9"
+              />
+              <button type="button" onClick={() => setShowToken((s) => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+          <div className="md:col-span-2">
+            <Label className="text-xs">Template padrão de confirmação</Label>
+            <Textarea
+              value={cfg.message_template || ""}
+              onChange={(e) => setCfg({ ...cfg, message_template: e.target.value })}
+              rows={4}
+              placeholder="Use variáveis: {{nome}}, {{tratamento}}, {{data}}, {{hora}}"
+            />
+          </div>
         </div>
+
+        {isConfigured && (
+          <div className="mt-5 pt-5 border-t border-dashed">
+            <p className="text-xs font-semibold mb-2 flex items-center gap-1.5"><Send className="h-3.5 w-3.5" /> Enviar mensagem de teste</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              <Input value={testNumber} onChange={(e) => setTestNumber(e.target.value)} placeholder="(11) 99999-9999" />
+              <Input className="md:col-span-2" value={testMessage} onChange={(e) => setTestMessage(e.target.value)} />
+            </div>
+            <Button size="sm" className="mt-2" onClick={sendTest} disabled={testing}>
+              {testing ? "Enviando…" : "Enviar teste"}
+            </Button>
+          </div>
+        )}
       </div>
     </SectionCard>
   );
