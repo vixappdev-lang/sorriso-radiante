@@ -993,3 +993,170 @@ function SectionApiKeys() {
     </SectionCard>
   );
 }
+
+/* ========== PAGAMENTOS — defaults globais de pré-pagamento e métodos ========== */
+function SectionPayments({ initial, onSave }: any) {
+  const [v, setV] = useState({
+    prepayment_mode: "optional", // off | optional | required
+    prepayment_default_cents: 5000, // R$ 50
+    accept_pix: true,
+    accept_credit_card: true,
+    accept_boleto: false,
+    accept_cash: true,
+    pix_key: "",
+    pix_owner: "",
+    max_installments: 12,
+    installments_no_interest: 4,
+    cancellation_policy:
+      "Cancelamentos com até 24h de antecedência têm reembolso total. Após esse prazo, o valor não é reembolsado.",
+    receipt_footer: "",
+    ...initial,
+  });
+
+  const modeMeta: Record<string, { label: string; desc: string; color: string }> = {
+    off: { label: "Desligado", desc: "Nunca pedir pré-pagamento (controle só por tratamento).", color: "slate" },
+    optional: { label: "Opcional", desc: "Cliente pode pagar antes — não bloqueia a confirmação.", color: "blue" },
+    required: { label: "Obrigatório", desc: "Agendamento só é confirmado após o pagamento ser identificado.", color: "amber" },
+  };
+
+  return (
+    <div className="space-y-4">
+      <SectionCard
+        title="Pré-pagamento — padrão da clínica"
+        description="Esta configuração vale como padrão. Cada tratamento ainda pode sobrescrever em /admin/tratamentos."
+        footer={<Button onClick={() => onSave(v)}>Salvar pagamentos</Button>}
+      >
+        <div>
+          <Label className="text-xs">Modo padrão</Label>
+          <div className="grid sm:grid-cols-3 gap-2 mt-2">
+            {Object.entries(modeMeta).map(([key, meta]) => {
+              const active = v.prepayment_mode === key;
+              return (
+                <button
+                  type="button"
+                  key={key}
+                  onClick={() => setV({ ...v, prepayment_mode: key })}
+                  className={cn(
+                    "text-left rounded-xl border-2 p-3 transition",
+                    active ? "border-slate-900 bg-slate-50" : "border-slate-200 hover:border-slate-300 bg-white",
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <p className="text-[13px] font-semibold text-slate-900">{meta.label}</p>
+                    {active && <Badge className="bg-slate-900 text-white text-[10px] h-5">Selecionado</Badge>}
+                  </div>
+                  <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">{meta.desc}</p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+          <div>
+            <Label className="text-xs">Valor padrão de pré-pagamento (R$)</Label>
+            <Input
+              type="number"
+              step="0.01"
+              value={Number(v.prepayment_default_cents) / 100 || ""}
+              onChange={(e) => setV({ ...v, prepayment_default_cents: Math.round(Number(e.target.value) * 100) })}
+              placeholder="50,00"
+              className="mt-1.5"
+            />
+            <p className="text-[10px] text-slate-400 mt-1">Aplicado quando o tratamento não tem valor próprio.</p>
+          </div>
+          <div>
+            <Label className="text-xs">Política de cancelamento</Label>
+            <Textarea
+              rows={3}
+              value={v.cancellation_policy}
+              onChange={(e) => setV({ ...v, cancellation_policy: e.target.value })}
+              className="mt-1.5"
+            />
+          </div>
+        </div>
+      </SectionCard>
+
+      <SectionCard
+        title="Métodos de pagamento aceitos"
+        description="Aparecem nos checkouts, faturas e respostas automáticas do WhatsApp."
+        footer={<Button onClick={() => onSave(v)}>Salvar métodos</Button>}
+      >
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {[
+            { k: "accept_pix", label: "PIX", emoji: "💚" },
+            { k: "accept_credit_card", label: "Cartão de crédito", emoji: "💳" },
+            { k: "accept_boleto", label: "Boleto", emoji: "📄" },
+            { k: "accept_cash", label: "Dinheiro", emoji: "💵" },
+          ].map((m) => {
+            const on = !!(v as any)[m.k];
+            return (
+              <button
+                type="button"
+                key={m.k}
+                onClick={() => setV({ ...v, [m.k]: !on })}
+                className={cn(
+                  "rounded-xl border-2 p-3 text-left transition",
+                  on ? "border-emerald-400 bg-emerald-50/50" : "border-slate-200 bg-white hover:border-slate-300",
+                )}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl">{m.emoji}</span>
+                  <Switch checked={on} onCheckedChange={(b) => setV({ ...v, [m.k]: b })} />
+                </div>
+                <p className="text-[12.5px] font-semibold text-slate-900 mt-2">{m.label}</p>
+              </button>
+            );
+          })}
+        </div>
+
+        {v.accept_pix && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 border-t mt-3">
+            <div>
+              <Label className="text-xs">Chave PIX</Label>
+              <Input value={v.pix_key} onChange={(e) => setV({ ...v, pix_key: e.target.value })} placeholder="CNPJ, e-mail, telefone..." className="mt-1.5" />
+            </div>
+            <div>
+              <Label className="text-xs">Titular da chave</Label>
+              <Input value={v.pix_owner} onChange={(e) => setV({ ...v, pix_owner: e.target.value })} placeholder="Nome ou Razão Social" className="mt-1.5" />
+            </div>
+          </div>
+        )}
+
+        {v.accept_credit_card && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-3 border-t mt-3">
+            <div>
+              <Label className="text-xs">Máximo de parcelas</Label>
+              <Input
+                type="number"
+                value={v.max_installments}
+                onChange={(e) => setV({ ...v, max_installments: Number(e.target.value) || 1 })}
+                className="mt-1.5"
+              />
+            </div>
+            <div>
+              <Label className="text-xs">Parcelas sem juros até</Label>
+              <Input
+                type="number"
+                value={v.installments_no_interest}
+                onChange={(e) => setV({ ...v, installments_no_interest: Number(e.target.value) || 0 })}
+                className="mt-1.5"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="pt-3 border-t mt-3">
+          <Label className="text-xs">Texto extra no recibo / fatura</Label>
+          <Textarea
+            rows={2}
+            value={v.receipt_footer}
+            onChange={(e) => setV({ ...v, receipt_footer: e.target.value })}
+            placeholder="Ex.: Obrigado pela confiança! CNPJ 00.000.000/0001-00"
+            className="mt-1.5"
+          />
+        </div>
+      </SectionCard>
+    </div>
+  );
+}
