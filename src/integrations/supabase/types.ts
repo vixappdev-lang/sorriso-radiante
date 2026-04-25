@@ -1143,6 +1143,7 @@ export type Database = {
           created_at: string
           current_qty: number
           id: string
+          image_url: string | null
           min_qty: number
           name: string
           sku: string | null
@@ -1156,6 +1157,7 @@ export type Database = {
           created_at?: string
           current_qty?: number
           id?: string
+          image_url?: string | null
           min_qty?: number
           name: string
           sku?: string | null
@@ -1169,6 +1171,7 @@ export type Database = {
           created_at?: string
           current_qty?: number
           id?: string
+          image_url?: string | null
           min_qty?: number
           name?: string
           sku?: string | null
@@ -1645,6 +1648,63 @@ export type Database = {
           status?: string
           type?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_templates: {
+        Row: {
+          built_in: boolean
+          category: string
+          config_fields: Json
+          config_values: Json
+          content: string
+          created_at: string
+          description: string | null
+          enabled: boolean
+          id: string
+          key: string
+          position: number
+          requires_config: boolean
+          title: string
+          trigger_keywords: string[]
+          updated_at: string
+          variables: string[]
+        }
+        Insert: {
+          built_in?: boolean
+          category?: string
+          config_fields?: Json
+          config_values?: Json
+          content: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          key: string
+          position?: number
+          requires_config?: boolean
+          title: string
+          trigger_keywords?: string[]
+          updated_at?: string
+          variables?: string[]
+        }
+        Update: {
+          built_in?: boolean
+          category?: string
+          config_fields?: Json
+          config_values?: Json
+          content?: string
+          created_at?: string
+          description?: string | null
+          enabled?: boolean
+          id?: string
+          key?: string
+          position?: number
+          requires_config?: boolean
+          title?: string
+          trigger_keywords?: string[]
+          updated_at?: string
+          variables?: string[]
         }
         Relationships: []
       }
