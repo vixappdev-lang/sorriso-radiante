@@ -68,7 +68,19 @@ export default function AdminPacientes() {
   const [quotes, setQuotes] = useState<any[]>([]);
   const [newNote, setNewNote] = useState("");
   const [newPatientOpen, setNewPatientOpen] = useState(false);
-  const [newPatient, setNewPatient] = useState({ full_name: "", phone: "", email: "", cpf: "", birth_date: "", notes: "" });
+  const emptyPatient = {
+    full_name: "", phone: "", email: "", cpf: "", rg: "", birth_date: "",
+    gender: "", marital_status: "", profession: "",
+    address_zip: "", address_street: "", address_number: "", address_complement: "", address_neighborhood: "", address_city: "", address_state: "",
+    emergency_contact_name: "", emergency_contact_phone: "", emergency_contact_relation: "",
+    allergies: "", medical_conditions: "", current_medications: "",
+    insurance_name: "", insurance_number: "",
+    source_channel: "recepcao", how_found_us: "",
+    responsible_name: "", responsible_cpf: "",
+    allow_whatsapp: true, allow_email: true,
+    notes: "",
+  };
+  const [newPatient, setNewPatient] = useState<typeof emptyPatient>(emptyPatient);
   const [newQuoteOpen, setNewQuoteOpen] = useState(false);
 
   useEffect(() => { setQ(params.get("q") ?? ""); }, [params]);
