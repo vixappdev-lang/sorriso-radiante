@@ -264,10 +264,13 @@ export default function AdminLeads() {
 function KanbanColumn({ col, leads, onCardClick, brl }: { col: typeof COLUMNS[number]; leads: Lead[]; onCardClick: (l: Lead) => void; brl: (c: number | null) => string }) {
   const { setNodeRef, isOver } = useDroppable({ id: col.key });
   return (
-    <div ref={setNodeRef} className={cn(
-      "admin-card flex flex-col min-h-[400px] overflow-hidden transition-colors",
-      isOver && "ring-2 ring-primary ring-offset-1"
-    )}>
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "admin-card flex flex-col min-h-[420px] overflow-hidden transition-all duration-150",
+        isOver && "ring-2 ring-primary ring-offset-2 shadow-lg scale-[1.01]"
+      )}
+    >
       <header className="flex items-center justify-between gap-2 border-b border-[hsl(var(--admin-border))] px-3 py-2.5">
         <div className="flex items-center gap-2 min-w-0">
           <span className={cn("h-2 w-2 rounded-full", COLOR_DOTS[col.color])} />
@@ -277,7 +280,9 @@ function KanbanColumn({ col, leads, onCardClick, brl }: { col: typeof COLUMNS[nu
       </header>
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {leads.length === 0 ? (
-          <p className="text-[11px] text-muted-foreground text-center py-6">Sem leads</p>
+          <div className="flex-1 grid place-items-center py-10 text-[11px] text-muted-foreground border border-dashed border-[hsl(var(--admin-border))] rounded-lg">
+            Solte aqui
+          </div>
         ) : leads.map((l) => (
           <DraggableLead key={l.id} lead={l} onClick={() => onCardClick(l)} brl={brl} />
         ))}
@@ -288,42 +293,55 @@ function KanbanColumn({ col, leads, onCardClick, brl }: { col: typeof COLUMNS[nu
 
 function DraggableLead({ lead, onClick, brl }: any) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
-  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
+  const style: React.CSSProperties = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    touchAction: "none",
+  };
   return (
-    <div ref={setNodeRef} style={style} className={cn("touch-none", isDragging && "opacity-30")}>
-      <LeadCard lead={lead} brl={brl} onClick={onClick} dragHandleProps={{ ...attributes, ...listeners }} />
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={cn("select-none", isDragging && "opacity-30")}
+    >
+      <LeadCard lead={lead} brl={brl} onClick={onClick} />
     </div>
   );
 }
 
-function LeadCard({ lead, brl, onClick, dragHandleProps, dragging }: any) {
+function LeadCard({ lead, brl, onClick, dragging }: any) {
   return (
     <article
       onClick={onClick}
       className={cn(
-        "rounded-lg border border-[hsl(var(--admin-border))] bg-white p-3 transition-colors",
-        dragging ? "shadow-lg ring-1 ring-primary/40" : "hover:border-primary/40 cursor-pointer"
+        "rounded-lg border border-[hsl(var(--admin-border))] bg-white p-3 transition-all cursor-grab active:cursor-grabbing",
+        dragging ? "shadow-2xl ring-2 ring-primary/60 rotate-[2deg] scale-105" : "hover:border-primary/40 hover:shadow-md"
       )}
     >
-      <div className="flex items-start gap-1.5">
-        <button {...(dragHandleProps ?? {})} onClick={(e) => e.stopPropagation()} className="mt-0.5 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing">
-          <GripVertical className="h-3.5 w-3.5" />
-        </button>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold truncate">{lead.name}</p>
-          {lead.treatment_interest && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{lead.treatment_interest}</p>}
-          <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-            {lead.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{lead.phone}</span>}
-            {lead.estimated_value_cents && <span className="font-semibold text-emerald-700 tabular-nums">{brl(lead.estimated_value_cents)}</span>}
-          </div>
-          {lead.phone && (
-            <div className="mt-2 flex justify-end" onClick={(e: any) => e.stopPropagation()}>
-              <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="grid h-7 w-7 place-items-center rounded text-emerald-600 hover:bg-emerald-50">
-                <MessageCircle className="h-3.5 w-3.5" />
-              </a>
-            </div>
-          )}
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold truncate text-slate-900">{lead.name}</p>
+        {lead.treatment_interest && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{lead.treatment_interest}</p>}
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+          {lead.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{lead.phone}</span>}
+          {lead.estimated_value_cents && <span className="font-semibold text-emerald-700 tabular-nums ml-auto">{brl(lead.estimated_value_cents)}</span>}
         </div>
+        {lead.phone && (
+          <div
+            className="mt-2 flex justify-end"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e: any) => e.stopPropagation()}
+          >
+            <a
+              href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="grid h-7 w-7 place-items-center rounded text-emerald-600 hover:bg-emerald-50"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        )}
       </div>
     </article>
   );
