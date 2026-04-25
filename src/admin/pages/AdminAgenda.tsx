@@ -19,7 +19,7 @@ import PublicLinkModal from "@/admin/components/PublicLinkModal";
 import { useBookingLinks } from "@/admin/hooks/useBookingLinks";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { TREATMENTS, DENTISTS } from "@/data/clinic";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -60,6 +60,21 @@ export default function AdminAgenda() {
   const [linkModalOpen, setLinkModalOpen] = useState(false);
   const { data: bookingLinks = [] } = useBookingLinks();
   const defaultLink = bookingLinks.find((l) => l.slug === "geral") || bookingLinks[0];
+
+  // Pré-pagamentos: mapa appointment_id -> status do pagamento
+  const { data: payments = [] } = useQuery({
+    queryKey: ["appointment_payments"],
+    queryFn: async () => {
+      const { data } = await supabase.from("appointment_payments").select("appointment_id, status, amount_cents");
+      return data || [];
+    },
+    staleTime: 30_000,
+  });
+  const paymentMap = useMemo(() => {
+    const m = new Map<string, { status: string; amount_cents: number }>();
+    payments.forEach((p: any) => { if (p.appointment_id) m.set(p.appointment_id, { status: p.status, amount_cents: p.amount_cents }); });
+    return m;
+  }, [payments]);
 
   const [form, setForm] = useState({ name: "", phone: "", email: "", treatment: TREATMENTS[0]?.name ?? "", professional: DENTISTS[0]?.name ?? "", date: iso(new Date()), time: "09:00", notes: "" });
   const [block, setBlock] = useState({ block_date: iso(new Date()), start_time: "12:00", end_time: "13:00", professional_slug: "", reason: "" });
@@ -211,7 +226,7 @@ export default function AdminAgenda() {
 
       {/* Visões */}
       {view === "day" && (
-        <DayTimeline appts={dayAppts} isLoading={isLoading} onOpen={(a) => setDrawer({ ...a })} onSetStatus={setStatus} onCancel={(id) => setConfirmCancel(id)} busyId={busyId} />
+        <DayTimeline appts={dayAppts} paymentMap={paymentMap} isLoading={isLoading} onOpen={(a) => setDrawer({ ...a })} onSetStatus={setStatus} onCancel={(id) => setConfirmCancel(id)} busyId={busyId} />
       )}
       {view === "week" && (
         <WeekGrid base={selected} appts={filteredAll} onOpen={(a) => setDrawer({ ...a })} />
@@ -317,7 +332,7 @@ export default function AdminAgenda() {
   );
 }
 
-function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }: any) {
+function DayTimeline({ appts, paymentMap, isLoading, onOpen, onSetStatus, onCancel, busyId }: any) {
   if (isLoading) return <div className="admin-card p-10 grid place-items-center text-muted-foreground"><Loader2 className="h-5 w-5 animate-spin" /></div>;
   if (appts.length === 0) return <div className="admin-card p-5"><EmptyState icon={CalIcon} title="Sem agendamentos neste dia" description="Selecione outro dia, crie um encaixe ou ajuste os filtros." /></div>;
 
@@ -341,7 +356,11 @@ function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }
                 <div className="flex flex-col gap-2">
                   {items.length === 0 ? (
                     <div className="h-full min-h-[40px] border border-dashed border-slate-200/70 rounded-lg opacity-0 hover:opacity-100 transition" />
-                  ) : items.map((a) => (
+                  ) : items.map((a) => {
+                    const pay = paymentMap?.get(a.id);
+                    const isPaid = pay?.status === "paid";
+                    const isPendingPay = pay && !isPaid;
+                    return (
                     <button
                       key={a.id}
                       onClick={() => onOpen(a)}
@@ -356,12 +375,37 @@ function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }
                         <span className="text-sm font-bold truncate text-slate-900">{a.name}</span>
                         <StatusPill status={a.status} />
                         {a.status === "pending" && <span className="h-1.5 w-1.5 rounded-full bg-amber-600 animate-pulse" />}
+                        {isPaid && (
+                          <span className="text-[10px] font-bold uppercase bg-emerald-600 text-white px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Pré-pago
+                          </span>
+                        )}
+                        {isPendingPay && (
+                          <span className="text-[10px] font-bold uppercase bg-amber-500 text-white px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                            <Lock className="h-3 w-3" /> Aguardando Pix
+                          </span>
+                        )}
                       </div>
                       <p className="text-[12px] mt-1.5 text-slate-700 truncate font-medium">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
                       <div className="mt-2.5 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                         {a.status === "pending" && (
                           <>
-                            <Button size="sm" variant="outline" className="h-7 text-xs bg-white" disabled={busyId === a.id} onClick={() => onSetStatus(a.id, "confirmed")}>Confirmar</Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-xs bg-white"
+                              disabled={busyId === a.id || isPendingPay}
+                              onClick={() => {
+                                if (isPendingPay) {
+                                  toast({ title: "Pré-pagamento pendente", description: "Aguarde a confirmação do Pix antes de confirmar.", variant: "destructive" });
+                                  return;
+                                }
+                                onSetStatus(a.id, "confirmed");
+                              }}
+                              title={isPendingPay ? "Aguardando confirmação de pré-pagamento" : "Confirmar agendamento"}
+                            >
+                              {isPendingPay ? <><Lock className="h-3 w-3 mr-1" /> Aguardando Pix</> : "Confirmar"}
+                            </Button>
                             <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive ml-auto hover:bg-red-50" onClick={() => onCancel(a.id)}>Cancelar</Button>
                           </>
                         )}
@@ -376,7 +420,8 @@ function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }
                         )}
                       </div>
                     </button>
-                  ))}
+                  );
+                  })}
                 </div>
               </div>
             );

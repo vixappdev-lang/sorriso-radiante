@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFinance, useUpsertFinance, useDeleteFinance, type FinanceEntry } from "@/admin/hooks/useFinance";
 import { toast } from "@/hooks/use-toast";
+import CommissionsPanel from "@/admin/components/CommissionsPanel";
 
 const TYPE_LABEL: Record<string, string> = { income: "Entrada", expense: "Saída", budget: "Orçamento" };
 const STATUS_OPTIONS = ["pending", "paid", "overdue", "cancelled"] as const;
@@ -185,6 +186,7 @@ export default function AdminFinanceiro() {
           <TabsTrigger value="pending">Pendentes</TabsTrigger>
           <TabsTrigger value="paid">Recebidos</TabsTrigger>
           <TabsTrigger value="overdue">Atrasados</TabsTrigger>
+          <TabsTrigger value="commissions">Comissões</TabsTrigger>
         </TabsList>
         {(["all", "pending", "paid", "overdue"] as const).map((tab) => (
           <TabsContent key={tab} value={tab} className="mt-4">
@@ -208,6 +210,9 @@ export default function AdminFinanceiro() {
             )}
           </TabsContent>
         ))}
+        <TabsContent value="commissions" className="mt-4">
+          <CommissionsPanel />
+        </TabsContent>
       </Tabs>
 
       <EntityDrawer

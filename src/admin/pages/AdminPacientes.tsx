@@ -68,7 +68,19 @@ export default function AdminPacientes() {
   const [quotes, setQuotes] = useState<any[]>([]);
   const [newNote, setNewNote] = useState("");
   const [newPatientOpen, setNewPatientOpen] = useState(false);
-  const [newPatient, setNewPatient] = useState({ full_name: "", phone: "", email: "", cpf: "", birth_date: "", notes: "" });
+  const emptyPatient = {
+    full_name: "", phone: "", email: "", cpf: "", rg: "", birth_date: "",
+    gender: "", marital_status: "", profession: "",
+    address_zip: "", address_street: "", address_number: "", address_complement: "", address_neighborhood: "", address_city: "", address_state: "",
+    emergency_contact_name: "", emergency_contact_phone: "", emergency_contact_relation: "",
+    allergies: "", medical_conditions: "", current_medications: "",
+    insurance_name: "", insurance_number: "",
+    source_channel: "recepcao", how_found_us: "",
+    responsible_name: "", responsible_cpf: "",
+    allow_whatsapp: true, allow_email: true,
+    notes: "",
+  };
+  const [newPatient, setNewPatient] = useState<typeof emptyPatient>(emptyPatient);
   const [newQuoteOpen, setNewQuoteOpen] = useState(false);
 
   useEffect(() => { setQ(params.get("q") ?? ""); }, [params]);
@@ -142,18 +154,44 @@ export default function AdminPacientes() {
 
   async function createPatient() {
     if (!newPatient.full_name || !newPatient.phone) return toast({ title: "Nome e telefone são obrigatórios", variant: "destructive" });
-    const { error } = await supabase.from("patient_accounts").insert({
-      full_name: newPatient.full_name,
-      phone: newPatient.phone.replace(/\D/g, ""),
-      email: newPatient.email || `${newPatient.phone.replace(/\D/g, "")}@sem-email.local`,
+    const cleanPhone = newPatient.phone.replace(/\D/g, "");
+    const address = (newPatient.address_zip || newPatient.address_street) ? {
+      zip: newPatient.address_zip, street: newPatient.address_street, number: newPatient.address_number,
+      complement: newPatient.address_complement, neighborhood: newPatient.address_neighborhood,
+      city: newPatient.address_city, state: newPatient.address_state,
+    } : null;
+    const payload: any = {
+      full_name: newPatient.full_name.trim(),
+      phone: cleanPhone,
+      email: newPatient.email?.trim() || `${cleanPhone}@sem-email.local`,
       cpf: newPatient.cpf || null,
+      rg: newPatient.rg || null,
       birth_date: newPatient.birth_date || null,
+      gender: newPatient.gender || null,
+      marital_status: newPatient.marital_status || null,
+      profession: newPatient.profession || null,
+      address,
+      emergency_contact_name: newPatient.emergency_contact_name || null,
+      emergency_contact_phone: newPatient.emergency_contact_phone?.replace(/\D/g, "") || null,
+      emergency_contact_relation: newPatient.emergency_contact_relation || null,
+      allergies: newPatient.allergies || null,
+      medical_conditions: newPatient.medical_conditions || null,
+      current_medications: newPatient.current_medications || null,
+      insurance_name: newPatient.insurance_name || null,
+      insurance_number: newPatient.insurance_number || null,
+      source_channel: newPatient.source_channel || null,
+      how_found_us: newPatient.how_found_us || null,
+      responsible_name: newPatient.responsible_name || null,
+      responsible_cpf: newPatient.responsible_cpf || null,
+      allow_whatsapp: newPatient.allow_whatsapp,
+      allow_email: newPatient.allow_email,
       notes: newPatient.notes || null,
-    } as any);
+    };
+    const { error } = await supabase.from("patient_accounts").insert(payload);
     if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
-    toast({ title: "Paciente cadastrado" });
+    toast({ title: "Paciente cadastrado com sucesso" });
     setNewPatientOpen(false);
-    setNewPatient({ full_name: "", phone: "", email: "", cpf: "", birth_date: "", notes: "" });
+    setNewPatient(emptyPatient);
     const { data } = await supabase.from("patient_accounts").select("*");
     setAccounts(data ?? []);
   }
@@ -339,25 +377,135 @@ export default function AdminPacientes() {
         )}
       </EntityDrawer>
 
-      {/* Modal: novo paciente */}
+      {/* Modal: novo paciente — cadastro completo (recepção / WhatsApp) */}
       <EntityModal
         open={newPatientOpen}
         onOpenChange={setNewPatientOpen}
         title="Cadastrar paciente"
-        footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setNewPatientOpen(false)}>Cancelar</Button><Button onClick={createPatient}>Cadastrar</Button></div>}
+        size="lg"
+        footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setNewPatientOpen(false)}>Cancelar</Button><Button onClick={createPatient}>Cadastrar paciente</Button></div>}
       >
-        <div className="space-y-3">
-          <div><Label className="text-xs">Nome completo*</Label><Input value={newPatient.full_name} onChange={(e) => setNewPatient({ ...newPatient, full_name: e.target.value })} /></div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><Label className="text-xs">Telefone*</Label><Input value={newPatient.phone} onChange={(e) => setNewPatient({ ...newPatient, phone: e.target.value })} placeholder="11999999999" /></div>
-            <div><Label className="text-xs">E-mail</Label><Input value={newPatient.email} onChange={(e) => setNewPatient({ ...newPatient, email: e.target.value })} /></div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><Label className="text-xs">CPF</Label><Input value={newPatient.cpf} onChange={(e) => setNewPatient({ ...newPatient, cpf: e.target.value })} /></div>
-            <div><Label className="text-xs">Nascimento</Label><Input type="date" value={newPatient.birth_date} onChange={(e) => setNewPatient({ ...newPatient, birth_date: e.target.value })} /></div>
-          </div>
-          <div><Label className="text-xs">Observações</Label><Textarea rows={3} value={newPatient.notes} onChange={(e) => setNewPatient({ ...newPatient, notes: e.target.value })} /></div>
-        </div>
+        <Tabs defaultValue="pessoal">
+          <TabsList className="grid grid-cols-4 w-full">
+            <TabsTrigger value="pessoal" className="text-xs">Pessoal</TabsTrigger>
+            <TabsTrigger value="endereco" className="text-xs">Endereço</TabsTrigger>
+            <TabsTrigger value="clinico" className="text-xs">Clínico</TabsTrigger>
+            <TabsTrigger value="extra" className="text-xs">Extras</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pessoal" className="mt-4 space-y-3">
+            <div><Label className="text-xs">Nome completo*</Label><Input value={newPatient.full_name} onChange={(e) => setNewPatient({ ...newPatient, full_name: e.target.value })} placeholder="Maria da Silva" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-xs">Telefone (WhatsApp)*</Label><Input value={newPatient.phone} onChange={(e) => setNewPatient({ ...newPatient, phone: e.target.value })} placeholder="(11) 99999-9999" /></div>
+              <div><Label className="text-xs">E-mail</Label><Input type="email" value={newPatient.email} onChange={(e) => setNewPatient({ ...newPatient, email: e.target.value })} placeholder="paciente@email.com" /></div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div><Label className="text-xs">CPF</Label><Input value={newPatient.cpf} onChange={(e) => setNewPatient({ ...newPatient, cpf: e.target.value })} placeholder="000.000.000-00" /></div>
+              <div><Label className="text-xs">RG</Label><Input value={newPatient.rg} onChange={(e) => setNewPatient({ ...newPatient, rg: e.target.value })} /></div>
+              <div><Label className="text-xs">Nascimento</Label><Input type="date" value={newPatient.birth_date} onChange={(e) => setNewPatient({ ...newPatient, birth_date: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div><Label className="text-xs">Gênero</Label>
+                <Select value={newPatient.gender} onValueChange={(v) => setNewPatient({ ...newPatient, gender: v })}>
+                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="feminino">Feminino</SelectItem>
+                    <SelectItem value="masculino">Masculino</SelectItem>
+                    <SelectItem value="outro">Outro</SelectItem>
+                    <SelectItem value="prefere_nao_dizer">Prefere não dizer</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div><Label className="text-xs">Estado civil</Label>
+                <Select value={newPatient.marital_status} onValueChange={(v) => setNewPatient({ ...newPatient, marital_status: v })}>
+                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="solteiro">Solteiro(a)</SelectItem>
+                    <SelectItem value="casado">Casado(a)</SelectItem>
+                    <SelectItem value="divorciado">Divorciado(a)</SelectItem>
+                    <SelectItem value="viuvo">Viúvo(a)</SelectItem>
+                    <SelectItem value="uniao_estavel">União estável</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div><Label className="text-xs">Profissão</Label><Input value={newPatient.profession} onChange={(e) => setNewPatient({ ...newPatient, profession: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t">
+              <div><Label className="text-xs">Responsável (se menor)</Label><Input value={newPatient.responsible_name} onChange={(e) => setNewPatient({ ...newPatient, responsible_name: e.target.value })} placeholder="Nome do responsável" /></div>
+              <div><Label className="text-xs">CPF do responsável</Label><Input value={newPatient.responsible_cpf} onChange={(e) => setNewPatient({ ...newPatient, responsible_cpf: e.target.value })} /></div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="endereco" className="mt-4 space-y-3">
+            <div className="grid grid-cols-3 gap-3">
+              <div><Label className="text-xs">CEP</Label><Input value={newPatient.address_zip} onChange={(e) => setNewPatient({ ...newPatient, address_zip: e.target.value })} placeholder="00000-000" /></div>
+              <div className="col-span-2"><Label className="text-xs">Rua/Avenida</Label><Input value={newPatient.address_street} onChange={(e) => setNewPatient({ ...newPatient, address_street: e.target.value })} /></div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div><Label className="text-xs">Número</Label><Input value={newPatient.address_number} onChange={(e) => setNewPatient({ ...newPatient, address_number: e.target.value })} /></div>
+              <div className="col-span-2"><Label className="text-xs">Complemento</Label><Input value={newPatient.address_complement} onChange={(e) => setNewPatient({ ...newPatient, address_complement: e.target.value })} placeholder="Apto, bloco, referência…" /></div>
+            </div>
+            <div><Label className="text-xs">Bairro</Label><Input value={newPatient.address_neighborhood} onChange={(e) => setNewPatient({ ...newPatient, address_neighborhood: e.target.value })} /></div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="col-span-2"><Label className="text-xs">Cidade</Label><Input value={newPatient.address_city} onChange={(e) => setNewPatient({ ...newPatient, address_city: e.target.value })} /></div>
+              <div><Label className="text-xs">UF</Label><Input value={newPatient.address_state} maxLength={2} onChange={(e) => setNewPatient({ ...newPatient, address_state: e.target.value.toUpperCase() })} /></div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="clinico" className="mt-4 space-y-3">
+            <div className="rounded-lg border bg-amber-50/40 p-3 space-y-2">
+              <p className="text-[11px] uppercase tracking-wider text-amber-800 font-semibold">Anamnese rápida</p>
+              <div><Label className="text-xs">Alergias (medicamentos, anestésicos, materiais)</Label><Textarea rows={2} value={newPatient.allergies} onChange={(e) => setNewPatient({ ...newPatient, allergies: e.target.value })} placeholder="Ex.: penicilina, látex…" /></div>
+              <div><Label className="text-xs">Condições médicas relevantes</Label><Textarea rows={2} value={newPatient.medical_conditions} onChange={(e) => setNewPatient({ ...newPatient, medical_conditions: e.target.value })} placeholder="Diabetes, hipertensão, gestante, cardíaco…" /></div>
+              <div><Label className="text-xs">Medicamentos em uso</Label><Textarea rows={2} value={newPatient.current_medications} onChange={(e) => setNewPatient({ ...newPatient, current_medications: e.target.value })} placeholder="Anticoagulantes, antidepressivos…" /></div>
+            </div>
+            <div className="rounded-lg border p-3 space-y-2">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Convênio / Plano</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label className="text-xs">Operadora</Label><Input value={newPatient.insurance_name} onChange={(e) => setNewPatient({ ...newPatient, insurance_name: e.target.value })} placeholder="Particular, Amil Dental…" /></div>
+                <div><Label className="text-xs">Nº carteirinha</Label><Input value={newPatient.insurance_number} onChange={(e) => setNewPatient({ ...newPatient, insurance_number: e.target.value })} /></div>
+              </div>
+            </div>
+            <div className="rounded-lg border p-3 space-y-2">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Contato de emergência</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div><Label className="text-xs">Nome</Label><Input value={newPatient.emergency_contact_name} onChange={(e) => setNewPatient({ ...newPatient, emergency_contact_name: e.target.value })} /></div>
+                <div><Label className="text-xs">Telefone</Label><Input value={newPatient.emergency_contact_phone} onChange={(e) => setNewPatient({ ...newPatient, emergency_contact_phone: e.target.value })} placeholder="(11) 99999-9999" /></div>
+              </div>
+              <div><Label className="text-xs">Grau de parentesco</Label><Input value={newPatient.emergency_contact_relation} onChange={(e) => setNewPatient({ ...newPatient, emergency_contact_relation: e.target.value })} placeholder="Cônjuge, mãe, irmão…" /></div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="extra" className="mt-4 space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-xs">Origem do cadastro</Label>
+                <Select value={newPatient.source_channel} onValueChange={(v) => setNewPatient({ ...newPatient, source_channel: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="recepcao">Recepção</SelectItem>
+                    <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                    <SelectItem value="site">Site</SelectItem>
+                    <SelectItem value="indicacao">Indicação</SelectItem>
+                    <SelectItem value="anuncio">Anúncio</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div><Label className="text-xs">Como nos conheceu?</Label><Input value={newPatient.how_found_us} onChange={(e) => setNewPatient({ ...newPatient, how_found_us: e.target.value })} placeholder="Instagram, Google, amigo…" /></div>
+            </div>
+            <div className="rounded-lg border p-3 space-y-2">
+              <p className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">Permissões de comunicação (LGPD)</p>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={newPatient.allow_whatsapp} onChange={(e) => setNewPatient({ ...newPatient, allow_whatsapp: e.target.checked })} className="rounded" />
+                Aceita receber lembretes e novidades por WhatsApp
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={newPatient.allow_email} onChange={(e) => setNewPatient({ ...newPatient, allow_email: e.target.checked })} className="rounded" />
+                Aceita receber comunicações por e-mail
+              </label>
+            </div>
+            <div><Label className="text-xs">Observações gerais</Label><Textarea rows={4} value={newPatient.notes} onChange={(e) => setNewPatient({ ...newPatient, notes: e.target.value })} placeholder="Qualquer informação adicional relevante…" /></div>
+          </TabsContent>
+        </Tabs>
       </EntityModal>
 
       {/* Modal: novo orçamento */}

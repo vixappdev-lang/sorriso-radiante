@@ -1,0 +1,20 @@
+
+ALTER TABLE public.patient_accounts
+  ADD COLUMN IF NOT EXISTS rg text,
+  ADD COLUMN IF NOT EXISTS gender text,
+  ADD COLUMN IF NOT EXISTS marital_status text,
+  ADD COLUMN IF NOT EXISTS profession text,
+  ADD COLUMN IF NOT EXISTS emergency_contact_name text,
+  ADD COLUMN IF NOT EXISTS emergency_contact_phone text,
+  ADD COLUMN IF NOT EXISTS emergency_contact_relation text,
+  ADD COLUMN IF NOT EXISTS allergies text,
+  ADD COLUMN IF NOT EXISTS medical_conditions text,
+  ADD COLUMN IF NOT EXISTS current_medications text,
+  ADD COLUMN IF NOT EXISTS insurance_name text,
+  ADD COLUMN IF NOT EXISTS insurance_number text,
+  ADD COLUMN IF NOT EXISTS source_channel text,
+  ADD COLUMN IF NOT EXISTS allow_whatsapp boolean NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS allow_email boolean NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS how_found_us text,
+  ADD COLUMN IF NOT EXISTS responsible_name text,
+  ADD COLUMN IF NOT EXISTS responsible_cpf text;

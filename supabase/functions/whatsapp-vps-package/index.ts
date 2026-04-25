@@ -12,8 +12,8 @@ const corsHeaders = {
 
 const PACKAGE_JSON = `{
   "name": "lynecloud-whatsapp-vps",
-  "version": "1.0.0",
-  "description": "LyneCloud WhatsApp VPS — Baileys + Express",
+  "version": "1.1.0",
+  "description": "LyneCloud WhatsApp VPS — Baileys + Express + Bot Webhook",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -23,7 +23,8 @@ const PACKAGE_JSON = `{
     "@whiskeysockets/baileys": "^6.7.7",
     "express": "^4.21.0",
     "pino": "^9.4.0",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "node-fetch": "^2.7.0"
   },
   "engines": {
     "node": ">=18"
@@ -32,9 +33,12 @@ const PACKAGE_JSON = `{
 `;
 
 const SERVER_JS = `/**
- * LyneCloud WhatsApp VPS — Baileys
- * API HTTP autenticada via Bearer token
- * Reconexão automática exponencial, sessão persistida em auth/
+ * LyneCloud WhatsApp VPS — Baileys (v1.1.0)
+ * - HTTP API autenticada via Bearer token
+ * - Reconexão exponencial, sessão persistida em auth/
+ * - Webhook reverso: encaminha mensagens recebidas ao bot LyneCloud
+ *   (POST {WEBHOOK_URL} com header X-LyneCloud-Token)
+ * - Auto-resposta opcional usando o bot do painel
  */
 
 const express = require("express");
@@ -42,6 +46,7 @@ const pino = require("pino");
 const QRCode = require("qrcode");
 const fs = require("fs");
 const path = require("path");
+const fetch = require("node-fetch");
 const {
   default: makeWASocket,
   useMultiFileAuthState,
@@ -53,12 +58,28 @@ const {
 const PORT = parseInt(process.env.PORT || "3000", 10);
 const TOKEN = process.env.LEVII_TOKEN;
 const AUTH_DIR = path.resolve(__dirname, "auth");
+const CONFIG_FILE = path.resolve(__dirname, "webhook.json");
 
 if (!TOKEN) {
   console.error("FATAL: LEVII_TOKEN env var required");
   process.exit(1);
 }
 if (!fs.existsSync(AUTH_DIR)) fs.mkdirSync(AUTH_DIR, { recursive: true });
+
+// Webhook config persistida em disco
+let webhookConfig = { url: "", secret: "", enabled: false };
+function loadWebhook() {
+  try {
+    if (fs.existsSync(CONFIG_FILE)) {
+      webhookConfig = { ...webhookConfig, ...JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8")) };
+    }
+  } catch (e) { console.error("[wh] load error", e.message); }
+}
+function saveWebhook() {
+  try { fs.writeFileSync(CONFIG_FILE, JSON.stringify(webhookConfig, null, 2)); }
+  catch (e) { console.error("[wh] save error", e.message); }
+}
+loadWebhook();
 
 const logger = pino({ level: "warn" });
 
@@ -68,8 +89,40 @@ let connState = "disconnected";
 let phoneNumber = null;
 let startedAt = Date.now();
 let messagesSent = 0;
+let messagesReceived = 0;
+let webhookCalls = 0;
+let webhookErrors = 0;
 let reconnectAttempts = 0;
 let reconnectTimer = null;
+let myJid = null;
+
+function digitsOnly(s) { return String(s || "").replace(/\\D/g, ""); }
+function jidFromNumber(num) { return digitsOnly(num) + "@s.whatsapp.net"; }
+function numberFromJid(jid) { return String(jid || "").split("@")[0].split(":")[0]; }
+
+async function forwardToWebhook(payload) {
+  if (!webhookConfig.enabled || !webhookConfig.url) return;
+  webhookCalls++;
+  try {
+    const resp = await fetch(webhookConfig.url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-LyneCloud-Token": webhookConfig.secret || "",
+        "User-Agent": "LyneCloud-WA-VPS/1.1",
+      },
+      body: JSON.stringify(payload),
+      timeout: 15000,
+    });
+    if (!resp.ok) {
+      webhookErrors++;
+      console.error(\`[wh] webhook \${resp.status}\`);
+    }
+  } catch (e) {
+    webhookErrors++;
+    console.error("[wh] webhook error", e.message);
+  }
+}
 
 async function connect() {
   if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
@@ -99,7 +152,8 @@ async function connect() {
         connState = "connected";
         currentQR = null;
         reconnectAttempts = 0;
-        phoneNumber = sock.user?.id?.split(":")[0] || null;
+        myJid = sock.user?.id || null;
+        phoneNumber = numberFromJid(myJid);
         console.log(\`[wa] CONECTADO como \${phoneNumber}\`);
       }
       if (connection === "close") {
@@ -117,6 +171,42 @@ async function connect() {
         }
       }
     });
+
+    // Escuta mensagens recebidas e dispara webhook
+    sock.ev.on("messages.upsert", async (m) => {
+      try {
+        if (m.type !== "notify") return;
+        for (const msg of m.messages || []) {
+          if (!msg.message) continue;
+          if (msg.key?.fromMe) continue; // ignora mensagens próprias
+          const remoteJid = msg.key?.remoteJid || "";
+          if (remoteJid.endsWith("@g.us")) continue; // ignora grupos
+          if (remoteJid.includes("status@broadcast")) continue;
+
+          const text =
+            msg.message.conversation ||
+            msg.message.extendedTextMessage?.text ||
+            msg.message.imageMessage?.caption ||
+            msg.message.videoMessage?.caption ||
+            "";
+          if (!text || !text.trim()) continue;
+
+          messagesReceived++;
+          const fromNumber = numberFromJid(remoteJid);
+          const contactName = msg.pushName || null;
+
+          console.log(\`[wa] in \${fromNumber}: \${text.substring(0, 80)}\`);
+          await forwardToWebhook({
+            from: fromNumber,
+            message: text.trim(),
+            contact_name: contactName,
+            message_id: msg.key?.id,
+            timestamp: msg.messageTimestamp,
+            provider: "baileys_vps",
+          });
+        }
+      } catch (e) { console.error("[wa] upsert error", e.message); }
+    });
   } catch (e) {
     console.error("[wa] connect error", e);
     connState = "disconnected";
@@ -124,11 +214,6 @@ async function connect() {
     const delay = Math.min(60000, 1500 * Math.pow(2, Math.min(reconnectAttempts, 6)));
     reconnectTimer = setTimeout(connect, delay);
   }
-}
-
-function jidFromNumber(num) {
-  const digits = String(num).replace(/\\D/g, "");
-  return \`\${digits}@s.whatsapp.net\`;
 }
 
 const app = express();
@@ -143,23 +228,28 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/health", (_, res) => res.json({ ok: true }));
+app.get("/health", (_, res) => res.json({ ok: true, version: "1.1.0" }));
 app.get("/status", (_, res) => res.json({
   status: connState, phone: phoneNumber,
   uptime_s: Math.floor((Date.now() - startedAt) / 1000),
-  messages_sent: messagesSent, reconnect_attempts: reconnectAttempts,
+  messages_sent: messagesSent, messages_received: messagesReceived,
+  webhook_calls: webhookCalls, webhook_errors: webhookErrors,
+  webhook_enabled: webhookConfig.enabled, webhook_url: webhookConfig.url ? "[configured]" : null,
+  reconnect_attempts: reconnectAttempts,
 }));
 app.get("/info", (_, res) => res.json({
-  version: require("./package.json").version, node: process.version,
+  version: "1.1.0", node: process.version,
   started_at: new Date(startedAt).toISOString(),
   uptime_s: Math.floor((Date.now() - startedAt) / 1000),
-  state: connState, phone: phoneNumber, messages_sent: messagesSent,
+  state: connState, phone: phoneNumber,
+  messages_sent: messagesSent, messages_received: messagesReceived,
 }));
 app.get("/qr", (_, res) => {
   if (connState === "connected") return res.json({ status: "connected", qr: null });
   if (!currentQR) return res.json({ status: connState, qr: null, message: "Aguardando QR..." });
   res.json({ status: "qr", qr: currentQR });
 });
+
 app.post("/send", async (req, res) => {
   if (connState !== "connected") return res.status(503).json({ error: "not_connected", state: connState });
   const { to, message } = req.body || {};
@@ -174,6 +264,22 @@ app.post("/send", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+// Webhook config
+app.get("/webhook", (_, res) => res.json(webhookConfig));
+app.post("/webhook", (req, res) => {
+  const { url, secret, enabled } = req.body || {};
+  if (typeof url === "string") webhookConfig.url = url.trim();
+  if (typeof secret === "string") webhookConfig.secret = secret;
+  if (typeof enabled === "boolean") webhookConfig.enabled = enabled;
+  saveWebhook();
+  res.json({ ok: true, ...webhookConfig });
+});
+app.post("/webhook/test", async (_, res) => {
+  await forwardToWebhook({ test: true, from: "0000000000", message: "ping de teste do VPS", contact_name: "VPS Test" });
+  res.json({ ok: true, called: webhookCalls, errors: webhookErrors });
+});
+
 app.post("/restart", async (_, res) => {
   try { sock?.end?.(undefined); } catch {}
   setTimeout(connect, 500);
@@ -187,7 +293,8 @@ app.post("/logout", async (_, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(\`[http] LyneCloud WA escutando em :\${PORT}\`);
+  console.log(\`[http] LyneCloud WA v1.1.0 escutando em :\${PORT}\`);
+  console.log(\`[wh] webhook \${webhookConfig.enabled ? "ATIVO" : "inativo"} url=\${webhookConfig.url || "(vazio)"}\`);
   connect();
 });
 
@@ -391,6 +498,7 @@ server {
 const GITIGNORE = `node_modules/
 auth/
 .env
+webhook.json
 *.log
 `;
 

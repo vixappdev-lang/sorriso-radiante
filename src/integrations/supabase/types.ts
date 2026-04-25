@@ -569,43 +569,97 @@ export type Database = {
       patient_accounts: {
         Row: {
           address: Json | null
+          allergies: string | null
+          allow_email: boolean
+          allow_whatsapp: boolean
           avatar_url: string | null
           birth_date: string | null
           cpf: string | null
           created_at: string
+          current_medications: string | null
           email: string
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relation: string | null
           full_name: string
+          gender: string | null
+          how_found_us: string | null
           id: string
+          insurance_name: string | null
+          insurance_number: string | null
+          marital_status: string | null
+          medical_conditions: string | null
           notes: string | null
           phone: string
+          profession: string | null
+          responsible_cpf: string | null
+          responsible_name: string | null
+          rg: string | null
+          source_channel: string | null
           updated_at: string
           user_id: string | null
         }
         Insert: {
           address?: Json | null
+          allergies?: string | null
+          allow_email?: boolean
+          allow_whatsapp?: boolean
           avatar_url?: string | null
           birth_date?: string | null
           cpf?: string | null
           created_at?: string
+          current_medications?: string | null
           email: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relation?: string | null
           full_name: string
+          gender?: string | null
+          how_found_us?: string | null
           id?: string
+          insurance_name?: string | null
+          insurance_number?: string | null
+          marital_status?: string | null
+          medical_conditions?: string | null
           notes?: string | null
           phone: string
+          profession?: string | null
+          responsible_cpf?: string | null
+          responsible_name?: string | null
+          rg?: string | null
+          source_channel?: string | null
           updated_at?: string
           user_id?: string | null
         }
         Update: {
           address?: Json | null
+          allergies?: string | null
+          allow_email?: boolean
+          allow_whatsapp?: boolean
           avatar_url?: string | null
           birth_date?: string | null
           cpf?: string | null
           created_at?: string
+          current_medications?: string | null
           email?: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relation?: string | null
           full_name?: string
+          gender?: string | null
+          how_found_us?: string | null
           id?: string
+          insurance_name?: string | null
+          insurance_number?: string | null
+          marital_status?: string | null
+          medical_conditions?: string | null
           notes?: string | null
           phone?: string
+          profession?: string | null
+          responsible_cpf?: string | null
+          responsible_name?: string | null
+          rg?: string | null
+          source_channel?: string | null
           updated_at?: string
           user_id?: string | null
         }
