@@ -307,7 +307,7 @@ function ConfigModal({ template, stored, onClose, onSave }: {
   useEffect(() => {
     if (!template) return;
     setContent(stored?.content ?? template.content);
-    setConfig(stored?.config ?? {});
+    setConfig(stored?.config_values ?? {});
     setKeywords((stored?.trigger_keywords ?? template.trigger_keywords).join(", "));
   }, [template, stored]);
 
