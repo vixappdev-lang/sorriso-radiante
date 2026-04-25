@@ -226,7 +226,7 @@ export default function AdminAgenda() {
 
       {/* Visões */}
       {view === "day" && (
-        <DayTimeline appts={dayAppts} isLoading={isLoading} onOpen={(a) => setDrawer({ ...a })} onSetStatus={setStatus} onCancel={(id) => setConfirmCancel(id)} busyId={busyId} />
+        <DayTimeline appts={dayAppts} paymentMap={paymentMap} isLoading={isLoading} onOpen={(a) => setDrawer({ ...a })} onSetStatus={setStatus} onCancel={(id) => setConfirmCancel(id)} busyId={busyId} />
       )}
       {view === "week" && (
         <WeekGrid base={selected} appts={filteredAll} onOpen={(a) => setDrawer({ ...a })} />
