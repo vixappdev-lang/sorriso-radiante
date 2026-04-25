@@ -164,6 +164,69 @@ async function callAiWithFallback(
 }
 
 
+// ============ TEMPLATES (FLUXOS ENCADEADOS) ============
+// Templates ficam em `whatsapp_templates`. Cada row tem:
+//   key, content, trigger_keywords[], config_values { steps?: FlowStep[], ...vars }
+// Steps: { id, on_reply_keywords?: string[], content }
+// Quando o paciente responde, tentamos:
+//   1) Continuar o flow ativo (conv.current_flow_key) checando steps[].on_reply_keywords
+//   2) Iniciar um flow novo se algum trigger_keywords casar
+function lcMatch(msg: string, words: string[] | null | undefined) {
+  if (!words || words.length === 0) return false;
+  const m = msg.toLowerCase().trim();
+  for (const w of words) {
+    const t = String(w || "").toLowerCase().trim();
+    if (!t) continue;
+    if (t.length <= 4 ? (m === t || m.startsWith(t + " ") || m.endsWith(" " + t)) : m.includes(t)) return true;
+  }
+  return false;
+}
+
+function applyVars(content: string, vars: Record<string, string>, contactName: string | null) {
+  let txt = String(content || "").replace(/\{\{nome\}\}/g, contactName || "");
+  for (const k of Object.keys(vars || {})) {
+    if (k === "steps") continue;
+    txt = txt.replace(new RegExp(`\\{\\{${k}\\}\\}`, "g"), String(vars[k] ?? ""));
+  }
+  return txt;
+}
+
+async function resolveTemplate(
+  supabase: any,
+  message: string,
+  currentFlowKey: string | null,
+  contactName: string | null,
+): Promise<{ reply: string; flow_key: string; step_id: string; next_flow_key: string | null } | null> {
+  const { data: tpls } = await supabase.from("whatsapp_templates").select("*").eq("enabled", true);
+  const list = (tpls ?? []) as any[];
+  if (list.length === 0) return null;
+
+  // 1) Tenta continuar o fluxo ativo
+  if (currentFlowKey) {
+    const cur = list.find((t) => t.key === currentFlowKey);
+    const steps: any[] = cur?.config_values?.steps ?? [];
+    for (const st of steps.slice(1)) {
+      if (lcMatch(message, st.on_reply_keywords)) {
+        const reply = applyVars(st.content, cur.config_values ?? {}, contactName);
+        return { reply, flow_key: cur.key, step_id: st.id, next_flow_key: cur.key };
+      }
+    }
+  }
+
+  // 2) Inicia um fluxo novo (primeiro step)
+  for (const tpl of list) {
+    const triggers: string[] = tpl.trigger_keywords ?? [];
+    if (triggers.length === 0) continue;
+    if (lcMatch(message, triggers)) {
+      const steps: any[] = tpl.config_values?.steps ?? [];
+      const first = steps[0] ?? { id: "msg", content: tpl.content };
+      const reply = applyVars(first.content, tpl.config_values ?? {}, contactName);
+      return { reply, flow_key: tpl.key, step_id: first.id, next_flow_key: tpl.key };
+    }
+  }
+  return null;
+}
+
 function json(body: any, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -238,15 +301,24 @@ Deno.serve(async (req) => {
     let reply = "";
     let aiUsed = false;
     let intentKey: string | null = null;
+    let nextFlowKey: string | null | undefined = undefined;
+
+    // 4.0 PRIORIDADE: Templates (fluxos encadeados) — sem delay, sem IA.
+    // Continua o flow ativo ou inicia um novo se trigger casar.
+    const tplResult = await resolveTemplate(supabase, message, conv!.current_flow_key ?? null, contactName);
 
     // 4.1 Saudação inicial padrão LyneCloud (primeira mensagem da conversa)
-    if (isFirstContact) {
+    if (isFirstContact && !tplResult) {
       const nome = contactName ? `, ${String(contactName).split(" ")[0]}` : "";
       const greetingTpl =
         (cfg as any).greeting_message ||
         `Olá${nome}! 👋 Aqui é da *LyneCloud*, em que podemos lhe ajudar hoje?`;
       reply = greetingTpl.replace(/\{\{nome\}\}/g, contactName || "");
       intentKey = "first_contact_greeting";
+    } else if (tplResult) {
+      reply = tplResult.reply;
+      intentKey = `tpl:${tplResult.flow_key}#${tplResult.step_id}`;
+      nextFlowKey = tplResult.next_flow_key;
     } else if (matched && matched.action === "reply" && matched.response_template) {
       reply = String(matched.response_template).replace(/\{\{nome\}\}/g, contactName || "");
       intentKey = matched.key;
@@ -286,10 +358,18 @@ Deno.serve(async (req) => {
 
     if (!reply) reply = cfg.fallback_message || "Recebi sua mensagem 💙";
 
-    // 6. Delay humanizado
-    if (cfg.human_like_delay) {
+    // 6. Delay humanizado — pulado quando veio de template (resposta instantânea)
+    const fromTemplate = nextFlowKey !== undefined;
+    if (cfg.human_like_delay && !fromTemplate) {
       const delay = Math.min(3000, 800 + reply.length * 30);
       await new Promise((r) => setTimeout(r, delay));
+    }
+
+    // 6.1 Atualiza fluxo ativo da conversa (se template definiu)
+    if (nextFlowKey !== undefined) {
+      await supabase.from("whatsapp_conversations")
+        .update({ current_flow_key: nextFlowKey })
+        .eq("id", conv!.id);
     }
 
     // 7. Envia via gateway

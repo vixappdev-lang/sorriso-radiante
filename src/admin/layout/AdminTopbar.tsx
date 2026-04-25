@@ -1,5 +1,5 @@
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { Bell, Menu, Search, ChevronDown, Mail, LogOut } from "lucide-react";
+import { Bell, Menu, Search, ChevronDown, Mail, LogOut, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAdminSession, adminSignOut } from "@/admin/hooks/useAdminSession";
 import { useAppointments } from "@/admin/hooks/useAppointments";
+import { useAdminTheme } from "@/admin/hooks/useAdminTheme";
 import { NAV_ITEMS } from "./AdminSidebar";
 import { useState } from "react";
 import ConfirmDialog from "@/admin/components/ConfirmDialog";
@@ -16,6 +17,7 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
   const navigate = useNavigate();
   const { user } = useAdminSession();
   const { data: appts = [] } = useAppointments();
+  const { theme, toggle: toggleTheme } = useAdminTheme();
   const [q, setQ] = useState("");
   const [logoutOpen, setLogoutOpen] = useState(false);
 
@@ -30,7 +32,7 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[hsl(var(--admin-border))] bg-white/85 backdrop-blur supports-[backdrop-filter]:bg-white/70">
+    <header className="admin-topbar sticky top-0 z-30 border-b border-[hsl(var(--admin-border))] bg-white/85 backdrop-blur supports-[backdrop-filter]:bg-white/70">
       <div className="flex h-14 items-center gap-3 px-4 sm:px-6">
         <Button variant="ghost" size="icon" className="lg:hidden" onClick={onOpenSidebar} aria-label="Abrir menu">
           <Menu className="h-5 w-5" />
@@ -59,6 +61,19 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
         </form>
 
         <div className="flex items-center gap-2 md:ml-2 ml-auto">
+          {/* Toggle Tema */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Mudar para tema claro" : "Mudar para tema escuro"}
+            title={theme === "dark" ? "Tema claro" : "Tema escuro"}
+            className="relative rounded-full h-10 w-10 hover:bg-muted/80 overflow-hidden"
+          >
+            <Sun className={`h-[18px] w-[18px] absolute transition-all duration-500 ${theme === "dark" ? "opacity-0 -rotate-90 scale-50" : "opacity-100 rotate-0 scale-100"}`} />
+            <Moon className={`h-[18px] w-[18px] absolute transition-all duration-500 ${theme === "dark" ? "opacity-100 rotate-0 scale-100" : "opacity-0 rotate-90 scale-50"}`} />
+          </Button>
+
           {/* Notificações */}
           <Popover>
             <PopoverTrigger asChild>
