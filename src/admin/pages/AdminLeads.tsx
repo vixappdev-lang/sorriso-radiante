@@ -1,7 +1,11 @@
 import { useMemo, useState } from "react";
-import { Megaphone, Plus, MessageCircle, Pencil, Trash2, Phone, DollarSign, Filter, GripVertical } from "lucide-react";
-import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
+import { Megaphone, Plus, MessageCircle, Pencil, Trash2, Phone, DollarSign, Filter } from "lucide-react";
+import {
+  DndContext, DragEndEvent, DragOverlay, DragStartEvent,
+  MouseSensor, TouchSensor, useDroppable, useSensor, useSensors, closestCorners,
+} from "@dnd-kit/core";
 import { useDraggable } from "@dnd-kit/core";
+import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
 import EmptyState from "@/admin/components/EmptyState";
@@ -15,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLeads, useUpsertLead, useDeleteLead, type Lead } from "@/admin/hooks/useLeads";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
