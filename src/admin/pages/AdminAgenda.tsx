@@ -356,7 +356,11 @@ function DayTimeline({ appts, paymentMap, isLoading, onOpen, onSetStatus, onCanc
                 <div className="flex flex-col gap-2">
                   {items.length === 0 ? (
                     <div className="h-full min-h-[40px] border border-dashed border-slate-200/70 rounded-lg opacity-0 hover:opacity-100 transition" />
-                  ) : items.map((a) => (
+                  ) : items.map((a) => {
+                    const pay = paymentMap?.get(a.id);
+                    const isPaid = pay?.status === "paid";
+                    const isPendingPay = pay && !isPaid;
+                    return (
                     <button
                       key={a.id}
                       onClick={() => onOpen(a)}
@@ -371,12 +375,37 @@ function DayTimeline({ appts, paymentMap, isLoading, onOpen, onSetStatus, onCanc
                         <span className="text-sm font-bold truncate text-slate-900">{a.name}</span>
                         <StatusPill status={a.status} />
                         {a.status === "pending" && <span className="h-1.5 w-1.5 rounded-full bg-amber-600 animate-pulse" />}
+                        {isPaid && (
+                          <span className="text-[10px] font-bold uppercase bg-emerald-600 text-white px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                            <CheckCircle2 className="h-3 w-3" /> Pré-pago
+                          </span>
+                        )}
+                        {isPendingPay && (
+                          <span className="text-[10px] font-bold uppercase bg-amber-500 text-white px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                            <Lock className="h-3 w-3" /> Aguardando Pix
+                          </span>
+                        )}
                       </div>
                       <p className="text-[12px] mt-1.5 text-slate-700 truncate font-medium">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
                       <div className="mt-2.5 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                         {a.status === "pending" && (
                           <>
-                            <Button size="sm" variant="outline" className="h-7 text-xs bg-white" disabled={busyId === a.id} onClick={() => onSetStatus(a.id, "confirmed")}>Confirmar</Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-xs bg-white"
+                              disabled={busyId === a.id || isPendingPay}
+                              onClick={() => {
+                                if (isPendingPay) {
+                                  toast({ title: "Pré-pagamento pendente", description: "Aguarde a confirmação do Pix antes de confirmar.", variant: "destructive" });
+                                  return;
+                                }
+                                onSetStatus(a.id, "confirmed");
+                              }}
+                              title={isPendingPay ? "Aguardando confirmação de pré-pagamento" : "Confirmar agendamento"}
+                            >
+                              {isPendingPay ? <><Lock className="h-3 w-3 mr-1" /> Aguardando Pix</> : "Confirmar"}
+                            </Button>
                             <Button size="sm" variant="ghost" className="h-7 text-xs text-destructive ml-auto hover:bg-red-50" onClick={() => onCancel(a.id)}>Cancelar</Button>
                           </>
                         )}
@@ -391,7 +420,8 @@ function DayTimeline({ appts, paymentMap, isLoading, onOpen, onSetStatus, onCanc
                         )}
                       </div>
                     </button>
-                  ))}
+                  );
+                  })}
                 </div>
               </div>
             );
