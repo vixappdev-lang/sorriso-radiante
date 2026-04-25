@@ -821,3 +821,370 @@ function VpsConfigModal({ open, onOpenChange, provider, reload }: any) {
     </EntityModal>
   );
 }
+
+/* ============ BOT / ATENDIMENTO IA ============ */
+
+const BOT_TEMPLATES = [
+  {
+    key: "humanizada",
+    label: "Atendente humanizada (recomendado)",
+    persona: "Atendente humanizada de clínica odontológica",
+    prompt: `Você é a recepcionista virtual de uma clínica odontológica de alto padrão. Seu nome é Lyne.
+
+REGRAS DE COMPORTAMENTO:
+- Sempre responda em português brasileiro, de forma natural, gentil e calorosa.
+- Use no máximo 2 frases curtas por mensagem (igual conversa real no WhatsApp).
+- Use emojis com moderação (1 por resposta no máximo).
+- Se a pessoa cumprimentar (oi, olá, bom dia, boa tarde, boa noite, tudo bem), retribua com naturalidade e pergunte como pode ajudar.
+- Se perguntarem sobre PREÇOS, diga que cada caso é avaliado em consulta gratuita e ofereça agendar.
+- Se perguntarem sobre HORÁRIO/ENDEREÇO, responda objetivamente.
+- Se a mensagem for COMPLEXA, urgência médica, reclamação séria ou pedido específico que você não tem informação, encaminhe para a equipe humana dizendo "Vou chamar uma de nossas atendentes pra te ajudar melhor 💙".
+- NUNCA invente preços, datas ou nomes de profissionais.
+- NUNCA prometa horários sem confirmação.
+- Sempre tente, com sutileza, levar a conversa para o agendamento de uma avaliação.`,
+  },
+  {
+    key: "comercial",
+    label: "Recepcionista comercial (foco em conversão)",
+    persona: "Recepcionista comercial de clínica",
+    prompt: `Você é uma recepcionista comercial de clínica odontológica. Seu objetivo é AGENDAR avaliações.
+
+- Responda em português brasileiro, breve e direto (1-2 frases).
+- Toda resposta termina com uma proposta de agendamento ou pergunta que avance pra agendar.
+- Use gatilhos como "vagas limitadas essa semana", "avaliação cortesia", "sem compromisso".
+- Se perguntarem preço, diga que depende do caso e que a avaliação é gratuita.
+- Se a pessoa demonstrar dúvida, ofereça a avaliação como solução.
+- Use 1 emoji por mensagem.
+- Para pedidos fora do escopo, encaminhe para humano.`,
+  },
+  {
+    key: "posvenda",
+    label: "Pós-venda gentil",
+    persona: "Atendente de pós-atendimento",
+    prompt: `Você é responsável por contato pós-atendimento na clínica. Seu papel é confirmar bem-estar e coletar feedback.
+
+- Tom carinhoso e empático, em português brasileiro.
+- 1-2 frases curtas.
+- Pergunte como o paciente está se sentindo, se há dúvidas sobre cuidados pós-procedimento.
+- Se houver QUALQUER queixa de dor, sangramento ou desconforto incomum, encaminhe imediatamente para humano.
+- Convide a pessoa a deixar uma avaliação se tudo correu bem.
+- Use emojis com moderação.`,
+  },
+];
+
+const DEFAULT_INTENTS = [
+  { key: "saudacao", label: "Saudação", trigger_examples: ["oi", "olá", "ola", "bom dia", "boa tarde", "boa noite", "tudo bem", "tudo bom"], action: "reply", response_template: "Olá! 👋 Aqui é a Lyne, recepcionista da clínica. Como posso te ajudar hoje?", position: 1 },
+  { key: "agendamento", label: "Quer agendar", trigger_examples: ["agendar", "marcar", "consulta", "agendamento", "horário", "horario disponivel"], action: "reply", response_template: "Que bom! 😊 Você pode agendar agora mesmo no nosso site, é rapidinho. Posso te enviar o link?", position: 2 },
+  { key: "preco", label: "Preço", trigger_examples: ["preço", "preco", "valor", "quanto custa", "quanto fica"], action: "reply", response_template: "Cada tratamento é avaliado individualmente. A primeira consulta é cortesia 💙 Quer agendar pra ver o seu caso?", position: 3 },
+  { key: "endereco", label: "Endereço/Localização", trigger_examples: ["endereço", "endereco", "localização", "localizacao", "onde fica", "como chego"], action: "reply", response_template: "Estamos no centro da cidade, posso te enviar a localização exata pelo Google Maps. Confirma?", position: 4 },
+  { key: "horario", label: "Horário de atendimento", trigger_examples: ["horario funcionamento", "que horas abre", "que horas fecha", "atendem"], action: "reply", response_template: "Atendemos de segunda a sexta das 8h às 19h e sábados das 8h às 13h 🕐", position: 5 },
+  { key: "urgencia", label: "Urgência → humano", trigger_examples: ["urgência", "urgencia", "dor forte", "sangramento", "emergência", "emergencia", "socorro"], action: "handoff", response_template: "Entendi. Vou chamar imediatamente uma atendente humana pra te ajudar 🚑", position: 6 },
+  { key: "reclamacao", label: "Reclamação → humano", trigger_examples: ["reclamação", "reclamacao", "péssimo", "pessimo", "horrivel", "ruim demais"], action: "handoff", response_template: "Sinto muito por isso. Vou te transferir agora pra equipe humana resolver 💙", position: 7 },
+  { key: "cancelar", label: "Cancelar consulta", trigger_examples: ["cancelar", "desmarcar", "remarcar"], action: "reply", response_template: "Sem problemas! Pode me dizer a data e horário que estava marcado pra eu encaminhar pro time da agenda?", position: 8 },
+];
+
+function BotTab() {
+  const [config, setConfig] = useState<any>(null);
+  const [intents, setIntents] = useState<any[]>([]);
+  const [conversations, setConversations] = useState<any[]>([]);
+  const [savingCfg, setSavingCfg] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+  const [editingIntent, setEditingIntent] = useState<any | null>(null);
+  const [activeConv, setActiveConv] = useState<any | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+
+  async function load() {
+    const [c, i, cv] = await Promise.all([
+      supabase.from("whatsapp_bot_config").select("*").limit(1).maybeSingle(),
+      supabase.from("whatsapp_bot_intents").select("*").order("position"),
+      supabase.from("whatsapp_conversations").select("*").order("last_message_at", { ascending: false }).limit(50),
+    ]);
+    if (!c.data) {
+      const { data: created } = await supabase.from("whatsapp_bot_config").insert({
+        enabled: false,
+        persona: BOT_TEMPLATES[0].persona,
+        system_prompt: BOT_TEMPLATES[0].prompt,
+      }).select().single();
+      setConfig(created);
+    } else setConfig(c.data);
+    setIntents(i.data ?? []);
+    setConversations(cv.data ?? []);
+  }
+  useEffect(() => { load(); }, []);
+
+  async function loadMessages(conv: any) {
+    setActiveConv(conv);
+    const { data } = await supabase.from("whatsapp_messages")
+      .select("*").eq("conversation_id", conv.id).order("created_at");
+    setMessages(data ?? []);
+    if (conv.unread_count > 0) {
+      await supabase.from("whatsapp_conversations").update({ unread_count: 0 }).eq("id", conv.id);
+    }
+  }
+
+  async function toggleConvAi(conv: any) {
+    await supabase.from("whatsapp_conversations").update({ ai_enabled: !conv.ai_enabled, status: conv.ai_enabled ? "handed_off" : "active" }).eq("id", conv.id);
+    toast({ title: conv.ai_enabled ? "Assumido por humano" : "IA reativada" });
+    load();
+    if (activeConv?.id === conv.id) setActiveConv({ ...conv, ai_enabled: !conv.ai_enabled });
+  }
+
+  async function saveConfig(patch: any) {
+    if (!config) return;
+    setSavingCfg(true);
+    const { error } = await supabase.from("whatsapp_bot_config").update(patch).eq("id", config.id);
+    setSavingCfg(false);
+    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    setConfig({ ...config, ...patch });
+    toast({ title: "Configuração salva" });
+  }
+
+  async function applyTemplate(tpl: any) {
+    await saveConfig({ persona: tpl.persona, system_prompt: tpl.prompt });
+  }
+
+  async function seedDefaultIntents() {
+    setSeeding(true);
+    // remove existing intents with same keys
+    const keys = DEFAULT_INTENTS.map((d) => d.key);
+    await supabase.from("whatsapp_bot_intents").delete().in("key", keys);
+    await supabase.from("whatsapp_bot_intents").insert(DEFAULT_INTENTS.map((d) => ({ ...d, enabled: true })));
+    setSeeding(false);
+    toast({ title: "Templates de intents restaurados" });
+    load();
+  }
+
+  async function saveIntent(intent: any) {
+    if (intent.id) {
+      await supabase.from("whatsapp_bot_intents").update({
+        label: intent.label, trigger_examples: intent.trigger_examples, response_template: intent.response_template, action: intent.action, enabled: intent.enabled, position: intent.position,
+      }).eq("id", intent.id);
+    } else {
+      await supabase.from("whatsapp_bot_intents").insert({
+        key: intent.key, label: intent.label, trigger_examples: intent.trigger_examples, response_template: intent.response_template, action: intent.action, enabled: intent.enabled, position: intent.position ?? intents.length + 1,
+      });
+    }
+    setEditingIntent(null);
+    load();
+    toast({ title: "Intent salva" });
+  }
+
+  async function deleteIntent(id: string) {
+    if (!confirm("Excluir esta intent?")) return;
+    await supabase.from("whatsapp_bot_intents").delete().eq("id", id);
+    load();
+  }
+
+  if (!config) return <div className="py-10 text-center text-sm text-slate-500"><Loader2 className="h-5 w-5 animate-spin mx-auto" /></div>;
+
+  return (
+    <div className="space-y-5">
+      {/* Card status do bot */}
+      <div className={cn(
+        "admin-card p-5 flex items-start gap-4",
+        config.enabled ? "border-emerald-300 bg-emerald-50/30" : ""
+      )}>
+        <div className={cn(
+          "h-12 w-12 rounded-xl grid place-items-center flex-shrink-0",
+          config.enabled ? "bg-gradient-to-br from-emerald-500 to-emerald-700 text-white" : "bg-slate-100 text-slate-500"
+        )}>
+          <Bot className="h-6 w-6" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="font-semibold text-slate-900">Bot conversacional com IA</h3>
+            <Badge className={cn("text-[10px] h-5", config.enabled ? "bg-emerald-100 text-emerald-700 border-emerald-200" : "bg-slate-100 text-slate-600 border-slate-200")}>
+              {config.enabled ? "Ativo" : "Desligado"}
+            </Badge>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Quando ligado, mensagens recebidas no WhatsApp são respondidas automaticamente com IA + intents.
+            Modelo: <code className="bg-slate-100 px-1.5 rounded">{config.model}</code>
+          </p>
+        </div>
+        <Switch checked={config.enabled} onCheckedChange={(v) => saveConfig({ enabled: v })} disabled={savingCfg} />
+      </div>
+
+      <div className="grid lg:grid-cols-2 gap-4">
+        {/* Persona / system prompt */}
+        <div className="admin-card p-5">
+          <div className="flex items-center gap-2 mb-3">
+            <Brain className="h-4 w-4 text-violet-600" />
+            <h4 className="font-semibold text-slate-900 text-sm">Personalidade do bot</h4>
+          </div>
+          <Label className="text-xs">Templates prontos</Label>
+          <div className="grid sm:grid-cols-3 gap-2 mt-1.5 mb-4">
+            {BOT_TEMPLATES.map((tpl) => (
+              <button key={tpl.key} onClick={() => applyTemplate(tpl)} className="rounded-lg border bg-white p-2.5 text-left hover:border-violet-400 transition">
+                <p className="text-[11px] font-semibold text-slate-900">{tpl.label.split(" (")[0]}</p>
+                <p className="text-[10px] text-slate-500 mt-0.5 line-clamp-2">{tpl.prompt.split("\n")[0]}</p>
+              </button>
+            ))}
+          </div>
+          <Label className="text-xs">Persona (curta)</Label>
+          <Input value={config.persona ?? ""} onChange={(e) => setConfig({ ...config, persona: e.target.value })} onBlur={(e) => saveConfig({ persona: e.target.value })} className="mt-1.5 mb-3" />
+          <Label className="text-xs">System prompt completo</Label>
+          <Textarea rows={10} value={config.system_prompt ?? ""} onChange={(e) => setConfig({ ...config, system_prompt: e.target.value })} onBlur={(e) => saveConfig({ system_prompt: e.target.value })} className="mt-1.5 font-mono text-[12px]" />
+          <div className="grid grid-cols-2 gap-3 mt-3">
+            <div>
+              <Label className="text-xs">Modelo IA</Label>
+              <select className="mt-1.5 w-full h-9 rounded-md border bg-white px-3 text-sm" value={config.model} onChange={(e) => saveConfig({ model: e.target.value })}>
+                <option value="google/gemini-2.5-flash">Gemini 2.5 Flash (rápido)</option>
+                <option value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (mais barato)</option>
+                <option value="google/gemini-2.5-pro">Gemini 2.5 Pro (mais inteligente)</option>
+                <option value="openai/gpt-5-mini">GPT-5 Mini</option>
+                <option value="openai/gpt-5">GPT-5 (premium)</option>
+              </select>
+            </div>
+            <div>
+              <Label className="text-xs">Mensagem fallback</Label>
+              <Input value={config.fallback_message ?? ""} onChange={(e) => setConfig({ ...config, fallback_message: e.target.value })} onBlur={(e) => saveConfig({ fallback_message: e.target.value })} className="mt-1.5" />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 mt-4 flex-wrap">
+            <label className="flex items-center gap-2 text-xs"><Switch checked={config.human_like_delay} onCheckedChange={(v) => saveConfig({ human_like_delay: v })} /> Delay humano (digitando…)</label>
+            <label className="flex items-center gap-2 text-xs"><Switch checked={config.business_hours_only} onCheckedChange={(v) => saveConfig({ business_hours_only: v })} /> Só em horário comercial</label>
+          </div>
+        </div>
+
+        {/* Intents */}
+        <div className="admin-card p-5">
+          <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-amber-500" />
+              <h4 className="font-semibold text-slate-900 text-sm">Intents (respostas rápidas)</h4>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={seedDefaultIntents} disabled={seeding}>
+                {seeding ? <Loader2 className="h-3 w-3 mr-1 animate-spin" /> : <RefreshCw className="h-3 w-3 mr-1" />} Restaurar templates
+              </Button>
+              <Button size="sm" onClick={() => setEditingIntent({ key: "", label: "", trigger_examples: [], response_template: "", action: "reply", enabled: true })}>
+                <Plus className="h-3.5 w-3.5 mr-1" /> Nova
+              </Button>
+            </div>
+          </div>
+          <p className="text-[11px] text-slate-500 mb-3">
+            Intents são respostas automáticas instantâneas. Se nenhuma intent casar com a mensagem, o bot usa IA.
+          </p>
+          {intents.length === 0 ? (
+            <div className="text-center py-8 text-xs text-slate-500">
+              Nenhuma intent cadastrada. Clique em "Restaurar templates" para criar 8 intents prontas.
+            </div>
+          ) : (
+            <ul className="divide-y max-h-[420px] overflow-y-auto">
+              {intents.map((it) => (
+                <li key={it.id} className="py-2 flex items-start gap-2">
+                  <Switch checked={it.enabled} onCheckedChange={async (v) => { await supabase.from("whatsapp_bot_intents").update({ enabled: v }).eq("id", it.id); load(); }} className="mt-1" />
+                  <div className="flex-1 min-w-0 cursor-pointer" onClick={() => setEditingIntent(it)}>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-sm font-medium text-slate-900">{it.label}</p>
+                      <Badge variant="outline" className="text-[9px] h-4">{it.action}</Badge>
+                    </div>
+                    <p className="text-[11px] text-slate-500 truncate">{(it.trigger_examples || []).slice(0, 4).join(" · ")}</p>
+                  </div>
+                  <Button size="sm" variant="ghost" onClick={() => deleteIntent(it.id)}><Trash2 className="h-3.5 w-3.5 text-rose-500" /></Button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+
+      {/* Conversas */}
+      <div className="admin-card p-0 overflow-hidden">
+        <div className="px-5 py-3 border-b flex items-center gap-2">
+          <MessageCircle className="h-4 w-4 text-blue-600" />
+          <h4 className="font-semibold text-slate-900 text-sm">Conversas ao vivo</h4>
+          <Badge variant="outline" className="ml-auto text-[10px]">{conversations.length}</Badge>
+        </div>
+        {conversations.length === 0 ? (
+          <div className="py-10 text-center text-xs text-slate-500">
+            Nenhuma conversa ainda. Aparecerão aqui assim que pacientes mandarem mensagens.
+          </div>
+        ) : (
+          <div className="grid md:grid-cols-[280px,1fr] divide-x">
+            <ul className="divide-y max-h-[420px] overflow-y-auto">
+              {conversations.map((c) => (
+                <li key={c.id}>
+                  <button onClick={() => loadMessages(c)} className={cn("w-full text-left px-4 py-3 hover:bg-slate-50 transition flex items-start gap-2", activeConv?.id === c.id && "bg-blue-50/60")}>
+                    <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white grid place-items-center text-xs font-semibold flex-shrink-0">{(c.contact_name || c.phone).slice(0, 2).toUpperCase()}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium truncate">{c.contact_name || c.phone}</p>
+                        {c.unread_count > 0 && <Badge className="bg-rose-500 text-white text-[9px] h-4 px-1.5">{c.unread_count}</Badge>}
+                      </div>
+                      <p className="text-[10px] text-slate-500">{new Date(c.last_message_at).toLocaleString("pt-BR")}</p>
+                      <Badge variant="outline" className="text-[9px] h-4 mt-0.5">{c.ai_enabled ? "🤖 IA" : "👤 Humano"}</Badge>
+                    </div>
+                    <ChevronRight className="h-3 w-3 text-slate-400 mt-3" />
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className="flex flex-col h-[420px]">
+              {activeConv ? (
+                <>
+                  <div className="px-4 py-2 border-b flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">{activeConv.contact_name || activeConv.phone}</p>
+                      <p className="text-[10px] text-slate-500">{activeConv.phone}</p>
+                    </div>
+                    <Button size="sm" variant="outline" onClick={() => toggleConvAi(activeConv)}>
+                      <UserCheck className="h-3.5 w-3.5 mr-1" /> {activeConv.ai_enabled ? "Assumir" : "Devolver à IA"}
+                    </Button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4 space-y-2 bg-slate-50/40">
+                    {messages.map((m) => (
+                      <div key={m.id} className={cn("max-w-[80%] rounded-2xl px-3 py-2 text-sm whitespace-pre-wrap", m.direction === "in" ? "bg-white border" : "ml-auto bg-emerald-500 text-white")}>
+                        {m.body}
+                        <p className={cn("text-[9px] mt-0.5", m.direction === "in" ? "text-slate-400" : "text-white/70")}>
+                          {new Date(m.created_at).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                          {m.ai_used && " · IA"}
+                          {m.intent_matched && ` · ${m.intent_matched}`}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="flex-1 grid place-items-center text-xs text-slate-400">Selecione uma conversa</div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Modal de intent */}
+      {editingIntent && (
+        <EntityModal open={!!editingIntent} onOpenChange={(v) => !v && setEditingIntent(null)} title={editingIntent.id ? "Editar intent" : "Nova intent"}>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div><Label className="text-xs">Chave (slug)</Label><Input value={editingIntent.key} onChange={(e) => setEditingIntent({ ...editingIntent, key: e.target.value.replace(/\s/g, "_") })} disabled={!!editingIntent.id} /></div>
+              <div><Label className="text-xs">Rótulo</Label><Input value={editingIntent.label} onChange={(e) => setEditingIntent({ ...editingIntent, label: e.target.value })} /></div>
+            </div>
+            <div>
+              <Label className="text-xs">Triggers (palavras separadas por vírgula)</Label>
+              <Textarea rows={2} value={(editingIntent.trigger_examples || []).join(", ")} onChange={(e) => setEditingIntent({ ...editingIntent, trigger_examples: e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean) })} placeholder="oi, olá, bom dia" />
+            </div>
+            <div>
+              <Label className="text-xs">Ação</Label>
+              <select className="w-full h-9 rounded-md border bg-white px-3 text-sm" value={editingIntent.action} onChange={(e) => setEditingIntent({ ...editingIntent, action: e.target.value })}>
+                <option value="reply">Responder com texto fixo</option>
+                <option value="handoff">Transferir para humano</option>
+                <option value="ai">Deixar IA responder</option>
+              </select>
+            </div>
+            <div>
+              <Label className="text-xs">Resposta (use {"{{nome}}"} para personalizar)</Label>
+              <Textarea rows={4} value={editingIntent.response_template} onChange={(e) => setEditingIntent({ ...editingIntent, response_template: e.target.value })} />
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <Button variant="outline" onClick={() => setEditingIntent(null)}>Cancelar</Button>
+              <Button onClick={() => saveIntent(editingIntent)}>Salvar</Button>
+            </div>
+          </div>
+        </EntityModal>
+      )}
+    </div>
+  );
+}
