@@ -102,7 +102,7 @@ export default function WhatsAppTemplatesTab() {
     if (!phone) return toast({ title: "Informe um número (com DDD) acima", variant: "destructive" });
     const cur = stored[t.key];
     const content: string = cur?.content ?? t.content;
-    const config: Record<string, string> = cur?.config ?? {};
+    const config: Record<string, string> = cur?.config_values ?? {};
     // Substitui variáveis
     let final = content.replace(/\{\{nome\}\}/g, "Cliente Teste");
     for (const v of t.variables) {
@@ -123,7 +123,7 @@ export default function WhatsAppTemplatesTab() {
   const needsConfigCount = WHATSAPP_TEMPLATES.filter((t) => {
     if (!t.requires_config) return false;
     const cur = stored[t.key];
-    const cfg: Record<string, string> = cur?.config ?? {};
+    const cfg: Record<string, string> = cur?.config_values ?? {};
     return (t.config_fields ?? []).some((f) => f.required && !cfg[f.key]);
   }).length;
 
@@ -190,7 +190,7 @@ export default function WhatsAppTemplatesTab() {
         {filtered.map((t) => {
           const cur = stored[t.key];
           const enabled = !!cur?.enabled;
-          const cfg: Record<string, string> = cur?.config ?? {};
+          const cfg: Record<string, string> = cur?.config_values ?? {};
           const needsCfg = t.requires_config && (t.config_fields ?? []).some((f) => f.required && !cfg[f.key]);
           const cat = TEMPLATE_CATEGORIES.find((c) => c.key === t.category);
           return (
