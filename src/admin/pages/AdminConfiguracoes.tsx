@@ -534,7 +534,7 @@ function ChatProWebhookCard() {
   );
 }
 
-
+function SectionClientArea({ initial, onSave }: any) {
   const [v, setV] = useState({
     enabled: false, require_email_verification: true, allow_self_registration: false,
     show_appointments: true, show_history: true, show_documents: false, show_invoices: true,
