@@ -278,7 +278,8 @@ function ChatProIntegrationCard() {
         setCfg((c: any) => ({ ...c, id: data.id }));
       }
       // ativa provider chatpro (manual upsert)
-      const { data: existingProv } = await supabase.from("whatsapp_providers" as any).select("id").eq("type", "chatpro").maybeSingle();
+      const existingProvRes: any = await supabase.from("whatsapp_providers" as any).select("id").eq("type", "chatpro").maybeSingle();
+      const existingProv = existingProvRes?.data as { id: string } | null;
       const provPayload: any = {
         type: "chatpro",
         label: "ChatPro",
