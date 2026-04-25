@@ -19,7 +19,7 @@ import PublicLinkModal from "@/admin/components/PublicLinkModal";
 import { useBookingLinks } from "@/admin/hooks/useBookingLinks";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { TREATMENTS, DENTISTS } from "@/data/clinic";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
