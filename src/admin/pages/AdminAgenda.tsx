@@ -346,18 +346,18 @@ function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }
                       key={a.id}
                       onClick={() => onOpen(a)}
                       className={cn(
-                        "group text-left rounded-xl border px-3.5 py-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden",
-                        STATUS_BG[a.status] || "bg-slate-50 border-slate-200"
+                        "group text-left rounded-xl border-2 pl-4 pr-3.5 py-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden min-h-[72px]",
+                        STATUS_BG[a.status] || "bg-slate-100 border-slate-300"
                       )}
                     >
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-current opacity-30" />
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-sm font-bold tabular-nums">{a.appointment_time}</span>
-                        <span className="text-sm font-semibold truncate">{a.name}</span>
+                      <div className={cn("absolute left-0 top-0 bottom-0 w-1.5", STATUS_BAR[a.status] || "bg-slate-400")} />
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className="text-sm font-bold tabular-nums bg-white/80 backdrop-blur px-2 py-0.5 rounded-md shadow-sm">{a.appointment_time}</span>
+                        <span className="text-sm font-bold truncate text-slate-900">{a.name}</span>
                         <StatusPill status={a.status} />
-                        {a.status === "pending" && <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />}
+                        {a.status === "pending" && <span className="h-1.5 w-1.5 rounded-full bg-amber-600 animate-pulse" />}
                       </div>
-                      <p className="text-[12px] mt-1 opacity-75 truncate font-medium">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
+                      <p className="text-[12px] mt-1.5 text-slate-700 truncate font-medium">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
                       <div className="mt-2.5 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                         {a.status === "pending" && (
                           <>
