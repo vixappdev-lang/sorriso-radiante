@@ -1025,15 +1025,57 @@ function BotTab() {
           <Input value={config.persona ?? ""} onChange={(e) => setConfig({ ...config, persona: e.target.value })} onBlur={(e) => saveConfig({ persona: e.target.value })} className="mt-1.5 mb-3" />
           <Label className="text-xs">System prompt completo</Label>
           <Textarea rows={10} value={config.system_prompt ?? ""} onChange={(e) => setConfig({ ...config, system_prompt: e.target.value })} onBlur={(e) => saveConfig({ system_prompt: e.target.value })} className="mt-1.5 font-mono text-[12px]" />
-          <div className="grid grid-cols-2 gap-3 mt-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-3">
             <div>
-              <Label className="text-xs">Modelo IA</Label>
-              <select className="mt-1.5 w-full h-9 rounded-md border bg-white px-3 text-sm" value={config.model} onChange={(e) => saveConfig({ model: e.target.value })}>
-                <option value="google/gemini-2.5-flash">Gemini 2.5 Flash (rápido)</option>
-                <option value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite (mais barato)</option>
-                <option value="google/gemini-2.5-pro">Gemini 2.5 Pro (mais inteligente)</option>
-                <option value="openai/gpt-5-mini">GPT-5 Mini</option>
-                <option value="openai/gpt-5">GPT-5 (premium)</option>
+              <Label className="text-xs">Provedor de IA</Label>
+              <select
+                className="mt-1.5 w-full h-9 rounded-md border bg-white px-3 text-sm"
+                value={(config as any).ai_provider ?? "openai"}
+                onChange={(e) => {
+                  const prov = e.target.value;
+                  const defaults: Record<string, string> = {
+                    openai: "gpt-4o-mini",
+                    gemini: "gemini-2.0-flash",
+                    lovable: "google/gemini-2.5-flash",
+                  };
+                  saveConfig({ ai_provider: prov, ai_model: defaults[prov] });
+                }}
+              >
+                <option value="openai">OpenAI (ChatGPT)</option>
+                <option value="gemini">Google Gemini</option>
+                <option value="lovable">Lovable AI Gateway</option>
+              </select>
+            </div>
+            <div>
+              <Label className="text-xs">Modelo</Label>
+              <select
+                className="mt-1.5 w-full h-9 rounded-md border bg-white px-3 text-sm"
+                value={(config as any).ai_model ?? "gpt-4o-mini"}
+                onChange={(e) => saveConfig({ ai_model: e.target.value })}
+              >
+                {((config as any).ai_provider ?? "openai") === "openai" && (
+                  <>
+                    <option value="gpt-4o-mini">GPT-4o Mini (rápido e barato)</option>
+                    <option value="gpt-4o">GPT-4o (premium)</option>
+                    <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
+                    <option value="gpt-4.1">GPT-4.1</option>
+                  </>
+                )}
+                {(config as any).ai_provider === "gemini" && (
+                  <>
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash (rápido)</option>
+                    <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite (mais barato)</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro (premium)</option>
+                  </>
+                )}
+                {(config as any).ai_provider === "lovable" && (
+                  <>
+                    <option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>
+                    <option value="google/gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                    <option value="openai/gpt-5-mini">GPT-5 Mini</option>
+                    <option value="openai/gpt-5">GPT-5</option>
+                  </>
+                )}
               </select>
             </div>
             <div>
@@ -1042,6 +1084,10 @@ function BotTab() {
             </div>
           </div>
           <div className="flex items-center gap-3 mt-4 flex-wrap">
+            <label className="flex items-center gap-2 text-xs">
+              <Switch checked={(config as any).ai_fallback_enabled !== false} onCheckedChange={(v) => saveConfig({ ai_fallback_enabled: v })} />
+              Fallback automático (tenta outro provedor se falhar)
+            </label>
             <label className="flex items-center gap-2 text-xs"><Switch checked={config.human_like_delay} onCheckedChange={(v) => saveConfig({ human_like_delay: v })} /> Delay humano (digitando…)</label>
             <label className="flex items-center gap-2 text-xs"><Switch checked={config.business_hours_only} onCheckedChange={(v) => saveConfig({ business_hours_only: v })} /> Só em horário comercial</label>
           </div>

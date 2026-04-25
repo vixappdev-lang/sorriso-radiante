@@ -41,14 +41,18 @@ function matchIntent(msg: string, intents: any[]) {
   return null;
 }
 
-async function callAiGateway(messages: any[], systemPrompt: string, model: string): Promise<string> {
-  const apiKey = Deno.env.get("LOVABLE_API_KEY");
-  if (!apiKey) throw new Error("LOVABLE_API_KEY ausente");
-  const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+// ============ PROVEDORES DE IA ============
+// 3 provedores suportados: openai, gemini, lovable
+// Com fallback automático entre eles se ai_fallback_enabled=true.
+
+async function callOpenAI(messages: any[], systemPrompt: string, model: string): Promise<string> {
+  const apiKey = Deno.env.get("OPENAI_API_KEY");
+  if (!apiKey) throw new Error("OPENAI_API_KEY ausente");
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
-      model,
+      model: model || "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },
         ...messages,
@@ -59,11 +63,106 @@ async function callAiGateway(messages: any[], systemPrompt: string, model: strin
   });
   if (!resp.ok) {
     const t = await resp.text();
-    throw new Error(`AI Gateway ${resp.status}: ${t}`);
+    throw new Error(`OpenAI ${resp.status}: ${t.slice(0, 300)}`);
   }
   const data = await resp.json();
   return data?.choices?.[0]?.message?.content?.trim() ?? "";
 }
+
+async function callGemini(messages: any[], systemPrompt: string, model: string): Promise<string> {
+  const apiKey = Deno.env.get("GEMINI_API_KEY");
+  if (!apiKey) throw new Error("GEMINI_API_KEY ausente");
+  const m = model || "gemini-2.0-flash";
+  // Converte formato OpenAI → Gemini
+  const contents = messages.map((msg: any) => ({
+    role: msg.role === "assistant" ? "model" : "user",
+    parts: [{ text: String(msg.content || "") }],
+  }));
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`;
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents,
+      generationConfig: { temperature: 0.7, maxOutputTokens: 400 },
+    }),
+  });
+  if (!resp.ok) {
+    const t = await resp.text();
+    throw new Error(`Gemini ${resp.status}: ${t.slice(0, 300)}`);
+  }
+  const data = await resp.json();
+  const text = data?.candidates?.[0]?.content?.parts?.map((p: any) => p?.text || "").join("") ?? "";
+  return String(text).trim();
+}
+
+async function callLovableAi(messages: any[], systemPrompt: string, model: string): Promise<string> {
+  const apiKey = Deno.env.get("LOVABLE_API_KEY");
+  if (!apiKey) throw new Error("LOVABLE_API_KEY ausente");
+  const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: model || "google/gemini-2.5-flash",
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...messages,
+      ],
+      temperature: 0.7,
+      max_tokens: 400,
+    }),
+  });
+  if (!resp.ok) {
+    const t = await resp.text();
+    throw new Error(`Lovable AI ${resp.status}: ${t.slice(0, 300)}`);
+  }
+  const data = await resp.json();
+  return data?.choices?.[0]?.message?.content?.trim() ?? "";
+}
+
+async function callAiWithFallback(
+  primary: string,
+  model: string,
+  messages: any[],
+  systemPrompt: string,
+  fallbackEnabled: boolean,
+): Promise<{ text: string; provider: string }> {
+  // Modelos padrão por provider quando o usuário não definiu um específico
+  const defaultModels: Record<string, string> = {
+    openai: "gpt-4o-mini",
+    gemini: "gemini-2.0-flash",
+    lovable: "google/gemini-2.5-flash",
+  };
+  const callers: Record<string, (m: any[], s: string, mdl: string) => Promise<string>> = {
+    openai: callOpenAI,
+    gemini: callGemini,
+    lovable: callLovableAi,
+  };
+
+  const order = [primary];
+  if (fallbackEnabled) {
+    if (primary !== "openai") order.push("openai");
+    if (primary !== "gemini") order.push("gemini");
+    if (primary !== "lovable") order.push("lovable");
+  }
+
+  let lastErr: any = null;
+  for (const prov of order) {
+    const fn = callers[prov];
+    if (!fn) continue;
+    const mdl = prov === primary ? (model || defaultModels[prov]) : defaultModels[prov];
+    try {
+      const text = await fn(messages, systemPrompt, mdl);
+      if (text) return { text, provider: prov };
+    } catch (e: any) {
+      console.warn(`[ai] ${prov} falhou:`, e.message);
+      lastErr = e;
+    }
+  }
+  throw lastErr ?? new Error("Nenhum provedor de IA respondeu");
+}
+
 
 function json(body: any, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -170,15 +269,17 @@ Deno.serve(async (req) => {
         content: m.body,
       }));
       try {
-        reply = await callAiGateway(
-          aiMessages,
-          cfg.system_prompt || cfg.persona || "Você é uma atendente humanizada da LyneCloud (clínica odontológica). Responda de forma curta, gentil e prestativa em português brasileiro. Use no máximo 2 frases curtas. Use emojis com moderação.",
-          cfg.model || "google/gemini-2.5-flash",
-        );
+        const sysPrompt = cfg.system_prompt || cfg.persona || "Você é uma atendente humanizada da LyneCloud (clínica odontológica). Responda de forma curta, gentil e prestativa em português brasileiro. Use no máximo 2 frases curtas. Use emojis com moderação.";
+        const provider = (cfg as any).ai_provider || "openai";
+        const model = (cfg as any).ai_model || cfg.model || "";
+        const fallback = (cfg as any).ai_fallback_enabled !== false;
+        const result = await callAiWithFallback(provider, model, aiMessages, sysPrompt, fallback);
+        reply = result.text;
         aiUsed = true;
+        intentKey = `ai:${result.provider}`;
         if (matched) intentKey = matched.key;
       } catch (e: any) {
-        console.error("AI error:", e.message);
+        console.error("AI error (todos provedores):", e.message);
         reply = cfg.fallback_message || "Vou te transferir para um humano em instantes 💙";
       }
     }

@@ -1335,6 +1335,9 @@ export type Database = {
       }
       whatsapp_bot_config: {
         Row: {
+          ai_fallback_enabled: boolean
+          ai_model: string
+          ai_provider: string
           business_hours_only: boolean
           created_at: string
           enabled: boolean
@@ -1348,6 +1351,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          ai_fallback_enabled?: boolean
+          ai_model?: string
+          ai_provider?: string
           business_hours_only?: boolean
           created_at?: string
           enabled?: boolean
@@ -1361,6 +1367,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          ai_fallback_enabled?: boolean
+          ai_model?: string
+          ai_provider?: string
           business_hours_only?: boolean
           created_at?: string
           enabled?: boolean
