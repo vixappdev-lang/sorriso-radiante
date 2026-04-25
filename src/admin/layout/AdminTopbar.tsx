@@ -61,6 +61,19 @@ export default function AdminTopbar({ onOpenSidebar }: { onOpenSidebar: () => vo
         </form>
 
         <div className="flex items-center gap-2 md:ml-2 ml-auto">
+          {/* Toggle Tema */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            aria-label={theme === "dark" ? "Mudar para tema claro" : "Mudar para tema escuro"}
+            title={theme === "dark" ? "Tema claro" : "Tema escuro"}
+            className="relative rounded-full h-10 w-10 hover:bg-muted/80 overflow-hidden"
+          >
+            <Sun className={`h-[18px] w-[18px] absolute transition-all duration-500 ${theme === "dark" ? "opacity-0 -rotate-90 scale-50" : "opacity-100 rotate-0 scale-100"}`} />
+            <Moon className={`h-[18px] w-[18px] absolute transition-all duration-500 ${theme === "dark" ? "opacity-100 rotate-0 scale-100" : "opacity-0 rotate-90 scale-50"}`} />
+          </Button>
+
           {/* Notificações */}
           <Popover>
             <PopoverTrigger asChild>
