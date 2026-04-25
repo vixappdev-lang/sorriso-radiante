@@ -43,6 +43,7 @@ function emptyForm(): any {
   return {
     slug: "", name: "", category: "", description: "", duration: "", price_from: "",
     professional_slug: "", availability: [] as string[], active: true,
+    requires_prepayment: false, prepayment_amount_cents: 0,
   };
 }
 
@@ -131,10 +132,13 @@ export default function AdminTratamentos() {
 
   function openCreate() { setForm(emptyForm()); setDrawer({ mode: "create" }); }
   function openEdit(r: Row) {
+    const ov: any = overrides.find((o: any) => o.slug === r.slug) || {};
     setForm({
       slug: r.slug, name: r.name, category: r.category, description: r.description,
       duration: r.duration, price_from: r.priceFrom,
-      professional_slug: r.professional_slug ?? "", availability: [], active: r.active,
+      professional_slug: r.professional_slug ?? "", availability: ov.availability ?? [], active: r.active,
+      requires_prepayment: !!ov.requires_prepayment,
+      prepayment_amount_cents: ov.prepayment_amount_cents ?? 0,
     });
     setDrawer({ mode: "edit", row: r });
   }
@@ -149,6 +153,8 @@ export default function AdminTratamentos() {
         duration: form.duration || null, price_from: form.price_from || null,
         professional_slug: form.professional_slug || null, active: form.active,
         availability: form.availability,
+        requires_prepayment: !!form.requires_prepayment,
+        prepayment_amount_cents: form.requires_prepayment ? (Number(form.prepayment_amount_cents) || 0) : null,
       } as any);
       toast({ title: "Tratamento salvo" });
       setDrawer(null);
