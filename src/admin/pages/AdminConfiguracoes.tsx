@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const SECTIONS = [
   { key: "general", label: "Geral", icon: Building2 },
   { key: "hours", label: "Horários", icon: Clock },
+  { key: "payments", label: "Pagamentos", icon: CreditCard },
   { key: "integrations", label: "Integrações", icon: Plug },
   { key: "client_area", label: "Área do Cliente", icon: UserCircle2 },
   { key: "branding", label: "Branding", icon: Palette },
