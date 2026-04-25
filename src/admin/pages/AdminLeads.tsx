@@ -45,6 +45,7 @@ export default function AdminLeads() {
   const { data: leads = [] } = useLeads();
   const upsert = useUpsertLead();
   const del = useDeleteLead();
+  const qc = useQueryClient();
   const [modal, setModal] = useState<"new" | Lead | null>(null);
   const [form, setForm] = useState<any>(emptyForm());
   const [confirmDel, setConfirmDel] = useState<string | null>(null);
@@ -52,7 +53,11 @@ export default function AdminLeads() {
   const [search, setSearch] = useState("");
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  // Sensores separados: mouse responde rápido, touch precisa de delay para não conflitar com scroll vertical do mobile
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 8 } }),
+  );
 
   const grouped = useMemo(() => {
     const map: Record<string, Lead[]> = {};
@@ -103,7 +108,9 @@ export default function AdminLeads() {
 
   function handleDragStart(e: DragStartEvent) { setDraggingId(String(e.active.id)); }
 
+  // Drag end com update otimista (evita o "card volta") + persistência sem reenviar campos do lead
   async function handleDragEnd(e: DragEndEvent) {
+    const id = draggingId;
     setDraggingId(null);
     const { active, over } = e;
     if (!over) return;
@@ -111,10 +118,27 @@ export default function AdminLeads() {
     const newStatus = String(over.id);
     const lead = leads.find((l) => l.id === leadId);
     if (!lead || lead.status === newStatus) return;
-    try {
-      await upsert.mutateAsync({ id: lead.id, name: lead.name, status: newStatus, last_touch_at: new Date().toISOString() } as any);
-      toast({ title: `Movido para "${COLUMNS.find((c) => c.key === newStatus)?.label}"` });
-    } catch (err: any) { toast({ title: "Erro", description: err.message, variant: "destructive" }); }
+
+    // Otimista: atualiza cache imediatamente
+    const prev = qc.getQueryData<Lead[]>(["admin", "leads"]);
+    qc.setQueryData<Lead[]>(["admin", "leads"], (old) =>
+      (old ?? []).map((l) => (l.id === leadId ? { ...l, status: newStatus, last_touch_at: new Date().toISOString() } : l))
+    );
+
+    // Persiste apenas o status (não sobrescreve outros campos)
+    const { error } = await supabase
+      .from("leads")
+      .update({ status: newStatus, last_touch_at: new Date().toISOString() })
+      .eq("id", leadId);
+
+    if (error) {
+      qc.setQueryData(["admin", "leads"], prev);
+      toast({ title: "Erro ao mover", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `Movido para "${COLUMNS.find((c) => c.key === newStatus)?.label}"` });
+    // Refetch silencioso pra alinhar com servidor
+    qc.invalidateQueries({ queryKey: ["admin", "leads"] });
   }
 
   function brl(cents: number | null) { return cents ? (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—"; }
