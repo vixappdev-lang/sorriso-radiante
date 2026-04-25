@@ -95,12 +95,23 @@ Deno.serve(async (req) => {
     let { data: conv } = await supabase
       .from("whatsapp_conversations")
       .select("*").eq("phone", phone).maybeSingle();
+
+    let isFirstContact = false;
     if (!conv) {
+      isFirstContact = true;
       const { data: c } = await supabase.from("whatsapp_conversations")
         .insert({ phone, contact_name: contactName, ai_enabled: true })
         .select().single();
       conv = c;
     } else {
+      // Verifica se já houve mensagens out (resposta do bot/atendente)
+      const { count: outCount } = await supabase
+        .from("whatsapp_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", conv.id)
+        .eq("direction", "out");
+      if (!outCount || outCount === 0) isFirstContact = true;
+
       await supabase.from("whatsapp_conversations")
         .update({ last_message_at: new Date().toISOString(), unread_count: (conv.unread_count || 0) + 1 })
         .eq("id", conv.id);
@@ -129,7 +140,15 @@ Deno.serve(async (req) => {
     let aiUsed = false;
     let intentKey: string | null = null;
 
-    if (matched && matched.action === "reply" && matched.response_template) {
+    // 4.1 Saudação inicial padrão LyneCloud (primeira mensagem da conversa)
+    if (isFirstContact) {
+      const nome = contactName ? `, ${String(contactName).split(" ")[0]}` : "";
+      const greetingTpl =
+        (cfg as any).greeting_message ||
+        `Olá${nome}! 👋 Aqui é da *LyneCloud*, em que podemos lhe ajudar hoje?`;
+      reply = greetingTpl.replace(/\{\{nome\}\}/g, contactName || "");
+      intentKey = "first_contact_greeting";
+    } else if (matched && matched.action === "reply" && matched.response_template) {
       reply = String(matched.response_template).replace(/\{\{nome\}\}/g, contactName || "");
       intentKey = matched.key;
     } else if (matched && matched.action === "handoff") {
@@ -151,7 +170,11 @@ Deno.serve(async (req) => {
         content: m.body,
       }));
       try {
-        reply = await callAiGateway(aiMessages, cfg.system_prompt || cfg.persona || "Você é uma atendente humanizada de uma clínica odontológica. Responda de forma curta, gentil e prestativa em português brasileiro. Use no máximo 2 frases curtas. Use emojis com moderação.", cfg.model || "google/gemini-2.5-flash");
+        reply = await callAiGateway(
+          aiMessages,
+          cfg.system_prompt || cfg.persona || "Você é uma atendente humanizada da LyneCloud (clínica odontológica). Responda de forma curta, gentil e prestativa em português brasileiro. Use no máximo 2 frases curtas. Use emojis com moderação.",
+          cfg.model || "google/gemini-2.5-flash",
+        );
         aiUsed = true;
         if (matched) intentKey = matched.key;
       } catch (e: any) {
