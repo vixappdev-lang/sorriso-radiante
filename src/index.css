@@ -296,20 +296,37 @@
   }
   .admin-pan { animation: admin-pan 22s ease-in-out infinite; }
 
-  /* Scrollbar transparente em todo o admin (mantém scroll funcional) */
+  /* Scrollbar discreta translúcida no admin (visível ao passar o mouse) */
   .admin-shell,
   .admin-shell * {
-    scrollbar-width: none;          /* Firefox */
-    -ms-overflow-style: none;       /* IE/Edge antigo */
+    scrollbar-width: thin;
+    scrollbar-color: hsl(220 15% 70% / 0.45) transparent;
   }
   .admin-shell::-webkit-scrollbar,
   .admin-shell *::-webkit-scrollbar {
-    width: 0 !important;
-    height: 0 !important;
+    width: 8px;
+    height: 8px;
+    background: transparent;
+  }
+  .admin-shell::-webkit-scrollbar-track,
+  .admin-shell *::-webkit-scrollbar-track {
     background: transparent;
   }
   .admin-shell::-webkit-scrollbar-thumb,
   .admin-shell *::-webkit-scrollbar-thumb {
+    background: hsl(220 15% 70% / 0.35);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background-color .2s ease;
+  }
+  .admin-shell::-webkit-scrollbar-thumb:hover,
+  .admin-shell *::-webkit-scrollbar-thumb:hover {
+    background: hsl(220 18% 50% / 0.55);
+    background-clip: padding-box;
+  }
+  .admin-shell::-webkit-scrollbar-corner,
+  .admin-shell *::-webkit-scrollbar-corner {
     background: transparent;
   }
 
