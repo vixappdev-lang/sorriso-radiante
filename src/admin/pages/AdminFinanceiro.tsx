@@ -186,6 +186,7 @@ export default function AdminFinanceiro() {
           <TabsTrigger value="pending">Pendentes</TabsTrigger>
           <TabsTrigger value="paid">Recebidos</TabsTrigger>
           <TabsTrigger value="overdue">Atrasados</TabsTrigger>
+          <TabsTrigger value="commissions">Comissões</TabsTrigger>
         </TabsList>
         {(["all", "pending", "paid", "overdue"] as const).map((tab) => (
           <TabsContent key={tab} value={tab} className="mt-4">
@@ -209,6 +210,9 @@ export default function AdminFinanceiro() {
             )}
           </TabsContent>
         ))}
+        <TabsContent value="commissions" className="mt-4">
+          <CommissionsPanel />
+        </TabsContent>
       </Tabs>
 
       <EntityDrawer
