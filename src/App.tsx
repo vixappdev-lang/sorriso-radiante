@@ -36,6 +36,8 @@ import AdminAvaliacoes from "@/admin/pages/AdminAvaliacoes";
 import AdminSite from "@/admin/pages/AdminSite";
 import AdminRelatorios from "@/admin/pages/AdminRelatorios";
 import AdminConfiguracoes from "@/admin/pages/AdminConfiguracoes";
+import AdminEstoque from "@/admin/pages/AdminEstoque";
+import PublicQuote from "./pages/PublicQuote.tsx";
 
 const queryClient = new QueryClient();
 
@@ -61,6 +63,7 @@ const App = () => (
             <Route path="/agendar/slug/:slug" element={<PublicBooking />} />
             <Route path="/area-cliente" element={<AreaCliente />} />
             <Route path="/apresentacao" element={<Apresentacao />} />
+            <Route path="/orcamento/:token" element={<PublicQuote />} />
 
             {/* Painel admin */}
             <Route path="/admin/login" element={<AdminLogin />} />
@@ -77,6 +80,7 @@ const App = () => (
               <Route path="agenda" element={<AdminAgenda />} />
               <Route path="pacientes" element={<AdminPacientes />} />
               <Route path="tratamentos" element={<AdminTratamentos />} />
+              <Route path="estoque" element={<AdminEstoque />} />
               <Route path="profissionais" element={<AdminProfissionais />} />
               <Route path="financeiro" element={<AdminFinanceiro />} />
               <Route path="leads" element={<AdminLeads />} />
