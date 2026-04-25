@@ -498,6 +498,7 @@ server {
 const GITIGNORE = `node_modules/
 auth/
 .env
+webhook.json
 *.log
 `;
 
