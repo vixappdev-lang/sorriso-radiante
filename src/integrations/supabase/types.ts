@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          diff: Json | null
+          entity: string
+          entity_id: string | null
+          id: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          diff?: Json | null
+          entity: string
+          entity_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          diff?: Json | null
+          entity?: string
+          entity_id?: string | null
+          id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           created_at: string
@@ -44,6 +74,45 @@ export type Database = {
           label?: string
           last_used_at?: string | null
           scopes?: string[]
+        }
+        Relationships: []
+      }
+      appointment_payments: {
+        Row: {
+          amount_cents: number
+          appointment_id: string | null
+          created_at: string
+          id: string
+          paid_at: string | null
+          pix_payload: string | null
+          provider: string
+          receipt_url: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          pix_payload?: string | null
+          provider?: string
+          receipt_url?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          appointment_id?: string | null
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          pix_payload?: string | null
+          provider?: string
+          receipt_url?: string | null
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -266,6 +335,84 @@ export type Database = {
           message?: string | null
           slots_synced?: number | null
           status?: string
+        }
+        Relationships: []
+      }
+      commission_entries: {
+        Row: {
+          amount_cents: number
+          base_amount_cents: number
+          created_at: string
+          financial_entry_id: string | null
+          id: string
+          paid_at: string | null
+          professional_name: string | null
+          professional_slug: string
+          reference_month: string | null
+          rule_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number
+          base_amount_cents?: number
+          created_at?: string
+          financial_entry_id?: string | null
+          id?: string
+          paid_at?: string | null
+          professional_name?: string | null
+          professional_slug: string
+          reference_month?: string | null
+          rule_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          base_amount_cents?: number
+          created_at?: string
+          financial_entry_id?: string | null
+          id?: string
+          paid_at?: string | null
+          professional_name?: string | null
+          professional_slug?: string
+          reference_month?: string | null
+          rule_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      commission_rules: {
+        Row: {
+          active: boolean
+          created_at: string
+          fixed_cents: number | null
+          id: string
+          percent: number | null
+          professional_slug: string
+          treatment_slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          fixed_cents?: number | null
+          id?: string
+          percent?: number | null
+          professional_slug: string
+          treatment_slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          fixed_cents?: number | null
+          id?: string
+          percent?: number | null
+          professional_slug?: string
+          treatment_slug?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -521,6 +668,87 @@ export type Database = {
           id?: string
           note?: string
           patient_phone?: string
+        }
+        Relationships: []
+      }
+      patient_odontogram: {
+        Row: {
+          created_at: string
+          id: string
+          patient_phone: string
+          teeth: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          patient_phone: string
+          teeth?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          patient_phone?: string
+          teeth?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      patient_quotes: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          created_by: string | null
+          discount_cents: number
+          expires_at: string | null
+          id: string
+          items: Json
+          notes: string | null
+          patient_name: string
+          patient_phone: string
+          status: string
+          subtotal_cents: number
+          token: string
+          total_cents: number
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          discount_cents?: number
+          expires_at?: string | null
+          id?: string
+          items?: Json
+          notes?: string | null
+          patient_name: string
+          patient_phone: string
+          status?: string
+          subtotal_cents?: number
+          token?: string
+          total_cents?: number
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          created_by?: string | null
+          discount_cents?: number
+          expires_at?: string | null
+          id?: string
+          items?: Json
+          notes?: string | null
+          patient_name?: string
+          patient_phone?: string
+          status?: string
+          subtotal_cents?: number
+          token?: string
+          total_cents?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -853,6 +1081,81 @@ export type Database = {
         }
         Relationships: []
       }
+      stock_items: {
+        Row: {
+          active: boolean
+          category: string | null
+          cost_cents: number
+          created_at: string
+          current_qty: number
+          id: string
+          min_qty: number
+          name: string
+          sku: string | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          category?: string | null
+          cost_cents?: number
+          created_at?: string
+          current_qty?: number
+          id?: string
+          min_qty?: number
+          name: string
+          sku?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          category?: string | null
+          cost_cents?: number
+          created_at?: string
+          current_qty?: number
+          id?: string
+          min_qty?: number
+          name?: string
+          sku?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stock_movements: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          item_id: string
+          qty: number
+          reason: string | null
+          type: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id: string
+          qty: number
+          reason?: string | null
+          type: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          item_id?: string
+          qty?: number
+          reason?: string | null
+          type?: string
+        }
+        Relationships: []
+      }
       treatments_overrides: {
         Row: {
           active: boolean
@@ -861,8 +1164,10 @@ export type Database = {
           description: string | null
           duration: string | null
           name: string | null
+          prepayment_amount_cents: number | null
           price_from: string | null
           professional_slug: string | null
+          requires_prepayment: boolean
           slug: string
           updated_at: string
         }
@@ -873,8 +1178,10 @@ export type Database = {
           description?: string | null
           duration?: string | null
           name?: string | null
+          prepayment_amount_cents?: number | null
           price_from?: string | null
           professional_slug?: string | null
+          requires_prepayment?: boolean
           slug: string
           updated_at?: string
         }
@@ -885,8 +1192,10 @@ export type Database = {
           description?: string | null
           duration?: string | null
           name?: string | null
+          prepayment_amount_cents?: number | null
           price_from?: string | null
           professional_slug?: string | null
+          requires_prepayment?: boolean
           slug?: string
           updated_at?: string
         }
@@ -970,6 +1279,84 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_bot_config: {
+        Row: {
+          business_hours_only: boolean
+          created_at: string
+          enabled: boolean
+          fallback_message: string
+          human_like_delay: boolean
+          id: string
+          model: string
+          persona: string
+          system_prompt: string
+          updated_at: string
+        }
+        Insert: {
+          business_hours_only?: boolean
+          created_at?: string
+          enabled?: boolean
+          fallback_message?: string
+          human_like_delay?: boolean
+          id?: string
+          model?: string
+          persona?: string
+          system_prompt?: string
+          updated_at?: string
+        }
+        Update: {
+          business_hours_only?: boolean
+          created_at?: string
+          enabled?: boolean
+          fallback_message?: string
+          human_like_delay?: boolean
+          id?: string
+          model?: string
+          persona?: string
+          system_prompt?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_bot_intents: {
+        Row: {
+          action: string
+          created_at: string
+          enabled: boolean
+          id: string
+          key: string
+          label: string
+          position: number
+          response_template: string
+          trigger_examples: string[]
+          updated_at: string
+        }
+        Insert: {
+          action?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key: string
+          label: string
+          position?: number
+          response_template?: string
+          trigger_examples?: string[]
+          updated_at?: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          key?: string
+          label?: string
+          position?: number
+          response_template?: string
+          trigger_examples?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       whatsapp_campaigns: {
         Row: {
           active: boolean
@@ -1012,6 +1399,42 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_conversations: {
+        Row: {
+          ai_enabled: boolean
+          contact_name: string | null
+          created_at: string
+          id: string
+          last_message_at: string
+          phone: string
+          status: string
+          unread_count: number
+          updated_at: string
+        }
+        Insert: {
+          ai_enabled?: boolean
+          contact_name?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          phone: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+        }
+        Update: {
+          ai_enabled?: boolean
+          contact_name?: string | null
+          created_at?: string
+          id?: string
+          last_message_at?: string
+          phone?: string
+          status?: string
+          unread_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       whatsapp_event_settings: {
         Row: {
           delay_minutes: number
@@ -1033,6 +1456,36 @@ export type Database = {
           event_key?: string
           template?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_messages: {
+        Row: {
+          ai_used: boolean
+          body: string
+          conversation_id: string
+          created_at: string
+          direction: string
+          id: string
+          intent_matched: string | null
+        }
+        Insert: {
+          ai_used?: boolean
+          body: string
+          conversation_id: string
+          created_at?: string
+          direction: string
+          id?: string
+          intent_matched?: string | null
+        }
+        Update: {
+          ai_used?: boolean
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          direction?: string
+          id?: string
+          intent_matched?: string | null
         }
         Relationships: []
       }
@@ -1134,6 +1587,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_quote_with_token: { Args: { _token: string }; Returns: string }
       has_permission: {
         Args: { _action?: string; _module: string; _user_id: string }
         Returns: boolean

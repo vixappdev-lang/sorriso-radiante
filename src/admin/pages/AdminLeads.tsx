@@ -1,7 +1,11 @@
 import { useMemo, useState } from "react";
-import { Megaphone, Plus, MessageCircle, Pencil, Trash2, Phone, DollarSign, Filter, GripVertical } from "lucide-react";
-import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, PointerSensor, useDroppable, useSensor, useSensors } from "@dnd-kit/core";
+import { Megaphone, Plus, MessageCircle, Pencil, Trash2, Phone, DollarSign, Filter } from "lucide-react";
+import {
+  DndContext, DragEndEvent, DragOverlay, DragStartEvent,
+  MouseSensor, TouchSensor, useDroppable, useSensor, useSensors, closestCorners,
+} from "@dnd-kit/core";
 import { useDraggable } from "@dnd-kit/core";
+import { useQueryClient } from "@tanstack/react-query";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
 import EmptyState from "@/admin/components/EmptyState";
@@ -15,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLeads, useUpsertLead, useDeleteLead, type Lead } from "@/admin/hooks/useLeads";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -40,6 +45,7 @@ export default function AdminLeads() {
   const { data: leads = [] } = useLeads();
   const upsert = useUpsertLead();
   const del = useDeleteLead();
+  const qc = useQueryClient();
   const [modal, setModal] = useState<"new" | Lead | null>(null);
   const [form, setForm] = useState<any>(emptyForm());
   const [confirmDel, setConfirmDel] = useState<string | null>(null);
@@ -47,7 +53,11 @@ export default function AdminLeads() {
   const [search, setSearch] = useState("");
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
+  // Sensores separados: mouse responde rápido, touch precisa de delay para não conflitar com scroll vertical do mobile
+  const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 8 } }),
+  );
 
   const grouped = useMemo(() => {
     const map: Record<string, Lead[]> = {};
@@ -98,7 +108,9 @@ export default function AdminLeads() {
 
   function handleDragStart(e: DragStartEvent) { setDraggingId(String(e.active.id)); }
 
+  // Drag end com update otimista (evita o "card volta") + persistência sem reenviar campos do lead
   async function handleDragEnd(e: DragEndEvent) {
+    const id = draggingId;
     setDraggingId(null);
     const { active, over } = e;
     if (!over) return;
@@ -106,10 +118,27 @@ export default function AdminLeads() {
     const newStatus = String(over.id);
     const lead = leads.find((l) => l.id === leadId);
     if (!lead || lead.status === newStatus) return;
-    try {
-      await upsert.mutateAsync({ id: lead.id, name: lead.name, status: newStatus, last_touch_at: new Date().toISOString() } as any);
-      toast({ title: `Movido para "${COLUMNS.find((c) => c.key === newStatus)?.label}"` });
-    } catch (err: any) { toast({ title: "Erro", description: err.message, variant: "destructive" }); }
+
+    // Otimista: atualiza cache imediatamente
+    const prev = qc.getQueryData<Lead[]>(["admin", "leads"]);
+    qc.setQueryData<Lead[]>(["admin", "leads"], (old) =>
+      (old ?? []).map((l) => (l.id === leadId ? { ...l, status: newStatus, last_touch_at: new Date().toISOString() } : l))
+    );
+
+    // Persiste apenas o status (não sobrescreve outros campos)
+    const { error } = await supabase
+      .from("leads")
+      .update({ status: newStatus, last_touch_at: new Date().toISOString() })
+      .eq("id", leadId);
+
+    if (error) {
+      qc.setQueryData(["admin", "leads"], prev);
+      toast({ title: "Erro ao mover", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: `Movido para "${COLUMNS.find((c) => c.key === newStatus)?.label}"` });
+    // Refetch silencioso pra alinhar com servidor
+    qc.invalidateQueries({ queryKey: ["admin", "leads"] });
   }
 
   function brl(cents: number | null) { return cents ? (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "—"; }
@@ -147,13 +176,13 @@ export default function AdminLeads() {
       {leads.length === 0 ? (
         <EmptyState icon={Megaphone} title="Nenhum lead ainda" description="Adicione contatos manualmente ou aguarde leads chegarem do site." action={<Button onClick={openNew}><Plus className="h-4 w-4 mr-2" /> Novo lead</Button>} />
       ) : view === "kanban" ? (
-        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <DndContext sensors={sensors} collisionDetection={closestCorners} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
           <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {COLUMNS.map((col) => (
               <KanbanColumn key={col.key} col={col} leads={grouped[col.key] ?? []} onCardClick={openEdit} brl={brl} />
             ))}
           </div>
-          <DragOverlay>
+          <DragOverlay dropAnimation={null}>
             {draggingLead && <LeadCard lead={draggingLead} brl={brl} dragging />}
           </DragOverlay>
         </DndContext>
@@ -235,10 +264,13 @@ export default function AdminLeads() {
 function KanbanColumn({ col, leads, onCardClick, brl }: { col: typeof COLUMNS[number]; leads: Lead[]; onCardClick: (l: Lead) => void; brl: (c: number | null) => string }) {
   const { setNodeRef, isOver } = useDroppable({ id: col.key });
   return (
-    <div ref={setNodeRef} className={cn(
-      "admin-card flex flex-col min-h-[400px] overflow-hidden transition-colors",
-      isOver && "ring-2 ring-primary ring-offset-1"
-    )}>
+    <div
+      ref={setNodeRef}
+      className={cn(
+        "admin-card flex flex-col min-h-[420px] overflow-hidden transition-all duration-150",
+        isOver && "ring-2 ring-primary ring-offset-2 shadow-lg scale-[1.01]"
+      )}
+    >
       <header className="flex items-center justify-between gap-2 border-b border-[hsl(var(--admin-border))] px-3 py-2.5">
         <div className="flex items-center gap-2 min-w-0">
           <span className={cn("h-2 w-2 rounded-full", COLOR_DOTS[col.color])} />
@@ -248,7 +280,9 @@ function KanbanColumn({ col, leads, onCardClick, brl }: { col: typeof COLUMNS[nu
       </header>
       <div className="flex-1 overflow-y-auto p-2 space-y-2">
         {leads.length === 0 ? (
-          <p className="text-[11px] text-muted-foreground text-center py-6">Sem leads</p>
+          <div className="flex-1 grid place-items-center py-10 text-[11px] text-muted-foreground border border-dashed border-[hsl(var(--admin-border))] rounded-lg">
+            Solte aqui
+          </div>
         ) : leads.map((l) => (
           <DraggableLead key={l.id} lead={l} onClick={() => onCardClick(l)} brl={brl} />
         ))}
@@ -259,42 +293,55 @@ function KanbanColumn({ col, leads, onCardClick, brl }: { col: typeof COLUMNS[nu
 
 function DraggableLead({ lead, onClick, brl }: any) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: lead.id });
-  const style = transform ? { transform: `translate3d(${transform.x}px, ${transform.y}px, 0)` } : undefined;
+  const style: React.CSSProperties = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    touchAction: "none",
+  };
   return (
-    <div ref={setNodeRef} style={style} className={cn("touch-none", isDragging && "opacity-30")}>
-      <LeadCard lead={lead} brl={brl} onClick={onClick} dragHandleProps={{ ...attributes, ...listeners }} />
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={cn("select-none", isDragging && "opacity-30")}
+    >
+      <LeadCard lead={lead} brl={brl} onClick={onClick} />
     </div>
   );
 }
 
-function LeadCard({ lead, brl, onClick, dragHandleProps, dragging }: any) {
+function LeadCard({ lead, brl, onClick, dragging }: any) {
   return (
     <article
       onClick={onClick}
       className={cn(
-        "rounded-lg border border-[hsl(var(--admin-border))] bg-white p-3 transition-colors",
-        dragging ? "shadow-lg ring-1 ring-primary/40" : "hover:border-primary/40 cursor-pointer"
+        "rounded-lg border border-[hsl(var(--admin-border))] bg-white p-3 transition-all cursor-grab active:cursor-grabbing",
+        dragging ? "shadow-2xl ring-2 ring-primary/60 rotate-[2deg] scale-105" : "hover:border-primary/40 hover:shadow-md"
       )}
     >
-      <div className="flex items-start gap-1.5">
-        <button {...(dragHandleProps ?? {})} onClick={(e) => e.stopPropagation()} className="mt-0.5 text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing">
-          <GripVertical className="h-3.5 w-3.5" />
-        </button>
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold truncate">{lead.name}</p>
-          {lead.treatment_interest && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{lead.treatment_interest}</p>}
-          <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
-            {lead.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{lead.phone}</span>}
-            {lead.estimated_value_cents && <span className="font-semibold text-emerald-700 tabular-nums">{brl(lead.estimated_value_cents)}</span>}
-          </div>
-          {lead.phone && (
-            <div className="mt-2 flex justify-end" onClick={(e: any) => e.stopPropagation()}>
-              <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer" className="grid h-7 w-7 place-items-center rounded text-emerald-600 hover:bg-emerald-50">
-                <MessageCircle className="h-3.5 w-3.5" />
-              </a>
-            </div>
-          )}
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold truncate text-slate-900">{lead.name}</p>
+        {lead.treatment_interest && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{lead.treatment_interest}</p>}
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
+          {lead.phone && <span className="inline-flex items-center gap-1"><Phone className="h-3 w-3" />{lead.phone}</span>}
+          {lead.estimated_value_cents && <span className="font-semibold text-emerald-700 tabular-nums ml-auto">{brl(lead.estimated_value_cents)}</span>}
         </div>
+        {lead.phone && (
+          <div
+            className="mt-2 flex justify-end"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={(e: any) => e.stopPropagation()}
+          >
+            <a
+              href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noreferrer"
+              className="grid h-7 w-7 place-items-center rounded text-emerald-600 hover:bg-emerald-50"
+            >
+              <MessageCircle className="h-3.5 w-3.5" />
+            </a>
+          </div>
+        )}
       </div>
     </article>
   );

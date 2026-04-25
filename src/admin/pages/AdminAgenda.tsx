@@ -29,10 +29,17 @@ function addDays(d: Date, n: number) { const x = new Date(d); x.setDate(x.getDat
 function startOfWeek(d: Date) { const x = new Date(d); const day = x.getDay(); x.setDate(x.getDate() - day); return x; }
 
 const STATUS_BG: Record<string, string> = {
-  pending: "bg-amber-50 border-amber-200 text-amber-900",
-  confirmed: "bg-blue-50 border-blue-200 text-blue-900",
-  done: "bg-emerald-50 border-emerald-200 text-emerald-900",
-  cancelled: "bg-rose-50 border-rose-200 text-rose-900 opacity-70",
+  pending: "bg-amber-100 border-amber-300 text-amber-950",
+  confirmed: "bg-blue-100 border-blue-300 text-blue-950",
+  done: "bg-emerald-100 border-emerald-300 text-emerald-950",
+  cancelled: "bg-rose-100 border-rose-300 text-rose-950 opacity-80",
+};
+
+const STATUS_BAR: Record<string, string> = {
+  pending: "bg-amber-500",
+  confirmed: "bg-blue-500",
+  done: "bg-emerald-500",
+  cancelled: "bg-rose-500",
 };
 
 const HOURS = Array.from({ length: 14 }).map((_, i) => 7 + i); // 07h-20h
@@ -339,18 +346,18 @@ function DayTimeline({ appts, isLoading, onOpen, onSetStatus, onCancel, busyId }
                       key={a.id}
                       onClick={() => onOpen(a)}
                       className={cn(
-                        "group text-left rounded-xl border px-3.5 py-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden",
-                        STATUS_BG[a.status] || "bg-slate-50 border-slate-200"
+                        "group text-left rounded-xl border-2 pl-4 pr-3.5 py-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden min-h-[72px]",
+                        STATUS_BG[a.status] || "bg-slate-100 border-slate-300"
                       )}
                     >
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-current opacity-30" />
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-sm font-bold tabular-nums">{a.appointment_time}</span>
-                        <span className="text-sm font-semibold truncate">{a.name}</span>
+                      <div className={cn("absolute left-0 top-0 bottom-0 w-1.5", STATUS_BAR[a.status] || "bg-slate-400")} />
+                      <div className="flex items-center gap-2.5 flex-wrap">
+                        <span className="text-sm font-bold tabular-nums bg-white/80 backdrop-blur px-2 py-0.5 rounded-md shadow-sm">{a.appointment_time}</span>
+                        <span className="text-sm font-bold truncate text-slate-900">{a.name}</span>
                         <StatusPill status={a.status} />
-                        {a.status === "pending" && <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />}
+                        {a.status === "pending" && <span className="h-1.5 w-1.5 rounded-full bg-amber-600 animate-pulse" />}
                       </div>
-                      <p className="text-[12px] mt-1 opacity-75 truncate font-medium">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
+                      <p className="text-[12px] mt-1.5 text-slate-700 truncate font-medium">{a.treatment}{a.professional ? ` · ${a.professional}` : ""} · {a.phone}</p>
                       <div className="mt-2.5 flex flex-wrap gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                         {a.status === "pending" && (
                           <>

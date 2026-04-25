@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Anyone create appointment_payments" ON public.appointment_payments;
