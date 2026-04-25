@@ -1473,6 +1473,7 @@ export type Database = {
           ai_enabled: boolean
           contact_name: string | null
           created_at: string
+          current_flow_key: string | null
           id: string
           last_message_at: string
           phone: string
@@ -1484,6 +1485,7 @@ export type Database = {
           ai_enabled?: boolean
           contact_name?: string | null
           created_at?: string
+          current_flow_key?: string | null
           id?: string
           last_message_at?: string
           phone: string
@@ -1495,6 +1497,7 @@ export type Database = {
           ai_enabled?: boolean
           contact_name?: string | null
           created_at?: string
+          current_flow_key?: string | null
           id?: string
           last_message_at?: string
           phone?: string
