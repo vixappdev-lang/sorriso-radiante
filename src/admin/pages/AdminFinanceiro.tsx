@@ -20,6 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useFinance, useUpsertFinance, useDeleteFinance, type FinanceEntry } from "@/admin/hooks/useFinance";
 import { toast } from "@/hooks/use-toast";
+import CommissionsPanel from "@/admin/components/CommissionsPanel";
 
 const TYPE_LABEL: Record<string, string> = { income: "Entrada", expense: "Saída", budget: "Orçamento" };
 const STATUS_OPTIONS = ["pending", "paid", "overdue", "cancelled"] as const;
