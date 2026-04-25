@@ -296,6 +296,23 @@
   }
   .admin-pan { animation: admin-pan 22s ease-in-out infinite; }
 
+  /* Scrollbar transparente em todo o admin (mantém scroll funcional) */
+  .admin-shell,
+  .admin-shell * {
+    scrollbar-width: none;          /* Firefox */
+    -ms-overflow-style: none;       /* IE/Edge antigo */
+  }
+  .admin-shell::-webkit-scrollbar,
+  .admin-shell *::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent;
+  }
+  .admin-shell::-webkit-scrollbar-thumb,
+  .admin-shell *::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
   /* ===== App namespace (Área do Cliente, Booking, Review) ===== */
   .app-shell,
   .app-shell * {
