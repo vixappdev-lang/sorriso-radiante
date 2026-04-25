@@ -3,9 +3,12 @@ import { Outlet } from "react-router-dom";
 import AdminSidebar from "./AdminSidebar";
 import AdminTopbar from "./AdminTopbar";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useAdminTheme } from "@/admin/hooks/useAdminTheme";
 
 export default function AdminLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  // Inicializa o tema admin (aplica classe .admin-dark se persistido)
+  useAdminTheme();
 
   return (
     <div className="admin-shell min-h-screen bg-[hsl(var(--admin-bg))]">
