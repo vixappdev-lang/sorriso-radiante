@@ -140,7 +140,15 @@ Deno.serve(async (req) => {
     let aiUsed = false;
     let intentKey: string | null = null;
 
-    if (matched && matched.action === "reply" && matched.response_template) {
+    // 4.1 Saudação inicial padrão LyneCloud (primeira mensagem da conversa)
+    if (isFirstContact) {
+      const nome = contactName ? `, ${String(contactName).split(" ")[0]}` : "";
+      const greetingTpl =
+        (cfg as any).greeting_message ||
+        `Olá${nome}! 👋 Aqui é da *LyneCloud*, em que podemos lhe ajudar hoje?`;
+      reply = greetingTpl.replace(/\{\{nome\}\}/g, contactName || "");
+      intentKey = "first_contact_greeting";
+    } else if (matched && matched.action === "reply" && matched.response_template) {
       reply = String(matched.response_template).replace(/\{\{nome\}\}/g, contactName || "");
       intentKey = matched.key;
     } else if (matched && matched.action === "handoff") {
@@ -162,7 +170,11 @@ Deno.serve(async (req) => {
         content: m.body,
       }));
       try {
-        reply = await callAiGateway(aiMessages, cfg.system_prompt || cfg.persona || "Você é uma atendente humanizada de uma clínica odontológica. Responda de forma curta, gentil e prestativa em português brasileiro. Use no máximo 2 frases curtas. Use emojis com moderação.", cfg.model || "google/gemini-2.5-flash");
+        reply = await callAiGateway(
+          aiMessages,
+          cfg.system_prompt || cfg.persona || "Você é uma atendente humanizada da LyneCloud (clínica odontológica). Responda de forma curta, gentil e prestativa em português brasileiro. Use no máximo 2 frases curtas. Use emojis com moderação.",
+          cfg.model || "google/gemini-2.5-flash",
+        );
         aiUsed = true;
         if (matched) intentKey = matched.key;
       } catch (e: any) {
