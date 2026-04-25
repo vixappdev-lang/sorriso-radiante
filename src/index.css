@@ -272,13 +272,20 @@
   .admin-shell select,
   .admin-shell [data-slot="input"] {
     background-color: hsl(var(--admin-input-bg));
-    border-color: hsl(var(--admin-border));
+    border-color: hsl(var(--admin-border-strong));
+    border-width: 1px;
+  }
+  .admin-shell input:hover,
+  .admin-shell textarea:hover,
+  .admin-shell select:hover {
+    border-color: hsl(220 18% 60%);
   }
   .admin-shell input:focus,
   .admin-shell textarea:focus,
   .admin-shell select:focus {
     background-color: hsl(var(--admin-card));
     border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 3px hsl(var(--ring) / 0.15);
   }
   .admin-soft-grid {
     background-image: radial-gradient(circle, hsl(220 20% 70% / 0.18) 1px, transparent 1px);
@@ -296,20 +303,37 @@
   }
   .admin-pan { animation: admin-pan 22s ease-in-out infinite; }
 
-  /* Scrollbar transparente em todo o admin (mantém scroll funcional) */
+  /* Scrollbar discreta translúcida no admin (visível ao passar o mouse) */
   .admin-shell,
   .admin-shell * {
-    scrollbar-width: none;          /* Firefox */
-    -ms-overflow-style: none;       /* IE/Edge antigo */
+    scrollbar-width: thin;
+    scrollbar-color: hsl(220 15% 70% / 0.45) transparent;
   }
   .admin-shell::-webkit-scrollbar,
   .admin-shell *::-webkit-scrollbar {
-    width: 0 !important;
-    height: 0 !important;
+    width: 8px;
+    height: 8px;
+    background: transparent;
+  }
+  .admin-shell::-webkit-scrollbar-track,
+  .admin-shell *::-webkit-scrollbar-track {
     background: transparent;
   }
   .admin-shell::-webkit-scrollbar-thumb,
   .admin-shell *::-webkit-scrollbar-thumb {
+    background: hsl(220 15% 70% / 0.35);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background-color .2s ease;
+  }
+  .admin-shell::-webkit-scrollbar-thumb:hover,
+  .admin-shell *::-webkit-scrollbar-thumb:hover {
+    background: hsl(220 18% 50% / 0.55);
+    background-clip: padding-box;
+  }
+  .admin-shell::-webkit-scrollbar-corner,
+  .admin-shell *::-webkit-scrollbar-corner {
     background: transparent;
   }
 
