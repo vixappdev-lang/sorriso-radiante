@@ -358,10 +358,18 @@ Deno.serve(async (req) => {
 
     if (!reply) reply = cfg.fallback_message || "Recebi sua mensagem 💙";
 
-    // 6. Delay humanizado
-    if (cfg.human_like_delay) {
+    // 6. Delay humanizado — pulado quando veio de template (resposta instantânea)
+    const fromTemplate = nextFlowKey !== undefined;
+    if (cfg.human_like_delay && !fromTemplate) {
       const delay = Math.min(3000, 800 + reply.length * 30);
       await new Promise((r) => setTimeout(r, delay));
+    }
+
+    // 6.1 Atualiza fluxo ativo da conversa (se template definiu)
+    if (nextFlowKey !== undefined) {
+      await supabase.from("whatsapp_conversations")
+        .update({ current_flow_key: nextFlowKey })
+        .eq("id", conv!.id);
     }
 
     // 7. Envia via gateway
