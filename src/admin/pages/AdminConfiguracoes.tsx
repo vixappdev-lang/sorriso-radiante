@@ -424,7 +424,117 @@ function ChatProIntegrationCard() {
   );
 }
 
-function SectionClientArea({ initial, onSave }: any) {
+function ChatProWebhookCard() {
+  const [loading, setLoading] = useState(false);
+  const [url, setUrl] = useState<string>("");
+  const [hasSecret, setHasSecret] = useState<boolean>(true);
+  const [testing, setTesting] = useState(false);
+
+  async function loadUrl() {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("whatsapp-inbound-url");
+      if (error) throw error;
+      setUrl(data?.url || "");
+      setHasSecret(!!data?.has_secret);
+    } catch (e: any) {
+      toast({ title: "Erro ao gerar URL", description: e.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => { loadUrl(); }, []);
+
+  async function copyUrl() {
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "URL copiada ✅", description: "Cole no painel do ChatPro em Configurações → Webhooks." });
+    } catch {
+      toast({ title: "Não foi possível copiar", variant: "destructive" });
+    }
+  }
+
+  async function testWebhook() {
+    if (!url) return;
+    setTesting(true);
+    try {
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event: "received_message",
+          message_data: {
+            from_me: false,
+            id: `test-${Date.now()}`,
+            message: "oi",
+            number: "5527999999999@s.whatsapp.net",
+            type: "receveid_message",
+            notify_name: "Teste Admin",
+          },
+        }),
+      });
+      const data = await resp.json();
+      toast({
+        title: resp.ok && data?.ok ? "Webhook OK ✅" : "Webhook respondeu mas com aviso",
+        description: JSON.stringify(data).slice(0, 200),
+        variant: resp.ok ? "default" : "destructive",
+      });
+    } catch (e: any) {
+      toast({ title: "Erro ao testar webhook", description: e.message, variant: "destructive" });
+    } finally {
+      setTesting(false);
+    }
+  }
+
+  return (
+    <SectionCard
+      title="Webhook de mensagens recebidas (Bot)"
+      description="Cole esta URL no painel do ChatPro em Configurações → Webhooks. Toda mensagem recebida será enviada para o bot da LyneCloud responder automaticamente."
+      footer={
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={loadUrl} disabled={loading}>{loading ? "Gerando…" : "Recarregar URL"}</Button>
+          <Button variant="outline" onClick={testWebhook} disabled={testing || !url}>{testing ? "Testando…" : "Testar webhook"}</Button>
+          <Button onClick={copyUrl} disabled={!url}><Copy className="h-4 w-4 mr-2" />Copiar URL</Button>
+        </div>
+      }
+    >
+      <div className="rounded-xl border border-[hsl(var(--admin-border))] p-5 bg-muted/30 space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="grid h-10 w-10 place-items-center rounded-lg bg-blue-500/10 text-blue-600"><Webhook className="h-5 w-5" /></div>
+          <div>
+            <p className="font-semibold">URL do Webhook ChatPro</p>
+            <p className="text-xs text-muted-foreground">Cole no campo "Webhook" do seu painel ChatPro (método POST, formato JSON).</p>
+          </div>
+        </div>
+
+        <div>
+          <Label className="text-xs">URL completa (com token)</Label>
+          <div className="flex gap-2">
+            <Input readOnly value={url} placeholder={loading ? "Gerando URL…" : "Clique em Recarregar"} className="font-mono text-[11px]" onFocus={(e) => e.currentTarget.select()} />
+            <Button variant="outline" size="icon" onClick={copyUrl} disabled={!url}><Copy className="h-4 w-4" /></Button>
+          </div>
+          {!hasSecret && (
+            <p className="text-[11px] text-amber-600 mt-1">⚠️ Nenhum secret configurado. A URL aceitará chamadas sem autenticação.</p>
+          )}
+        </div>
+
+        <div className="rounded-lg border border-dashed bg-background p-3 space-y-1.5">
+          <p className="text-xs font-semibold">📋 Passo a passo no ChatPro:</p>
+          <ol className="text-[11px] text-muted-foreground list-decimal pl-4 space-y-0.5">
+            <li>Acesse <span className="font-mono">app.chatpro.com.br</span> → sua instância → <strong>Configurações → Webhooks</strong>.</li>
+            <li>Cole a URL acima no campo "URL do webhook".</li>
+            <li>Marque o evento <strong>"received_message"</strong> (mensagem recebida).</li>
+            <li>Salve. Use o botão <strong>"Testar webhook"</strong> acima para validar.</li>
+          </ol>
+        </div>
+      </div>
+    </SectionCard>
+  );
+}
+
+
   const [v, setV] = useState({
     enabled: false, require_email_verification: true, allow_self_registration: false,
     show_appointments: true, show_history: true, show_documents: false, show_invoices: true,
