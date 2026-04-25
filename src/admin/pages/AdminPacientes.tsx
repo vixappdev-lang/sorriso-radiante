@@ -386,11 +386,11 @@ export default function AdminPacientes() {
         footer={<div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setNewPatientOpen(false)}>Cancelar</Button><Button onClick={createPatient}>Cadastrar paciente</Button></div>}
       >
         <Tabs defaultValue="pessoal">
-          <TabsList className="grid grid-cols-4 w-full">
-            <TabsTrigger value="pessoal" className="text-xs">Pessoal</TabsTrigger>
-            <TabsTrigger value="endereco" className="text-xs">Endereço</TabsTrigger>
-            <TabsTrigger value="clinico" className="text-xs">Clínico</TabsTrigger>
-            <TabsTrigger value="extra" className="text-xs">Extras</TabsTrigger>
+          <TabsList className="grid grid-cols-4 w-full bg-muted/60 p-1 h-auto">
+            <TabsTrigger value="pessoal" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md font-medium">Pessoal</TabsTrigger>
+            <TabsTrigger value="endereco" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md font-medium">Endereço</TabsTrigger>
+            <TabsTrigger value="clinico" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md font-medium">Clínico</TabsTrigger>
+            <TabsTrigger value="extra" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md font-medium">Extras</TabsTrigger>
           </TabsList>
 
           <TabsContent value="pessoal" className="mt-4 space-y-3">
