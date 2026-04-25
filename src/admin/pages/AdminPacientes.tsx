@@ -154,18 +154,44 @@ export default function AdminPacientes() {
 
   async function createPatient() {
     if (!newPatient.full_name || !newPatient.phone) return toast({ title: "Nome e telefone são obrigatórios", variant: "destructive" });
-    const { error } = await supabase.from("patient_accounts").insert({
-      full_name: newPatient.full_name,
-      phone: newPatient.phone.replace(/\D/g, ""),
-      email: newPatient.email || `${newPatient.phone.replace(/\D/g, "")}@sem-email.local`,
+    const cleanPhone = newPatient.phone.replace(/\D/g, "");
+    const address = (newPatient.address_zip || newPatient.address_street) ? {
+      zip: newPatient.address_zip, street: newPatient.address_street, number: newPatient.address_number,
+      complement: newPatient.address_complement, neighborhood: newPatient.address_neighborhood,
+      city: newPatient.address_city, state: newPatient.address_state,
+    } : null;
+    const payload: any = {
+      full_name: newPatient.full_name.trim(),
+      phone: cleanPhone,
+      email: newPatient.email?.trim() || `${cleanPhone}@sem-email.local`,
       cpf: newPatient.cpf || null,
+      rg: newPatient.rg || null,
       birth_date: newPatient.birth_date || null,
+      gender: newPatient.gender || null,
+      marital_status: newPatient.marital_status || null,
+      profession: newPatient.profession || null,
+      address,
+      emergency_contact_name: newPatient.emergency_contact_name || null,
+      emergency_contact_phone: newPatient.emergency_contact_phone?.replace(/\D/g, "") || null,
+      emergency_contact_relation: newPatient.emergency_contact_relation || null,
+      allergies: newPatient.allergies || null,
+      medical_conditions: newPatient.medical_conditions || null,
+      current_medications: newPatient.current_medications || null,
+      insurance_name: newPatient.insurance_name || null,
+      insurance_number: newPatient.insurance_number || null,
+      source_channel: newPatient.source_channel || null,
+      how_found_us: newPatient.how_found_us || null,
+      responsible_name: newPatient.responsible_name || null,
+      responsible_cpf: newPatient.responsible_cpf || null,
+      allow_whatsapp: newPatient.allow_whatsapp,
+      allow_email: newPatient.allow_email,
       notes: newPatient.notes || null,
-    } as any);
+    };
+    const { error } = await supabase.from("patient_accounts").insert(payload);
     if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
-    toast({ title: "Paciente cadastrado" });
+    toast({ title: "Paciente cadastrado com sucesso" });
     setNewPatientOpen(false);
-    setNewPatient({ full_name: "", phone: "", email: "", cpf: "", birth_date: "", notes: "" });
+    setNewPatient(emptyPatient);
     const { data } = await supabase.from("patient_accounts").select("*");
     setAccounts(data ?? []);
   }
