@@ -67,6 +67,7 @@ export default function AdminConfiguracoes() {
       <div>
         {section === "general" && <SectionGeneral initial={get("general")} onSave={(v: any) => save("general", v)} />}
         {section === "hours" && <SectionHours />}
+        {section === "payments" && <SectionPayments initial={get("payments")} onSave={(v: any) => save("payments", v)} />}
         {section === "integrations" && <SectionIntegrations initial={get("integrations")} onSave={(v: any) => save("integrations", v)} />}
         {section === "client_area" && <SectionClientArea initial={get("client_area")} onSave={(v: any) => save("client_area", v)} />}
         {section === "branding" && <SectionBranding initial={get("branding")} onSave={(v: any) => save("branding", v)} />}
