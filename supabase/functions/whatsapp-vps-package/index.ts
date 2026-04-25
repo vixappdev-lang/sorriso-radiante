@@ -12,8 +12,8 @@ const corsHeaders = {
 
 const PACKAGE_JSON = `{
   "name": "lynecloud-whatsapp-vps",
-  "version": "1.0.0",
-  "description": "LyneCloud WhatsApp VPS — Baileys + Express",
+  "version": "1.1.0",
+  "description": "LyneCloud WhatsApp VPS — Baileys + Express + Bot Webhook",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -23,7 +23,8 @@ const PACKAGE_JSON = `{
     "@whiskeysockets/baileys": "^6.7.7",
     "express": "^4.21.0",
     "pino": "^9.4.0",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "node-fetch": "^2.7.0"
   },
   "engines": {
     "node": ">=18"
