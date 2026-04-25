@@ -29,10 +29,17 @@ function addDays(d: Date, n: number) { const x = new Date(d); x.setDate(x.getDat
 function startOfWeek(d: Date) { const x = new Date(d); const day = x.getDay(); x.setDate(x.getDate() - day); return x; }
 
 const STATUS_BG: Record<string, string> = {
-  pending: "bg-amber-50 border-amber-200 text-amber-900",
-  confirmed: "bg-blue-50 border-blue-200 text-blue-900",
-  done: "bg-emerald-50 border-emerald-200 text-emerald-900",
-  cancelled: "bg-rose-50 border-rose-200 text-rose-900 opacity-70",
+  pending: "bg-amber-100 border-amber-300 text-amber-950",
+  confirmed: "bg-blue-100 border-blue-300 text-blue-950",
+  done: "bg-emerald-100 border-emerald-300 text-emerald-950",
+  cancelled: "bg-rose-100 border-rose-300 text-rose-950 opacity-80",
+};
+
+const STATUS_BAR: Record<string, string> = {
+  pending: "bg-amber-500",
+  confirmed: "bg-blue-500",
+  done: "bg-emerald-500",
+  cancelled: "bg-rose-500",
 };
 
 const HOURS = Array.from({ length: 14 }).map((_, i) => 7 + i); // 07h-20h
