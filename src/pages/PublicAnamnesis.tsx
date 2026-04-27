@@ -10,7 +10,7 @@ import { Loader2, ShieldCheck, FileText, CheckCircle2 } from "lucide-react";
 import SignaturePad from "@/admin/components/SignaturePad";
 import { useClinicBrand } from "@/hooks/useClinicBrand";
 import { toast } from "@/hooks/use-toast";
-import { SEO } from "@/components/SEO";
+import SEO from "@/components/SEO";
 
 type Question = { id: string; label: string; type: "text" | "textarea" | "select"; options?: string[]; required?: boolean };
 
