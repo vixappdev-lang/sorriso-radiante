@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import SEO from "@/components/SEO";
 import { TREATMENTS, DENTISTS } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
 
 type DbProfessional = {
