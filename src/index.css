@@ -679,6 +679,20 @@
     color: hsl(210 20% 96%) !important;
     border-color: hsl(220 14% 22%) !important;
   }
+  html[data-admin-theme="dark"] .admin-modal-content,
+  html[data-admin-theme="dark"] .admin-modal-header,
+  html[data-admin-theme="dark"] .admin-modal-body,
+  html[data-admin-theme="dark"] .admin-modal-footer {
+    background-color: hsl(222 26% 10%) !important;
+    color: hsl(210 20% 96%) !important;
+    border-color: hsl(220 14% 22%) !important;
+  }
+  html[data-admin-theme="dark"] .admin-modal-footer,
+  html[data-admin-theme="dark"] .admin-modal-content .bg-muted\/30,
+  html[data-admin-theme="dark"] .admin-modal-content .bg-muted\/40,
+  html[data-admin-theme="dark"] .admin-modal-content .bg-muted\/60 {
+    background-color: hsl(222 22% 14%) !important;
+  }
   html[data-admin-theme="dark"] [role="dialog"] .bg-white,
   html[data-admin-theme="dark"] [role="dialog"] .bg-slate-50,
   html[data-admin-theme="dark"] [role="dialog"] .bg-muted\/30,
