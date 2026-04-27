@@ -57,7 +57,7 @@ export default function LocationModal({ open, onOpenChange }: Props) {
             </span>
             <div className="min-w-0 flex-1">
               <DialogTitle className="font-display text-xl sm:text-2xl text-balance leading-tight">
-                Como chegar à LyneCloud
+                Como chegar à {clinicName}
               </DialogTitle>
               <DialogDescription className="text-xs sm:text-sm mt-1">
                 Toque em "Abrir no mapa" para iniciar a rota no seu GPS.
