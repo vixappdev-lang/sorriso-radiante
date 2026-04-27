@@ -122,11 +122,11 @@ export default function PatientImagesTab({ patientPhone }: Props) {
               )}
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-1.5">
                 <div className="flex items-center justify-between gap-1">
-                  <Badge variant="outline" className="bg-white/95 text-[9px] py-0 h-4 border-0 text-slate-800">
+                  <Badge variant="outline" className="bg-white/95 dark:bg-slate-800/95 text-[9px] py-0 h-4 border-0 text-slate-800 dark:text-slate-100">
                     {CATEGORIES.find((c) => c.value === img.category)?.label ?? img.category}
                   </Badge>
                   {img.tooth_fdi && (
-                    <Badge variant="outline" className="bg-amber-100 text-[9px] py-0 h-4 border-0 text-amber-900">
+                    <Badge variant="outline" className="bg-amber-100 dark:bg-amber-900/80 text-[9px] py-0 h-4 border-0 text-amber-900 dark:text-amber-100">
                       Dente {img.tooth_fdi}
                     </Badge>
                   )}

@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   Bell, Plus, MessageCircle, CheckCircle2, Clock, AlertTriangle,
-  Calendar as CalIcon, Trash2, Phone, Send,
+  Calendar as CalIcon, Trash2, Phone, Send, Sparkles,
 } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRecallTasks, useUpsertRecall, useDeleteRecall, type RecallTask } from "@/admin/hooks/useRecall";
 import { useClinicBrand } from "@/hooks/useClinicBrand";
 import { toast } from "@/hooks/use-toast";
@@ -95,11 +97,26 @@ export default function AdminRecall() {
     toast({ title: "Recall concluído" });
   }
 
-  function whatsappLink(t: RecallTask) {
-    const msg = encodeURIComponent(
-      `Olá ${t.patient_name}! Aqui é da ${brand.name}. Faz um tempinho desde seu último cuidado${t.treatment ? ` (${t.treatment})` : ""}, que tal agendarmos seu retorno? 😊`
-    );
+  const TEMPLATES = (t: RecallTask) => {
+    const treat = t.treatment ? ` (${t.treatment})` : "";
+    return [
+      { id: "gentle", label: "Carinhoso", text: `Olá ${t.patient_name}! Aqui é da ${brand.name} 🦷 Faz um tempinho desde seu último cuidado${treat}, que tal agendarmos seu retorno? Estamos com horários abertos essa semana 😊` },
+      { id: "maintenance", label: "Manutenção / limpeza", text: `Oi ${t.patient_name}! Tudo bem? Notamos que está na hora da sua manutenção${treat} aqui na ${brand.name}. Posso já reservar um horário pra você?` },
+      { id: "post_op", label: "Pós-operatório", text: `Olá ${t.patient_name}! Aqui é da ${brand.name}. Estamos passando para saber como está se sentindo após o procedimento${treat}. Qualquer desconforto, é só responder essa mensagem que te oriento. 💙` },
+      { id: "promo", label: "Oferta especial", text: `Olá ${t.patient_name}! 🎁 Está com agenda aberta essa semana na ${brand.name} e queremos te oferecer condição especial para retomar seu tratamento${treat}. Posso te enviar os horários disponíveis?` },
+    ];
+  };
+
+  function whatsappLink(t: RecallTask, templateId: string = "gentle") {
+    const tpl = TEMPLATES(t).find((x) => x.id === templateId) ?? TEMPLATES(t)[0];
+    const msg = encodeURIComponent(tpl.text);
     return `https://wa.me/55${t.patient_phone.replace(/\D/g, "")}?text=${msg}`;
+  }
+
+  function adjustDueDate(days: number) {
+    const d = new Date(form.due_date + "T00:00:00");
+    d.setDate(d.getDate() + days);
+    setForm({ ...form, due_date: d.toISOString().slice(0, 10) });
   }
 
   const columns: Column<RecallTask>[] = [
@@ -170,9 +187,31 @@ export default function AdminRecall() {
                 onRowClick={openEdit}
                 rowActions={(r) => (
                   <>
-                    <a href={whatsappLink(r)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
-                      <Button size="sm" variant="ghost" title="Enviar WhatsApp"><MessageCircle className="h-4 w-4 text-emerald-600" /></Button>
-                    </a>
+                    <Popover>
+                      <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" variant="ghost" title="Enviar WhatsApp"><MessageCircle className="h-4 w-4 text-emerald-600" /></Button>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="w-72 p-2" onClick={(e) => e.stopPropagation()}>
+                        <p className="text-[11px] uppercase tracking-wider text-muted-foreground px-2 pt-1 pb-2">Mensagem</p>
+                        <div className="space-y-1">
+                          {TEMPLATES(r).map((tpl) => (
+                            <a
+                              key={tpl.id}
+                              href={whatsappLink(r, tpl.id)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block rounded-md px-2 py-2 text-sm hover:bg-muted transition cursor-pointer"
+                              onClick={() => setTimeout(() => markSent(r), 400)}
+                            >
+                              <div className="flex items-center gap-2 font-medium">
+                                <Sparkles className="h-3.5 w-3.5 text-primary" />{tpl.label}
+                              </div>
+                              <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">{tpl.text}</p>
+                            </a>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                     {r.status === "pending" && (
                       <Button size="sm" variant="ghost" title="Marcar como enviado" onClick={(e) => { e.stopPropagation(); markSent(r); }}>
                         <Send className="h-4 w-4 text-blue-600" />
@@ -208,8 +247,39 @@ export default function AdminRecall() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label className="text-xs">Tratamento / motivo</Label><Input value={form.treatment} onChange={(e) => setForm({ ...form, treatment: e.target.value })} placeholder="Limpeza, manutenção…" /></div>
-            <div><Label className="text-xs">Vencimento*</Label><Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} /></div>
+            <div>
+              <Label className="text-xs">Vencimento*</Label>
+              <Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
+              <div className="flex gap-1 mt-1.5 flex-wrap">
+                {[
+                  { d: 7, l: "+7d" }, { d: 30, l: "+1m" }, { d: 90, l: "+3m" }, { d: 180, l: "+6m" }, { d: 365, l: "+1a" },
+                ].map((p) => (
+                  <button
+                    key={p.d}
+                    type="button"
+                    onClick={() => adjustDueDate(p.d)}
+                    className="text-[10px] px-2 py-0.5 rounded-md border border-[hsl(var(--admin-border))] bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
+                  >
+                    {p.l}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
+          {open !== "new" && (
+            <div>
+              <Label className="text-xs">Status</Label>
+              <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pendente</SelectItem>
+                  <SelectItem value="sent">Enviado</SelectItem>
+                  <SelectItem value="done">Concluído</SelectItem>
+                  <SelectItem value="cancelled">Cancelado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div><Label className="text-xs">Observações</Label><Textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Detalhes para o atendente lembrar do paciente…" /></div>
         </div>
       </EntityModal>
