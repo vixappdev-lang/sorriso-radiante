@@ -6,13 +6,15 @@ import PageHero from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
 import { TREATMENTS } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function Tratamentos() {
   const { open } = useScheduleModal();
+  const clinicName = useClinicName();
   return (
     <SiteLayout>
       <SEO
-        title="Tratamentos — LyneCloud"
+        title={`Tratamentos — ${clinicName}`}
         description="Implantes, ortodontia, lentes, clareamento, harmonização e mais. Tratamentos odontológicos completos com tecnologia de ponta."
       />
       <PageHero
