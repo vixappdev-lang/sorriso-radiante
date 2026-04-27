@@ -44,11 +44,28 @@ async function fetchBrand(): Promise<ClinicBrand> {
   }
 }
 
+let realtimeBound = false;
+function bindRealtimeOnce() {
+  if (realtimeBound) return;
+  realtimeBound = true;
+  try {
+    supabase
+      .channel("clinic_settings_brand")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "clinic_settings", filter: "key=eq.general" },
+        () => { fetchBrand(); }
+      )
+      .subscribe();
+  } catch { /* noop */ }
+}
+
 export function useClinicBrand(): ClinicBrand {
   const [brand, setBrand] = useState<ClinicBrand>(cache ?? FALLBACK);
 
   useEffect(() => {
     listeners.add(setBrand);
+    bindRealtimeOnce();
     if (cache) {
       setBrand(cache);
     } else {
