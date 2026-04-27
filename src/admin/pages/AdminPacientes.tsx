@@ -591,13 +591,13 @@ function Odontogram({ teeth, onChange }: { teeth: Record<string, ToothStatus>; o
 }
 
 function Tooth({ num, status, selectedStatus, onClick }: { num: number; status?: ToothStatus; selectedStatus: ToothStatus; onClick: () => void }) {
-  const fillClass = status ? TOOTH_STATUS[status].color : "fill-white stroke-slate-300";
+  const fillClass = status ? TOOTH_STATUS[status].color : "fill-card stroke-[hsl(var(--admin-border-strong))]";
   return (
     <button onClick={onClick} className="group flex flex-col items-center" title={`Dente ${num}${status ? ` — ${TOOTH_STATUS[status].label}` : ""}`}>
       <svg width="22" height="28" viewBox="0 0 22 28" className="transition group-hover:scale-110">
-        <path d="M11 2 C5 2, 2 6, 2 12 C2 18, 4 24, 7 26 C8 27, 9 27, 11 24 C13 27, 14 27, 15 26 C18 24, 20 18, 20 12 C20 6, 17 2, 11 2 Z" className={cn("stroke-slate-400 stroke-1", fillClass)} />
+        <path d="M11 2 C5 2, 2 6, 2 12 C2 18, 4 24, 7 26 C8 27, 9 27, 11 24 C13 27, 14 27, 15 26 C18 24, 20 18, 20 12 C20 6, 17 2, 11 2 Z" className={cn("stroke-[hsl(var(--admin-border-strong))] stroke-1", fillClass)} />
       </svg>
-      <span className="text-[8px] text-slate-500 tabular-nums">{num}</span>
+      <span className="text-[8px] text-muted-foreground tabular-nums">{num}</span>
     </button>
   );
 }
