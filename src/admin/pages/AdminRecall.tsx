@@ -187,9 +187,31 @@ export default function AdminRecall() {
                 onRowClick={openEdit}
                 rowActions={(r) => (
                   <>
-                    <a href={whatsappLink(r)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
-                      <Button size="sm" variant="ghost" title="Enviar WhatsApp"><MessageCircle className="h-4 w-4 text-emerald-600" /></Button>
-                    </a>
+                    <Popover>
+                      <PopoverTrigger asChild onClick={(e) => e.stopPropagation()}>
+                        <Button size="sm" variant="ghost" title="Enviar WhatsApp"><MessageCircle className="h-4 w-4 text-emerald-600" /></Button>
+                      </PopoverTrigger>
+                      <PopoverContent align="end" className="w-72 p-2" onClick={(e) => e.stopPropagation()}>
+                        <p className="text-[11px] uppercase tracking-wider text-muted-foreground px-2 pt-1 pb-2">Mensagem</p>
+                        <div className="space-y-1">
+                          {TEMPLATES(r).map((tpl) => (
+                            <a
+                              key={tpl.id}
+                              href={whatsappLink(r, tpl.id)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="block rounded-md px-2 py-2 text-sm hover:bg-muted transition cursor-pointer"
+                              onClick={() => setTimeout(() => markSent(r), 400)}
+                            >
+                              <div className="flex items-center gap-2 font-medium">
+                                <Sparkles className="h-3.5 w-3.5 text-primary" />{tpl.label}
+                              </div>
+                              <p className="text-[11px] text-muted-foreground line-clamp-2 mt-0.5">{tpl.text}</p>
+                            </a>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                     {r.status === "pending" && (
                       <Button size="sm" variant="ghost" title="Marcar como enviado" onClick={(e) => { e.stopPropagation(); markSent(r); }}>
                         <Send className="h-4 w-4 text-blue-600" />
