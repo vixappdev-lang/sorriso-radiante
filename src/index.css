@@ -638,6 +638,8 @@
   /* Hover suaves de cards/botões cinzas claros */
   .admin-shell.admin-dark .hover\:bg-slate-50:hover,
   .admin-shell.admin-dark .hover\:bg-slate-100:hover,
+  .admin-shell.admin-dark .hover\:bg-white:hover,
+  .admin-shell.admin-dark .hover\:bg-\[hsl\(220_24\%_98\%\)\]:hover,
   .admin-shell.admin-dark .hover\:bg-muted:hover,
   .admin-shell.admin-dark .hover\:bg-muted\/40:hover,
   .admin-shell.admin-dark .hover\:bg-muted\/80:hover {
@@ -677,8 +679,26 @@
     color: hsl(210 20% 96%) !important;
     border-color: hsl(220 14% 22%) !important;
   }
+  html[data-admin-theme="dark"] .admin-modal-content,
+  html[data-admin-theme="dark"] .admin-modal-header,
+  html[data-admin-theme="dark"] .admin-modal-body,
+  html[data-admin-theme="dark"] .admin-modal-footer {
+    background-color: hsl(222 26% 10%) !important;
+    color: hsl(210 20% 96%) !important;
+    border-color: hsl(220 14% 22%) !important;
+  }
+  html[data-admin-theme="dark"] .admin-modal-footer,
+  html[data-admin-theme="dark"] .admin-modal-content .bg-muted\/30,
+  html[data-admin-theme="dark"] .admin-modal-content .bg-muted\/40,
+  html[data-admin-theme="dark"] .admin-modal-content .bg-muted\/60 {
+    background-color: hsl(222 22% 14%) !important;
+  }
   html[data-admin-theme="dark"] [role="dialog"] .bg-white,
-  html[data-admin-theme="dark"] [role="dialog"] .bg-slate-50 {
+  html[data-admin-theme="dark"] [role="dialog"] .bg-slate-50,
+  html[data-admin-theme="dark"] [role="dialog"] .bg-muted\/30,
+  html[data-admin-theme="dark"] [role="dialog"] .bg-muted\/40,
+  html[data-admin-theme="dark"] [role="dialog"] .bg-muted\/60,
+  html[data-admin-theme="dark"] [role="dialog"] .bg-muted\/80 {
     background-color: hsl(222 24% 12%) !important;
   }
   html[data-admin-theme="dark"] [role="dialog"] input,
@@ -703,6 +723,22 @@
   html[data-admin-theme="dark"] [role="dialog"] .text-slate-400,
   html[data-admin-theme="dark"] [role="dialog"] .text-slate-500\/70 {
     color: hsl(220 12% 64%) !important;
+  }
+
+  /* Popovers, dropdowns e selects portados pelo Radix */
+  html[data-admin-theme="dark"] [data-radix-popper-content-wrapper] [cmdk-root],
+  html[data-admin-theme="dark"] [data-radix-popper-content-wrapper] [role="listbox"],
+  html[data-admin-theme="dark"] [data-radix-popper-content-wrapper] [role="menu"],
+  html[data-admin-theme="dark"] [data-radix-popper-content-wrapper] [role="dialog"] {
+    background-color: hsl(222 26% 11%) !important;
+    color: hsl(210 20% 96%) !important;
+    border-color: hsl(220 14% 22%) !important;
+  }
+  html[data-admin-theme="dark"] [data-radix-popper-content-wrapper] [role="option"]:hover,
+  html[data-admin-theme="dark"] [data-radix-popper-content-wrapper] [role="menuitem"]:hover,
+  html[data-admin-theme="dark"] [data-radix-popper-content-wrapper] [data-highlighted] {
+    background-color: hsl(222 22% 16%) !important;
+    color: hsl(210 20% 96%) !important;
   }
 
   /* Sonner/Toast no dark */

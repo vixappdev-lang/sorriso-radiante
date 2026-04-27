@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { forwardRef, useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Download, ExternalLink, Loader2, X } from "lucide-react";
@@ -14,10 +14,11 @@ type Props = {
   filename: string;
 };
 
-export default function PdfPreviewModal({ open, onOpenChange, title, description, buildDoc, filename }: Props) {
+const PdfPreviewModal = forwardRef<HTMLDivElement, Props>(function PdfPreviewModal({ open, onOpenChange, title, description, buildDoc, filename }, ref) {
   const [url, setUrl] = useState<string | null>(null);
   const [doc, setDoc] = useState<jsPDF | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -25,6 +26,7 @@ export default function PdfPreviewModal({ open, onOpenChange, title, description
     let createdUrl: string | null = null;
     setLoading(true);
     setUrl(null);
+    setError(null);
     (async () => {
       try {
         const d = await buildDoc();
@@ -33,6 +35,8 @@ export default function PdfPreviewModal({ open, onOpenChange, title, description
         createdUrl = URL.createObjectURL(blob);
         setDoc(d);
         setUrl(createdUrl);
+      } catch (e: any) {
+        if (!cancelled) setError(e?.message ?? "Não foi possível gerar o PDF.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -53,8 +57,8 @@ export default function PdfPreviewModal({ open, onOpenChange, title, description
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="p-0 sm:max-w-5xl w-[96vw] max-h-[95vh] overflow-hidden flex flex-col gap-0">
-        <DialogHeader className="border-b border-[hsl(var(--admin-border))] px-5 py-3 flex-row items-center justify-between space-y-0">
+      <DialogContent ref={ref} hideClose className="admin-modal-content p-0 sm:max-w-5xl w-[96vw] h-[92vh] max-h-[95vh] overflow-hidden flex flex-col gap-0 bg-card text-card-foreground border-[hsl(var(--admin-border))]">
+        <DialogHeader className="admin-modal-header border-b border-[hsl(var(--admin-border))] px-5 py-3 flex-row items-center justify-between space-y-0">
           <div className="min-w-0">
             <DialogTitle className="text-[15px] font-semibold tracking-tight">{title}</DialogTitle>
             {description && <DialogDescription className="text-xs">{description}</DialogDescription>}
@@ -72,7 +76,14 @@ export default function PdfPreviewModal({ open, onOpenChange, title, description
           </div>
         </DialogHeader>
         <div className="flex-1 bg-[hsl(220_18%_18%)] overflow-hidden">
-          {loading || !url ? (
+          {error ? (
+            <div className="h-full grid place-items-center text-white/80 px-6 text-center">
+              <div>
+                <p className="text-sm font-semibold text-white">Erro ao gerar PDF</p>
+                <p className="text-xs text-white/65 mt-1 max-w-md">{error}</p>
+              </div>
+            </div>
+          ) : loading || !url ? (
             <div className="h-full grid place-items-center text-white/80">
               <div className="flex items-center gap-2 text-sm">
                 <Loader2 className="h-4 w-4 animate-spin" /> Gerando PDF…
@@ -90,4 +101,6 @@ export default function PdfPreviewModal({ open, onOpenChange, title, description
       </DialogContent>
     </Dialog>
   );
-}
+});
+
+export default PdfPreviewModal;
