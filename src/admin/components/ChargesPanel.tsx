@@ -158,7 +158,7 @@ export default function ChargesPanel() {
               <div className="rounded-lg border border-[hsl(var(--admin-border))] p-3">
                 <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Link de pagamento</p>
                 <div className="mt-1 flex items-center gap-2">
-                  <a href={view.payment_url} target="_blank" rel="noreferrer" className="text-xs text-blue-600 underline truncate flex-1">{view.payment_url}</a>
+                  <a href={view.payment_url} target="_blank" rel="noreferrer" className="text-xs text-primary underline truncate flex-1">{view.payment_url}</a>
                   <Button size="sm" variant="ghost" onClick={() => { navigator.clipboard.writeText(view.payment_url!); toast({ title: "Copiado" }); }}><Copy className="h-3.5 w-3.5" /></Button>
                 </div>
               </div>
