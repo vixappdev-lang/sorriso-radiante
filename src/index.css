@@ -712,6 +712,12 @@
     border-color: hsl(220 14% 24%) !important;
   }
 
+  /* PDF iframe (preview) — fundo escuro neutro para destacar página branca do PDF */
+  html[data-admin-theme="dark"] [role="dialog"] iframe[title*="PDF" i],
+  html[data-admin-theme="dark"] [role="dialog"] iframe[src^="blob:"] {
+    background-color: hsl(220 18% 14%);
+  }
+
   /* ===== App namespace (Área do Cliente, Booking, Review) ===== */
   .app-shell,
   .app-shell * {
