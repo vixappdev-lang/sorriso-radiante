@@ -172,31 +172,7 @@ export default function BankReconciliationPanel() {
         description={selected ? `${selected.reconciled_lines}/${selected.total_lines} conciliadas` : ""}
         size="xl"
       >
-        <ul className="space-y-2">
-          {lines.map((l) => {
-            const matched = !!l.matched_entry_id;
-            return (
-              <li key={l.id} className={`rounded-lg border p-3 ${matched ? "border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/20" : "border-[hsl(var(--admin-border))]"}`}>
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{l.description}</p>
-                    <p className="text-xs text-muted-foreground tabular-nums">{new Date(l.posted_at).toLocaleDateString("pt-BR")}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`text-sm font-semibold tabular-nums ${l.amount_cents < 0 ? "text-rose-600" : "text-emerald-700"}`}>{brl(l.amount_cents)}</span>
-                    {matched ? (
-                      <Badge variant="outline" className="border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />Conciliado
-                      </Badge>
-                    ) : (
-                      <Button size="sm" variant="outline" onClick={() => setMatchLine(l)}><LinkIcon className="h-3.5 w-3.5 mr-1.5" />Conciliar</Button>
-                    )}
-                  </div>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <LinesView lines={lines} onMatch={setMatchLine} />
       </EntityModal>
 
       {/* Modal: conciliar com lançamento */}
