@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import {
   Bell, Plus, MessageCircle, CheckCircle2, Clock, AlertTriangle,
-  Calendar as CalIcon, Trash2, Phone, Send,
+  Calendar as CalIcon, Trash2, Phone, Send, Sparkles,
 } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import KpiCard from "@/admin/components/KpiCard";
@@ -16,6 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useRecallTasks, useUpsertRecall, useDeleteRecall, type RecallTask } from "@/admin/hooks/useRecall";
 import { useClinicBrand } from "@/hooks/useClinicBrand";
 import { toast } from "@/hooks/use-toast";
