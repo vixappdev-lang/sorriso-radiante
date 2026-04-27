@@ -68,7 +68,7 @@ export default function DataTable<T extends Record<string, any>>({
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-[hsl(220_24%_98%)] text-xs uppercase tracking-wider text-[hsl(var(--admin-text-muted))]">
+          <thead className="bg-muted/55 text-xs uppercase tracking-wider text-[hsl(var(--admin-text-muted))]">
             <tr>
               {columns.map((c) => (
                 <th key={c.key} className={cn("text-left px-4 py-3 font-medium", c.className)}>
@@ -89,7 +89,7 @@ export default function DataTable<T extends Record<string, any>>({
               slice.map((row, i) => (
                 <tr
                   key={(row.id as any) ?? i}
-                  className={cn("border-t border-[hsl(var(--admin-border))]", onRowClick && "cursor-pointer hover:bg-[hsl(220_24%_98%)]")}
+                  className={cn("border-t border-[hsl(var(--admin-border))] transition-colors", onRowClick && "cursor-pointer hover:bg-muted/45")}
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
                 >
                   {columns.map((c) => (
