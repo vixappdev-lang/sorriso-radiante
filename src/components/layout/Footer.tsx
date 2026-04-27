@@ -20,7 +20,7 @@ export default function Footer() {
                 </svg>
               </span>
               <div className="flex flex-col leading-tight">
-                <span className="font-display text-lg font-semibold">LyneCloud</span>
+                <span className="font-display text-lg font-semibold">{clinicName}</span>
                 <span className="text-[10px] uppercase tracking-[0.22em] font-semibold text-white/60">Odontologia</span>
               </div>
             </div>
