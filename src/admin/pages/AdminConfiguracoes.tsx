@@ -620,6 +620,181 @@ function SectionBranding({ initial, onSave }: any) {
   );
 }
 
+const DEFAULT_PRESCRIPTION_TEMPLATE = {
+  name: "Receita odontológica padrão",
+  documentTitle: "Receita",
+  layout: "modern" as "classic" | "modern" | "compact",
+  primaryColor: "#1e40af",
+  accentColor: "#10b981",
+  logoText: "LyneCloud Clínica",
+  watermark: "CLÍNICA",
+  introText: "Prescrição realizada após avaliação clínica. Utilize os medicamentos conforme orientação profissional.",
+  bodyText: "1. Medicamento / concentração: ______________________________________________\n   Posologia: ________________________________________________________________\n   Duração: __________________________________________________________________\n\n2. Medicamento / concentração: ______________________________________________\n   Posologia: ________________________________________________________________\n   Duração: __________________________________________________________________",
+  instructions: "Não interrompa o tratamento sem orientação. Em caso de reação adversa, suspenda o uso e entre em contato com a clínica imediatamente.",
+  footerText: "Documento válido para impressão, envio digital ao paciente e arquivamento no prontuário.",
+  signatureName: "Dra. Responsável",
+  signatureRole: "Cirurgiã-dentista",
+  registration: "CRO 00000",
+};
+
+function SectionPrescriptionTemplate({ initial, onSave }: any) {
+  const brand = useClinicBrand();
+  const [template, setTemplate] = useState({ ...DEFAULT_PRESCRIPTION_TEMPLATE, logoText: brand.name, ...initial });
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [pdfOpen, setPdfOpen] = useState(false);
+
+  useEffect(() => {
+    if (!initial?.logoText && brand.name) setTemplate((s) => ({ ...s, logoText: brand.name }));
+  }, [brand.name, initial?.logoText]);
+
+  function buildDoc() {
+    return generatePrescriptionTemplatePdf({
+      clinic: { name: brand.name, phone: brand.phone, email: brand.email, address: brand.address, cep: brand.cep },
+      template,
+      sample: { patientName: "Paciente Exemplo", date: new Date().toLocaleDateString("pt-BR") },
+    });
+  }
+
+  function downloadTemplate() {
+    buildDoc().save(`${template.documentTitle.toLowerCase().replace(/\s+/g, "-")}-modelo.pdf`);
+  }
+
+  function printTemplate() {
+    const doc = buildDoc();
+    doc.autoPrint();
+    const url = URL.createObjectURL(doc.output("blob"));
+    window.open(url, "_blank");
+    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  }
+
+  return (
+    <SectionCard
+      title="Templates clínicos"
+      description="Monte receitas, atestados e orientações com identidade da clínica, prontos para imprimir, baixar ou enviar online."
+      footer={
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button variant="outline" onClick={() => setPdfOpen(true)}><Eye className="h-4 w-4 mr-2" />Pré-visualizar PDF</Button>
+          <Button variant="outline" onClick={printTemplate}><Printer className="h-4 w-4 mr-2" />Imprimir</Button>
+          <Button onClick={() => { onSave(template); toast({ title: "Template salvo" }); }}>Salvar template</Button>
+        </div>
+      }
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-[360px,1fr] gap-4">
+        <div className="space-y-3">
+          <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-muted/30 p-4">
+            <div className="flex items-center gap-3">
+              <div className="grid h-10 w-10 place-items-center rounded-lg bg-primary/10 text-primary"><FilePenLine className="h-5 w-5" /></div>
+              <div>
+                <p className="text-sm font-semibold">Editor visual de receita</p>
+                <p className="text-xs text-muted-foreground">Modelo A4 com cabeçalho, marca d'água, conteúdo e assinatura.</p>
+              </div>
+            </div>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Button variant="outline" onClick={() => setEditorOpen(true)}><LayoutTemplate className="h-4 w-4 mr-2" />Abrir editor</Button>
+              <Button variant="outline" onClick={downloadTemplate}><Download className="h-4 w-4 mr-2" />Baixar PDF</Button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {(["modern", "classic", "compact"] as const).map((layout) => (
+              <button
+                key={layout}
+                type="button"
+                onClick={() => setTemplate({ ...template, layout })}
+                className={cn(
+                  "rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
+                  template.layout === layout ? "border-primary bg-primary text-primary-foreground" : "border-[hsl(var(--admin-border))] bg-background hover:bg-muted/60",
+                )}
+              >
+                {layout === "modern" ? "Moderno" : layout === "classic" ? "Clássico" : "Compacto"}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div><Label className="text-xs">Cor principal</Label><Input type="color" value={template.primaryColor} onChange={(e) => setTemplate({ ...template, primaryColor: e.target.value })} className="h-10" /></div>
+            <div><Label className="text-xs">Cor de apoio</Label><Input type="color" value={template.accentColor} onChange={(e) => setTemplate({ ...template, accentColor: e.target.value })} className="h-10" /></div>
+          </div>
+        </div>
+
+        <PrescriptionPaperPreview template={template} brand={brand} />
+      </div>
+
+      <EntityModal open={editorOpen} onOpenChange={setEditorOpen} title="Editor de template clínico" description="Personalize o documento como em um canvas A4: identidade, conteúdo, orientação, rodapé e assinatura." size="xl"
+        footer={<div className="flex flex-wrap justify-end gap-2"><Button variant="outline" onClick={() => setTemplate({ ...DEFAULT_PRESCRIPTION_TEMPLATE, logoText: brand.name })}><RotateCcw className="h-4 w-4 mr-2" />Restaurar padrão</Button><Button variant="outline" onClick={() => setPdfOpen(true)}><Eye className="h-4 w-4 mr-2" />Ver PDF</Button><Button onClick={() => { onSave(template); setEditorOpen(false); toast({ title: "Template salvo" }); }}>Salvar e fechar</Button></div>}
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-[330px,1fr] gap-4">
+          <div className="space-y-3">
+            <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-muted/30 p-3 space-y-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5"><Type className="h-3.5 w-3.5" /> Identidade</p>
+              <div><Label className="text-xs">Nome do modelo</Label><Input value={template.name} onChange={(e) => setTemplate({ ...template, name: e.target.value })} /></div>
+              <div><Label className="text-xs">Título do documento</Label><Input value={template.documentTitle} onChange={(e) => setTemplate({ ...template, documentTitle: e.target.value })} placeholder="Receita, Atestado, Orientações..." /></div>
+              <div><Label className="text-xs">Texto do logo/cabeçalho</Label><Input value={template.logoText} onChange={(e) => setTemplate({ ...template, logoText: e.target.value })} /></div>
+              <div><Label className="text-xs">Marca d'água</Label><Input value={template.watermark} onChange={(e) => setTemplate({ ...template, watermark: e.target.value })} placeholder="Opcional" /></div>
+            </div>
+
+            <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-muted/30 p-3 space-y-3">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Assinatura profissional</p>
+              <div><Label className="text-xs">Nome</Label><Input value={template.signatureName} onChange={(e) => setTemplate({ ...template, signatureName: e.target.value })} /></div>
+              <div><Label className="text-xs">Cargo/especialidade</Label><Input value={template.signatureRole} onChange={(e) => setTemplate({ ...template, signatureRole: e.target.value })} /></div>
+              <div><Label className="text-xs">Registro</Label><Input value={template.registration} onChange={(e) => setTemplate({ ...template, registration: e.target.value })} placeholder="CRO / CRM" /></div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div><Label className="text-xs">Texto inicial</Label><Textarea rows={2} value={template.introText} onChange={(e) => setTemplate({ ...template, introText: e.target.value })} /></div>
+            <div><Label className="text-xs">Corpo da receita / documento</Label><Textarea rows={10} value={template.bodyText} onChange={(e) => setTemplate({ ...template, bodyText: e.target.value })} /></div>
+            <div><Label className="text-xs">Orientações ao paciente</Label><Textarea rows={4} value={template.instructions} onChange={(e) => setTemplate({ ...template, instructions: e.target.value })} /></div>
+            <div><Label className="text-xs">Rodapé</Label><Textarea rows={2} value={template.footerText} onChange={(e) => setTemplate({ ...template, footerText: e.target.value })} /></div>
+          </div>
+        </div>
+      </EntityModal>
+
+      <PdfPreviewModal
+        open={pdfOpen}
+        onOpenChange={setPdfOpen}
+        title={`${template.documentTitle} · modelo da clínica`}
+        description="PDF A4 profissional para impressão, download ou envio digital."
+        filename={`${template.documentTitle.toLowerCase().replace(/\s+/g, "-")}-modelo.pdf`}
+        buildDoc={buildDoc}
+      />
+    </SectionCard>
+  );
+}
+
+function PrescriptionPaperPreview({ template, brand }: any) {
+  return (
+    <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-muted/30 p-3 overflow-auto">
+      <div className="mx-auto min-h-[560px] max-w-[460px] rounded-lg border border-[hsl(var(--admin-border))] bg-background p-6 shadow-sm relative overflow-hidden">
+        <div className="absolute left-0 right-0 top-0 h-2" style={{ backgroundColor: template.primaryColor }} />
+        {template.watermark && <div className="pointer-events-none absolute inset-0 grid place-items-center text-5xl font-bold opacity-[0.04] -rotate-12">{template.watermark}</div>}
+        <div className="relative space-y-5">
+          <header className="border-b border-[hsl(var(--admin-border))] pb-3">
+            <p className="text-lg font-bold" style={{ color: template.primaryColor }}>{template.logoText || brand.name}</p>
+            <p className="text-[10px] text-muted-foreground mt-1">{[brand.phone, brand.email, brand.address].filter(Boolean).join(" · ")}</p>
+          </header>
+          <section>
+            <p className="text-sm font-bold uppercase tracking-wider" style={{ color: template.primaryColor }}>{template.documentTitle}</p>
+            <div className="mt-1 h-1 w-16 rounded-full" style={{ backgroundColor: template.accentColor }} />
+          </section>
+          <section className="rounded-lg border border-[hsl(var(--admin-border))] p-3 text-xs">
+            <div className="flex justify-between"><span className="text-muted-foreground">Paciente</span><span>Paciente Exemplo</span></div>
+            <div className="flex justify-between mt-1"><span className="text-muted-foreground">Data</span><span>{new Date().toLocaleDateString("pt-BR")}</span></div>
+          </section>
+          <p className="text-xs leading-relaxed text-muted-foreground">{template.introText}</p>
+          <pre className="min-h-40 whitespace-pre-wrap rounded-lg border border-[hsl(var(--admin-border))] p-3 text-[11px] leading-relaxed font-sans">{template.bodyText}</pre>
+          <div className="rounded-lg bg-muted/50 p-3 text-[11px] leading-relaxed"><strong>Orientações:</strong> {template.instructions}</div>
+          <footer className="pt-8 text-right text-xs">
+            <div className="ml-auto mb-2 h-px w-44 bg-border" />
+            <p className="font-semibold">{template.signatureName}</p>
+            <p className="text-muted-foreground">{[template.signatureRole, template.registration].filter(Boolean).join(" · ")}</p>
+          </footer>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ========== USUÁRIOS — criação em modal + permissões granulares ========== */
 function SectionUsers() {
   const { data: users = [], isLoading } = useStaffUsers();
