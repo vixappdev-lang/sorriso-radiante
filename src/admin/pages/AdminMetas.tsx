@@ -192,6 +192,25 @@ export default function AdminMetas() {
                     <span>{Math.round(pct)}% concluído</span>
                     <span>{g.period === "monthly" ? "Mensal" : g.period}</span>
                   </div>
+
+                  {/* Projeção fim de mês — baseado no ritmo até agora */}
+                  {(() => {
+                    const today = new Date();
+                    const refDate = new Date(g.reference_month + "T00:00:00");
+                    const isCurrentMonth = today.getFullYear() === refDate.getFullYear() && today.getMonth() === refDate.getMonth();
+                    if (!isCurrentMonth || actual <= 0) return null;
+                    const dayOfMonth = today.getDate();
+                    const daysInMonth = new Date(refDate.getFullYear(), refDate.getMonth() + 1, 0).getDate();
+                    const projected = (actual / dayOfMonth) * daysInMonth;
+                    const projectedPct = target > 0 ? Math.round((projected / target) * 100) : 0;
+                    const willHit = projected >= target;
+                    return (
+                      <div className={`mt-1 text-[11px] flex items-center gap-1 ${willHit ? "text-emerald-700 dark:text-emerald-400" : "text-amber-700 dark:text-amber-400"}`}>
+                        <TrendingUp className="h-3 w-3" />
+                        Tendência: {g.metric === "revenue" ? brl(Math.round(projected * 100)) : Math.round(projected)} ({projectedPct}% da meta)
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {g.notes && <p className="text-[11px] text-muted-foreground mt-3 pt-3 border-t border-[hsl(var(--admin-border))]">{g.notes}</p>}
