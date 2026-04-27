@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
 import ContactModal from "@/components/layout/ContactModal";
 import { TREATMENTS, TESTIMONIALS, DENTISTS } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
@@ -22,12 +23,13 @@ const fadeUp = {
 export default function Home() {
   const { open } = useScheduleModal();
   const [contactOpen, setContactOpen] = useState(false);
+  const clinicName = useClinicName();
 
   return (
     <SiteLayout>
       <SEO
-        title="LyneCloud — Odontologia de Excelência em Aracruz/ES"
-        description="Tecnologia de ponta, atendimento humano e resultados que duram em Aracruz/ES. Implantes, ortodontia, lentes de contato dental e emergência 24h."
+        title={`${clinicName} — Odontologia de Excelência em Aracruz/ES`}
+        description={`Tecnologia de ponta, atendimento humano e resultados que duram em Aracruz/ES. Implantes, ortodontia, lentes de contato dental e emergência 24h.`}
       />
 
       {/* HERO — DARK */}
@@ -56,7 +58,7 @@ export default function Home() {
 
             <p className="mt-5 text-base sm:text-lg text-white/75 max-w-xl leading-relaxed">
               Tecnologia de ponta, profissionais especialistas e um atendimento que acolhe.
-              Na LyneCloud, cada detalhe é pensado para o seu conforto e para um resultado natural que dura.
+              Na {clinicName}, cada detalhe é pensado para o seu conforto e para um resultado natural que dura.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
@@ -148,7 +150,7 @@ export default function Home() {
       <section className="section bg-soft">
         <div className="container-edge">
           <motion.div {...fadeUp} className="max-w-2xl">
-            <span className="eyebrow"><Stethoscope className="h-3.5 w-3.5" /> Por que escolher a LyneCloud</span>
+            <span className="eyebrow"><Stethoscope className="h-3.5 w-3.5" /> Por que escolher a {clinicName}</span>
             <h2 className="font-display font-semibold h-section mt-3 text-foreground text-balance">
               Cuidado clínico premium, do diagnóstico ao acompanhamento.
             </h2>

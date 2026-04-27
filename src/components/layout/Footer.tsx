@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import { Instagram, Facebook, Mail, MapPin, Phone, Clock } from "lucide-react";
 import { useState } from "react";
 import LocationModal from "./LocationModal";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function Footer() {
   const year = new Date().getFullYear();
   const [locOpen, setLocOpen] = useState(false);
+  const clinicName = useClinicName();
   return (
     <footer className="bg-surface-dark text-surface-dark-foreground">
       <div className="container-edge py-14 sm:py-20">
@@ -18,7 +20,7 @@ export default function Footer() {
                 </svg>
               </span>
               <div className="flex flex-col leading-tight">
-                <span className="font-display text-lg font-semibold">LyneCloud</span>
+                <span className="font-display text-lg font-semibold">{clinicName}</span>
                 <span className="text-[10px] uppercase tracking-[0.22em] font-semibold text-white/60">Odontologia</span>
               </div>
             </div>
@@ -80,7 +82,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between text-xs text-white/55">
-          <p>© {year} LyneCloud. Todos os direitos reservados. CNPJ 00.000.000/0001-00 — Resp. Técnico CRO/ES 0000.</p>
+          <p>© {year} {clinicName}. Todos os direitos reservados. CNPJ 00.000.000/0001-00 — Resp. Técnico CRO/ES 0000.</p>
           <div className="flex items-center gap-4">
             <a href="#" className="hover:text-white">Política de Privacidade</a>
             <a href="#" className="hover:text-white">Termos de Uso</a>

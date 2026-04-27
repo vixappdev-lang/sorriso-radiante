@@ -5,14 +5,16 @@ import SiteLayout from "@/components/layout/SiteLayout";
 import PageHero from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function Sobre() {
   const { open } = useScheduleModal();
+  const clinicName = useClinicName();
   return (
     <SiteLayout>
       <SEO
-        title="Sobre — LyneCloud"
-        description="Conheça a história, missão e valores da LyneCloud. Mais de 15 anos transformando sorrisos com excelência clínica e atendimento humano."
+        title={`Sobre — ${clinicName}`}
+        description={`Conheça a história, missão e valores da ${clinicName}. Mais de 15 anos transformando sorrisos com excelência clínica e atendimento humano.`}
       />
       <PageHero
         eyebrow="Sobre nós"
@@ -33,7 +35,7 @@ export default function Sobre() {
               Uma clínica feita por pessoas, para pessoas.
             </h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
-              A LyneCloud nasceu do sonho da Dra. Camila LyneCloud em criar um espaço onde o paciente não fosse só
+              A {clinicName} nasceu do sonho da Dra. Camila Andrade em criar um espaço onde o paciente não fosse só
               mais um número. Aqui, cada sorriso tem uma história, e cada plano de tratamento é desenhado para você.
             </p>
             <p className="mt-3 text-muted-foreground leading-relaxed">
@@ -47,7 +49,7 @@ export default function Sobre() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: "easeOut" }}
             src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
-            alt="Ambiente acolhedor da LyneCloud"
+            alt={`Ambiente acolhedor da ${clinicName}`}
             className="rounded-3xl shadow-elegant w-full aspect-[4/3] object-cover"
             loading="lazy"
           />

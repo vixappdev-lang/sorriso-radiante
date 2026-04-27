@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Navigation, Clock, Phone, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { CLINIC_INFO } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { toast } from "@/hooks/use-toast";
 
 const ADDRESS_FULL = "Av. Venâncio Flores, 350 - Sala 04, Centro, Aracruz - ES, 29190-036";
@@ -16,6 +17,7 @@ interface Props {
 
 export default function LocationModal({ open, onOpenChange }: Props) {
   const [copied, setCopied] = useState(false);
+  const clinicName = useClinicName();
 
   // Detecta plataforma para abrir o app de mapa nativo correto
   const handleOpenGPS = () => {
@@ -55,7 +57,7 @@ export default function LocationModal({ open, onOpenChange }: Props) {
             </span>
             <div className="min-w-0 flex-1">
               <DialogTitle className="font-display text-xl sm:text-2xl text-balance leading-tight">
-                Como chegar à LyneCloud
+                Como chegar à {clinicName}
               </DialogTitle>
               <DialogDescription className="text-xs sm:text-sm mt-1">
                 Toque em "Abrir no mapa" para iniciar a rota no seu GPS.
@@ -68,7 +70,7 @@ export default function LocationModal({ open, onOpenChange }: Props) {
           {/* Mini-mapa preview */}
           <div className="rounded-xl overflow-hidden border border-border/70 aspect-video shadow-soft">
             <iframe
-              title="Mapa LyneCloud"
+              title={`Mapa ${clinicName}`}
               src={`https://www.google.com/maps?q=${LAT},${LNG}&z=16&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

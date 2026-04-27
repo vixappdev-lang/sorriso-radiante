@@ -12,13 +12,13 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
-
-const BRAND = "LyneCloud";
 
 type Section = "home" | "appointments" | "history" | "invoices" | "profile";
 
 export default function AreaCliente() {
+  const BRAND = useClinicName();
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState<any>({
@@ -66,6 +66,7 @@ export default function AreaCliente() {
 /* ───────────────────────── LOGIN ───────────────────────── */
 
 function LoginScreen({ config }: any) {
+  const BRAND = useClinicName();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -403,6 +404,7 @@ function ClientApp({ session, config }: any) {
 /* ───────────────────────── VIEWS ───────────────────────── */
 
 function HomeView({ config, profile, upcoming, openInvoices, setSection, navigate, bookingSlug }: any) {
+  const BRAND = useClinicName();
   const next = upcoming[0];
   const totalDue = openInvoices.reduce((s: number, i: any) => s + (i.amount_cents || 0), 0);
   return (
@@ -552,6 +554,7 @@ function InvoicesView({ items }: any) {
 }
 
 function ProfileView({ profile, session }: any) {
+  const BRAND = useClinicName();
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Meu perfil</h2>

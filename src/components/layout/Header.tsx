@@ -4,6 +4,7 @@ import { Menu, Phone, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
 
 // Topo enxuto: apenas o essencial
@@ -27,6 +28,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const { open: openSchedule } = useScheduleModal();
+  const clinicName = useClinicName();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -53,8 +55,8 @@ export default function Header() {
       )}
     >
       <div className="container-edge flex h-16 items-center justify-between sm:h-20">
-        <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="LyneCloud — início">
-          <Logo light={transparent} />
+        <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label={`${clinicName} — início`}>
+          <Logo light={transparent} name={clinicName} />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-0.5" aria-label="Principal">
@@ -218,7 +220,7 @@ export default function Header() {
   );
 }
 
-function Logo({ light = false }: { light?: boolean }) {
+function Logo({ light = false, name = "LyneCloud" }: { light?: boolean; name?: string }) {
   return (
     <span className="flex items-center gap-2.5">
       <span className={cn(
@@ -234,7 +236,7 @@ function Logo({ light = false }: { light?: boolean }) {
           "font-display text-lg font-semibold tracking-tight transition-colors duration-300",
           light ? "text-white" : "text-foreground"
         )}>
-          LyneCloud
+          {name}
         </span>
         <span className={cn(
           "text-[10px] uppercase tracking-[0.22em] font-semibold transition-colors duration-300",

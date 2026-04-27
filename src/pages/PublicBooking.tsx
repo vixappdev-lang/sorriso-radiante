@@ -13,6 +13,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { ptBR } from "date-fns/locale";
 import SEO from "@/components/SEO";
 import { TREATMENTS, DENTISTS } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
 
 type DbProfessional = {
@@ -23,7 +24,7 @@ type DbProfessional = {
   photo_url: string | null;
 };
 
-const CLINIC_NAME = "LyneCloud";
+
 
 type LinkRow = {
   id: string;
@@ -51,6 +52,7 @@ const STEPS: { key: StepKey; label: string; icon: any }[] = [
 export default function PublicBooking() {
   const { slug = "", token = "" } = useParams();
   const accessor = token || slug;
+  const CLINIC_NAME = useClinicName();
 
   const [link, setLink] = useState<LinkRow | null>(null);
   const [loading, setLoading] = useState(true);

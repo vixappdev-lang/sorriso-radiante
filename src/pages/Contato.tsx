@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Informe seu nome").max(100),
@@ -23,6 +24,7 @@ type Data = z.infer<typeof schema>;
 export default function Contato() {
   const [sent, setSent] = useState(false);
   const form = useForm<Data>({ resolver: zodResolver(schema), mode: "onBlur" });
+  const clinicName = useClinicName();
 
   const onSubmit = async () => {
     await new Promise((r) => setTimeout(r, 600));
@@ -33,8 +35,8 @@ export default function Contato() {
   return (
     <SiteLayout>
       <SEO
-        title="Contato — LyneCloud"
-        description="Fale com a LyneCloud: WhatsApp, telefone, e-mail e formulário de contato. Estamos prontos para tirar suas dúvidas."
+        title={`Contato — ${clinicName}`}
+        description={`Fale com a ${clinicName}: WhatsApp, telefone, e-mail e formulário de contato. Estamos prontos para tirar suas dúvidas.`}
       />
       <PageHero
         eyebrow="Fale com a gente"

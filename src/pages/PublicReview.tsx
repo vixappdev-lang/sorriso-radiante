@@ -5,9 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import SEO from "@/components/SEO";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
 
-const CLINIC_NAME = "LyneCloud";
 
 type Invite = {
   id: string;
@@ -57,6 +57,7 @@ function Confetti() {
 
 export default function PublicReview() {
   const { token = "" } = useParams();
+  const CLINIC_NAME = useClinicName();
   const [invite, setInvite] = useState<Invite | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);

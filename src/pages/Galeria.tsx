@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Camera, Sparkles } from "lucide-react";
+import { useState } from "react";
 import SEO from "@/components/SEO";
 import SiteLayout from "@/components/layout/SiteLayout";
 import PageHero from "@/components/layout/PageHero";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 type GalleryItem = {
   src: string;
@@ -26,21 +28,20 @@ const IMAGES: GalleryItem[] = [
 
 const CATEGORIES = ["Todos", "Ambiente", "Resultados", "Equipe"] as const;
 
-import { useState } from "react";
-
 export default function Galeria() {
   const [filter, setFilter] = useState<typeof CATEGORIES[number]>("Todos");
   const filtered = filter === "Todos" ? IMAGES : IMAGES.filter((i) => i.category === filter);
+  const clinicName = useClinicName();
 
   return (
     <SiteLayout>
       <SEO
-        title="Galeria — LyneCloud"
-        description="Conheça por dentro a LyneCloud: ambiente moderno, equipamentos de ponta, resultados reais e a equipe que cuida do seu sorriso."
+        title={`Galeria — ${clinicName}`}
+        description={`Conheça por dentro a ${clinicName}: ambiente moderno, equipamentos de ponta, resultados reais e a equipe que cuida do seu sorriso.`}
       />
       <PageHero
         eyebrow="Galeria"
-        title="Por dentro da LyneCloud."
+        title={`Por dentro da ${clinicName}.`}
         subtitle="Ambiente acolhedor, tecnologia de ponta e resultados que falam por si. Veja com seus próprios olhos por que somos referência em Aracruz/ES."
       />
 

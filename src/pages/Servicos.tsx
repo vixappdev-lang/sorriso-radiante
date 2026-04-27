@@ -5,14 +5,16 @@ import { TREATMENTS } from "@/data/clinic";
 import { Button } from "@/components/ui/button";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
 import { CheckCircle2 } from "lucide-react";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function Servicos() {
   const { open } = useScheduleModal();
+  const clinicName = useClinicName();
   return (
     <SiteLayout>
       <SEO
-        title="Serviços e Preços — LyneCloud"
-        description="Lista completa de serviços odontológicos da LyneCloud com faixas de preço e duração média de cada procedimento."
+        title={`Serviços e Preços — ${clinicName}`}
+        description={`Lista completa de serviços odontológicos da ${clinicName} com faixas de preço e duração média de cada procedimento.`}
       />
       <PageHero
         eyebrow="Serviços e preços"

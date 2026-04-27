@@ -1,8 +1,10 @@
 import { CLINIC_INFO } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function WhatsAppFab() {
   const phone = CLINIC_INFO.whatsapp.number;
-  const text = encodeURIComponent("Olá! Gostaria de informações sobre tratamentos na LyneCloud.");
+  const clinicName = useClinicName();
+  const text = encodeURIComponent(`Olá! Gostaria de informações sobre tratamentos na ${clinicName}.`);
   return (
     <a
       href={`https://wa.me/${phone}?text=${text}`}

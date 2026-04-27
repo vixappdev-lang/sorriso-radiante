@@ -16,6 +16,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { TREATMENTS, DENTISTS } from "@/data/clinic";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
 
 const phoneRegex = /^\(?\d{2}\)?\s?9?\s?\d{4}-?\d{4}$/;
@@ -50,6 +51,7 @@ interface Props {
 export default function ScheduleModal({ open, onOpenChange, presetTreatment }: Props) {
   const [submitted, setSubmitted] = useState<FormData | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
+  const clinicName = useClinicName();
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -291,7 +293,7 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
                   </div>
 
                   <p className="text-[11px] text-muted-foreground text-center sm:text-left">
-                    Ao enviar, você concorda em ser contatado(a) pela LyneCloud.
+                    Ao enviar, você concorda em ser contatado(a) pela {clinicName}.
                   </p>
                 </>
               )}
