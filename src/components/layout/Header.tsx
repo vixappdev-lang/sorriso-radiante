@@ -207,7 +207,7 @@ export default function Header() {
                   <div className="flex items-start gap-3 px-3 pt-1">
                     <MapPin className="h-3.5 w-3.5 text-primary mt-0.5 shrink-0" />
                     <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Av. Venâncio Flores, 350 — Centro, Aracruz/ES
+                      Rua Exemplo, 123 — Centro, Aracruz/ES
                     </p>
                   </div>
                 </div>
