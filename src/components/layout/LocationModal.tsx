@@ -17,6 +17,7 @@ interface Props {
 
 export default function LocationModal({ open, onOpenChange }: Props) {
   const [copied, setCopied] = useState(false);
+  const clinicName = useClinicName();
 
   // Detecta plataforma para abrir o app de mapa nativo correto
   const handleOpenGPS = () => {
