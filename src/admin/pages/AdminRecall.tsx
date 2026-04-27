@@ -97,11 +97,26 @@ export default function AdminRecall() {
     toast({ title: "Recall concluído" });
   }
 
-  function whatsappLink(t: RecallTask) {
-    const msg = encodeURIComponent(
-      `Olá ${t.patient_name}! Aqui é da ${brand.name}. Faz um tempinho desde seu último cuidado${t.treatment ? ` (${t.treatment})` : ""}, que tal agendarmos seu retorno? 😊`
-    );
+  const TEMPLATES = (t: RecallTask) => {
+    const treat = t.treatment ? ` (${t.treatment})` : "";
+    return [
+      { id: "gentle", label: "Carinhoso", text: `Olá ${t.patient_name}! Aqui é da ${brand.name} 🦷 Faz um tempinho desde seu último cuidado${treat}, que tal agendarmos seu retorno? Estamos com horários abertos essa semana 😊` },
+      { id: "maintenance", label: "Manutenção / limpeza", text: `Oi ${t.patient_name}! Tudo bem? Notamos que está na hora da sua manutenção${treat} aqui na ${brand.name}. Posso já reservar um horário pra você?` },
+      { id: "post_op", label: "Pós-operatório", text: `Olá ${t.patient_name}! Aqui é da ${brand.name}. Estamos passando para saber como está se sentindo após o procedimento${treat}. Qualquer desconforto, é só responder essa mensagem que te oriento. 💙` },
+      { id: "promo", label: "Oferta especial", text: `Olá ${t.patient_name}! 🎁 Está com agenda aberta essa semana na ${brand.name} e queremos te oferecer condição especial para retomar seu tratamento${treat}. Posso te enviar os horários disponíveis?` },
+    ];
+  };
+
+  function whatsappLink(t: RecallTask, templateId: string = "gentle") {
+    const tpl = TEMPLATES(t).find((x) => x.id === templateId) ?? TEMPLATES(t)[0];
+    const msg = encodeURIComponent(tpl.text);
     return `https://wa.me/55${t.patient_phone.replace(/\D/g, "")}?text=${msg}`;
+  }
+
+  function adjustDueDate(days: number) {
+    const d = new Date(form.due_date + "T00:00:00");
+    d.setDate(d.getDate() + days);
+    setForm({ ...form, due_date: d.toISOString().slice(0, 10) });
   }
 
   const columns: Column<RecallTask>[] = [
