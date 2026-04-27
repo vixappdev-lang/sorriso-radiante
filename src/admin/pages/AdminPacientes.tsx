@@ -323,6 +323,18 @@ export default function AdminPacientes() {
                 </div>
               </TabsContent>
 
+              <TabsContent value="anamnese" className="mt-4">
+                <PatientAnamnesisTab patientPhone={drawer.phone} patientName={drawer.name} />
+              </TabsContent>
+
+              <TabsContent value="prontuario" className="mt-4">
+                <PatientRecordsTab patientPhone={drawer.phone} patientName={drawer.name} />
+              </TabsContent>
+
+              <TabsContent value="imagens" className="mt-4">
+                <PatientImagesTab patientPhone={drawer.phone} />
+              </TabsContent>
+
               <TabsContent value="odontograma" className="mt-4">
                 <Odontogram teeth={odontogram} onChange={saveTooth} />
               </TabsContent>
