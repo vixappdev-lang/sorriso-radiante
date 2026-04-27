@@ -57,8 +57,8 @@ const PdfPreviewModal = forwardRef<HTMLDivElement, Props>(function PdfPreviewMod
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent ref={ref} hideClose className="p-0 sm:max-w-5xl w-[96vw] h-[92vh] max-h-[95vh] overflow-hidden flex flex-col gap-0 bg-card text-card-foreground border-[hsl(var(--admin-border))]">
-        <DialogHeader className="border-b border-[hsl(var(--admin-border))] px-5 py-3 flex-row items-center justify-between space-y-0">
+      <DialogContent ref={ref} hideClose className="admin-modal-content p-0 sm:max-w-5xl w-[96vw] h-[92vh] max-h-[95vh] overflow-hidden flex flex-col gap-0 bg-card text-card-foreground border-[hsl(var(--admin-border))]">
+        <DialogHeader className="admin-modal-header border-b border-[hsl(var(--admin-border))] px-5 py-3 flex-row items-center justify-between space-y-0">
           <div className="min-w-0">
             <DialogTitle className="text-[15px] font-semibold tracking-tight">{title}</DialogTitle>
             {description && <DialogDescription className="text-xs">{description}</DialogDescription>}
