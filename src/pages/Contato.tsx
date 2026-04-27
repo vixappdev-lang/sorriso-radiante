@@ -35,8 +35,8 @@ export default function Contato() {
   return (
     <SiteLayout>
       <SEO
-        title="Contato — LyneCloud"
-        description="Fale com a LyneCloud: WhatsApp, telefone, e-mail e formulário de contato. Estamos prontos para tirar suas dúvidas."
+        title={`Contato — ${clinicName}`}
+        description={`Fale com a ${clinicName}: WhatsApp, telefone, e-mail e formulário de contato. Estamos prontos para tirar suas dúvidas.`}
       />
       <PageHero
         eyebrow="Fale com a gente"
