@@ -513,12 +513,9 @@ export function generatePrescriptionTemplatePdf(input: PrescriptionTemplatePdfIn
   }
 
   if (input.template.watermark) {
-    doc.saveGraphicsState();
-    doc.setGState(new (doc as any).GState({ opacity: 0.055 }));
-    rgb(doc, primary, "text");
+    doc.setTextColor(236, 240, 246);
     setFont(doc, 42, "bold");
     doc.text(input.template.watermark.toUpperCase(), PAGE.w / 2, 150, { align: "center", angle: -32 });
-    doc.restoreGraphicsState();
   }
 
   let y = input.template.layout === "modern" ? 42 : 43;
