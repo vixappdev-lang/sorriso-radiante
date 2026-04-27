@@ -16,6 +16,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { TREATMENTS, DENTISTS } from "@/data/clinic";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
 
 const phoneRegex = /^\(?\d{2}\)?\s?9?\s?\d{4}-?\d{4}$/;
