@@ -326,7 +326,7 @@ export default function AdminPacientes() {
               </TabsContent>
 
               <TabsContent value="anamnese" className="mt-4">
-                <PatientAnamnesisTab patientPhone={drawer.phone} patientName={drawer.name} />
+                <PatientAnamnesisTab patientPhone={drawer.phone} patientName={drawer.name} patientEmail={drawer.email} />
               </TabsContent>
 
               <TabsContent value="prontuario" className="mt-4">
@@ -344,7 +344,7 @@ export default function AdminPacientes() {
               <TabsContent value="orcamento" className="mt-4 space-y-3">
                 <Button onClick={() => setNewQuoteOpen(true)} size="sm" className="w-full"><Plus className="h-3.5 w-3.5 mr-1.5" /> Novo orçamento</Button>
                 {quotes.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">Nenhum orçamento ainda.</p>}
-                {quotes.map((q) => <QuoteCard key={q.id} quote={q} onChange={() => loadPatientData(drawer.phone)} />)}
+                {quotes.map((q) => <QuoteCard key={q.id} quote={q} patient={drawer} onChange={() => loadPatientData(drawer.phone)} />)}
               </TabsContent>
 
               <TabsContent value="historico" className="mt-4">
