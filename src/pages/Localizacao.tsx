@@ -10,7 +10,7 @@ export default function Localizacao() {
     <SiteLayout>
       <SEO
         title={`Localização — ${clinicName} em Aracruz/ES`}
-        description={`Av. Venâncio Flores, 350 — Centro, Aracruz/ES. Como chegar, horários e estacionamento da ${clinicName}.`}
+        description={`Rua Exemplo, 123 — Centro, Aracruz/ES. Como chegar, horários e estacionamento da ${clinicName}.`}
       />
       <PageHero
         eyebrow="Localização"
