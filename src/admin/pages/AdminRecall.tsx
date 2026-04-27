@@ -247,8 +247,39 @@ export default function AdminRecall() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div><Label className="text-xs">Tratamento / motivo</Label><Input value={form.treatment} onChange={(e) => setForm({ ...form, treatment: e.target.value })} placeholder="Limpeza, manutenção…" /></div>
-            <div><Label className="text-xs">Vencimento*</Label><Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} /></div>
+            <div>
+              <Label className="text-xs">Vencimento*</Label>
+              <Input type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
+              <div className="flex gap-1 mt-1.5 flex-wrap">
+                {[
+                  { d: 7, l: "+7d" }, { d: 30, l: "+1m" }, { d: 90, l: "+3m" }, { d: 180, l: "+6m" }, { d: 365, l: "+1a" },
+                ].map((p) => (
+                  <button
+                    key={p.d}
+                    type="button"
+                    onClick={() => adjustDueDate(p.d)}
+                    className="text-[10px] px-2 py-0.5 rounded-md border border-[hsl(var(--admin-border))] bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
+                  >
+                    {p.l}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
+          {open !== "new" && (
+            <div>
+              <Label className="text-xs">Status</Label>
+              <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pendente</SelectItem>
+                  <SelectItem value="sent">Enviado</SelectItem>
+                  <SelectItem value="done">Concluído</SelectItem>
+                  <SelectItem value="cancelled">Cancelado</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           <div><Label className="text-xs">Observações</Label><Textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Detalhes para o atendente lembrar do paciente…" /></div>
         </div>
       </EntityModal>
