@@ -160,8 +160,8 @@ export type AnamnesisPdfInput = {
   clinic: ClinicHeader;
   patient: { name: string; phone: string; email?: string | null };
   template: { name: string; specialty?: string };
-  questions: AnamnesisQuestion[];
-  answers: Record<string, string>;
+  questions: AnamnesisQuestion[] | unknown;
+  answers: Record<string, unknown> | unknown;
   signature?: { dataUrl?: string | null; signedAt?: string | null; ip?: string | null; hash?: string | null };
   createdAt?: string | null;
 };
@@ -171,6 +171,8 @@ export function generateAnamnesisPdf(input: AnamnesisPdfInput): jsPDF {
   const subtitle = `Anamnese${input.template.specialty ? " · " + input.template.specialty : ""}`;
   drawHeader(doc, input.clinic, subtitle);
   const c = new Cursor(doc, input.clinic, subtitle);
+  const questions = Array.isArray(input.questions) ? input.questions as AnamnesisQuestion[] : [];
+  const answers = (input.answers && typeof input.answers === "object" ? input.answers : {}) as Record<string, unknown>;
 
   // Identificação
   c.sectionTitle("Identificação do paciente");
@@ -182,8 +184,9 @@ export function generateAnamnesisPdf(input: AnamnesisPdfInput): jsPDF {
 
   // Respostas
   c.sectionTitle(input.template.name || "Questionário clínico");
-  input.questions.forEach((q, idx) => {
-    const a = (input.answers?.[q.id] ?? "").toString().trim() || "—";
+  questions.forEach((q, idx) => {
+    const raw = answers?.[q.id];
+    const a = Array.isArray(raw) ? raw.join(", ") : (raw ?? "").toString().trim() || "—";
     c.ensure(12);
     setFont(doc, 9, "bold");
     rgb(doc, MUTED, "text");
@@ -242,8 +245,9 @@ export function generateAnamnesisPdf(input: AnamnesisPdfInput): jsPDF {
     c.y += 4;
   }
   if (input.signature?.hash) {
-    doc.text(`Hash SHA-256: ${input.signature.hash}`, MARGIN.x, c.y, { maxWidth: CONTENT_W });
-    c.y += 6;
+    const hashLines = doc.splitTextToSize(`Hash SHA-256: ${input.signature.hash}`, CONTENT_W);
+    doc.text(hashLines, MARGIN.x, c.y);
+    c.y += Math.max(6, hashLines.length * 3.8);
   }
   setFont(doc, 7.5, "normal");
   rgb(doc, MUTED, "text");
@@ -280,6 +284,15 @@ export type QuotePdfInput = {
   };
 };
 
+function safeItems(items: unknown): QuoteItem[] {
+  if (!Array.isArray(items)) return [];
+  return items.map((it: any) => ({
+    name: String(it?.name ?? "Procedimento"),
+    qty: Math.max(1, Number(it?.qty) || 1),
+    price_cents: Math.max(0, Number(it?.price_cents) || 0),
+  }));
+}
+
 function brl(c: number) {
   return (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
@@ -291,6 +304,7 @@ export function generateQuotePdf(input: QuotePdfInput): jsPDF {
     : "Plano de Tratamento · Orçamento";
   drawHeader(doc, input.clinic, subtitle);
   const c = new Cursor(doc, input.clinic, subtitle);
+  const items = safeItems(input.quote.items);
 
   // ID do orçamento
   rgb(doc, MUTED, "text");
@@ -323,7 +337,7 @@ export function generateQuotePdf(input: QuotePdfInput): jsPDF {
   c.y += 7;
 
   // Linhas
-  input.quote.items.forEach((it, i) => {
+  items.forEach((it, i) => {
     const rowH = 8;
     c.ensure(rowH);
     if (i % 2 === 0) {
@@ -388,7 +402,7 @@ export function generateQuotePdf(input: QuotePdfInput): jsPDF {
     doc.roundedRect(MARGIN.x, c.y, CONTENT_W, 14, 2, 2, "F");
     doc.setTextColor(255, 255, 255);
     setFont(doc, 11, "bold");
-    doc.text("✓  PLANO ACEITO PELO PACIENTE", MARGIN.x + 4, c.y + 6);
+    doc.text("PLANO ACEITO PELO PACIENTE", MARGIN.x + 4, c.y + 6);
     setFont(doc, 9, "normal");
     doc.text(
       `Aceite registrado em ${new Date(input.quote.accepted_at).toLocaleString("pt-BR")} via link público seguro.`,
