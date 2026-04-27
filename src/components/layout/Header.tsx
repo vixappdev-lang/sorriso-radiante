@@ -28,6 +28,7 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const { open: openSchedule } = useScheduleModal();
+  const clinicName = useClinicName();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
