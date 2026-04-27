@@ -28,8 +28,8 @@ export default function Home() {
   return (
     <SiteLayout>
       <SEO
-        title="LyneCloud — Odontologia de Excelência em Aracruz/ES"
-        description="Tecnologia de ponta, atendimento humano e resultados que duram em Aracruz/ES. Implantes, ortodontia, lentes de contato dental e emergência 24h."
+        title={`${clinicName} — Odontologia de Excelência em Aracruz/ES`}
+        description={`Tecnologia de ponta, atendimento humano e resultados que duram em Aracruz/ES. Implantes, ortodontia, lentes de contato dental e emergência 24h.`}
       />
 
       {/* HERO — DARK */}
