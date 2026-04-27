@@ -2,10 +2,12 @@ import { Link } from "react-router-dom";
 import { Instagram, Facebook, Mail, MapPin, Phone, Clock } from "lucide-react";
 import { useState } from "react";
 import LocationModal from "./LocationModal";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function Footer() {
   const year = new Date().getFullYear();
   const [locOpen, setLocOpen] = useState(false);
+  const clinicName = useClinicName();
   return (
     <footer className="bg-surface-dark text-surface-dark-foreground">
       <div className="container-edge py-14 sm:py-20">
