@@ -5,14 +5,16 @@ import SiteLayout from "@/components/layout/SiteLayout";
 import PageHero from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function Sobre() {
   const { open } = useScheduleModal();
+  const clinicName = useClinicName();
   return (
     <SiteLayout>
       <SEO
-        title="Sobre — LyneCloud"
-        description="Conheça a história, missão e valores da LyneCloud. Mais de 15 anos transformando sorrisos com excelência clínica e atendimento humano."
+        title={`Sobre — ${clinicName}`}
+        description={`Conheça a história, missão e valores da ${clinicName}. Mais de 15 anos transformando sorrisos com excelência clínica e atendimento humano.`}
       />
       <PageHero
         eyebrow="Sobre nós"
