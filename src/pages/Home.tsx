@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
 import ContactModal from "@/components/layout/ContactModal";
 import { TREATMENTS, TESTIMONIALS, DENTISTS } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 const fadeUp = {
   initial: { opacity: 0, y: 18 },
