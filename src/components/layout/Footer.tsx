@@ -82,7 +82,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between text-xs text-white/55">
-          <p>© {year} LyneCloud. Todos os direitos reservados. CNPJ 00.000.000/0001-00 — Resp. Técnico CRO/ES 0000.</p>
+          <p>© {year} {clinicName}. Todos os direitos reservados. CNPJ 00.000.000/0001-00 — Resp. Técnico CRO/ES 0000.</p>
           <div className="flex items-center gap-4">
             <a href="#" className="hover:text-white">Política de Privacidade</a>
             <a href="#" className="hover:text-white">Termos de Uso</a>
