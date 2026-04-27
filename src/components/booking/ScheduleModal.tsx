@@ -293,7 +293,7 @@ export default function ScheduleModal({ open, onOpenChange, presetTreatment }: P
                   </div>
 
                   <p className="text-[11px] text-muted-foreground text-center sm:text-left">
-                    Ao enviar, você concorda em ser contatado(a) pela LyneCloud.
+                    Ao enviar, você concorda em ser contatado(a) pela {clinicName}.
                   </p>
                 </>
               )}
