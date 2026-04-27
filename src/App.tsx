@@ -37,6 +37,9 @@ import AdminSite from "@/admin/pages/AdminSite";
 import AdminRelatorios from "@/admin/pages/AdminRelatorios";
 import AdminConfiguracoes from "@/admin/pages/AdminConfiguracoes";
 import AdminEstoque from "@/admin/pages/AdminEstoque";
+import AdminRecall from "@/admin/pages/AdminRecall";
+import AdminMetas from "@/admin/pages/AdminMetas";
+import AdminLotes from "@/admin/pages/AdminLotes";
 import PublicQuote from "./pages/PublicQuote.tsx";
 import PublicAnamnesis from "./pages/PublicAnamnesis.tsx";
 
@@ -83,8 +86,11 @@ const App = () => (
               <Route path="pacientes" element={<AdminPacientes />} />
               <Route path="tratamentos" element={<AdminTratamentos />} />
               <Route path="estoque" element={<AdminEstoque />} />
+              <Route path="lotes" element={<AdminLotes />} />
               <Route path="profissionais" element={<AdminProfissionais />} />
               <Route path="financeiro" element={<AdminFinanceiro />} />
+              <Route path="metas" element={<AdminMetas />} />
+              <Route path="recall" element={<AdminRecall />} />
               <Route path="leads" element={<AdminLeads />} />
               <Route path="whatsapp" element={<AdminWhatsApp />} />
               <Route path="avaliacoes" element={<AdminAvaliacoes />} />

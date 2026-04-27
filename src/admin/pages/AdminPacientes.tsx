@@ -8,7 +8,6 @@ import {
 import PageHeader from "@/admin/components/PageHeader";
 import EmptyState from "@/admin/components/EmptyState";
 import DataTable, { type Column } from "@/admin/components/DataTable";
-import EntityDrawer from "@/admin/components/EntityDrawer";
 import EntityModal from "@/admin/components/EntityModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -260,19 +259,22 @@ export default function AdminPacientes() {
         />
       )}
 
-      <EntityDrawer
+      <EntityModal
         open={!!drawer}
         onOpenChange={(v) => { if (!v) setDrawer(null); }}
         title={drawer?.name ?? ""}
-        description={`${drawer?.visits ?? 0} visita(s) · última em ${drawer ? new Date(drawer.last).toLocaleDateString("pt-BR") : ""}`}
+        description={drawer ? `${drawer.visits} visita(s) · última em ${new Date(drawer.last).toLocaleDateString("pt-BR")}` : ""}
+        size="xl"
       >
         {drawer && (
           <div className="space-y-5">
-            <div className="rounded-xl border bg-muted/30 p-4 space-y-2">
-              <div className="flex items-center gap-2 text-sm"><Phone className="h-4 w-4 text-muted-foreground" /> {drawer.phone}</div>
-              <div className="flex items-center gap-2 text-sm"><Mail className="h-4 w-4 text-muted-foreground" /> {drawer.email || "—"}</div>
+            <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-muted/30 p-4 grid grid-cols-1 sm:grid-cols-[1fr,auto] gap-3 items-center">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 text-sm"><Phone className="h-4 w-4 text-muted-foreground" /> {drawer.phone}</div>
+                <div className="flex items-center gap-2 text-sm"><Mail className="h-4 w-4 text-muted-foreground" /> {drawer.email || "—"}</div>
+              </div>
               <a href={`https://wa.me/55${drawer.phone.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
-                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"><MessageCircle className="h-4 w-4 mr-2" /> Abrir WhatsApp</Button>
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-white"><MessageCircle className="h-4 w-4 mr-2" /> WhatsApp</Button>
               </a>
             </div>
 
@@ -290,25 +292,25 @@ export default function AdminPacientes() {
               </TabsList>
 
               <TabsContent value="resumo" className="mt-4 space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-lg border p-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="rounded-lg border border-[hsl(var(--admin-border))] p-3">
                     <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Visitas</p>
                     <p className="text-2xl font-semibold mt-1">{drawer.visits}</p>
                   </div>
-                  <div className="rounded-lg border p-3">
+                  <div className="rounded-lg border border-[hsl(var(--admin-border))] p-3">
                     <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Tratamentos únicos</p>
                     <p className="text-2xl font-semibold mt-1">{new Set(history.map(h => h.treatment)).size}</p>
                   </div>
-                  <div className="rounded-lg border p-3">
+                  <div className="rounded-lg border border-[hsl(var(--admin-border))] p-3">
                     <p className="text-[11px] uppercase tracking-wider text-muted-foreground">Total pago</p>
-                    <p className="text-lg font-semibold mt-1 text-emerald-700">{brl(totalSpent)}</p>
+                    <p className="text-lg font-semibold mt-1 text-emerald-700 dark:text-emerald-400">{brl(totalSpent)}</p>
                   </div>
-                  <div className="rounded-lg border p-3">
+                  <div className="rounded-lg border border-[hsl(var(--admin-border))] p-3">
                     <p className="text-[11px] uppercase tracking-wider text-muted-foreground">A receber</p>
-                    <p className="text-lg font-semibold mt-1 text-amber-700">{brl(pending)}</p>
+                    <p className="text-lg font-semibold mt-1 text-amber-700 dark:text-amber-400">{brl(pending)}</p>
                   </div>
                 </div>
-                <div className="rounded-lg border p-3">
+                <div className="rounded-lg border border-[hsl(var(--admin-border))] p-3">
                   <p className="text-[11px] uppercase tracking-wider text-muted-foreground mb-1">Conta no portal</p>
                   {account ? (
                     <div className="text-sm">
@@ -349,7 +351,7 @@ export default function AdminPacientes() {
                 <ul className="space-y-2">
                   {history.length === 0 && <li className="text-xs text-muted-foreground">Nenhum agendamento.</li>}
                   {history.map((a) => (
-                    <li key={a.id} className="rounded-lg border p-3">
+                    <li key={a.id} className="rounded-lg border border-[hsl(var(--admin-border))] p-3">
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-sm font-medium">{a.treatment}</p>
                         <StatusPill status={a.status} />
@@ -363,14 +365,14 @@ export default function AdminPacientes() {
               <TabsContent value="financeiro" className="mt-4 space-y-2">
                 {invoices.length === 0 && <p className="text-xs text-muted-foreground">Nenhum lançamento financeiro.</p>}
                 {invoices.map((i) => (
-                  <div key={i.id} className="rounded-lg border p-3 flex items-center justify-between">
+                  <div key={i.id} className="rounded-lg border border-[hsl(var(--admin-border))] p-3 flex items-center justify-between">
                     <div className="min-w-0">
                       <p className="text-sm font-medium truncate">{i.description}</p>
                       <p className="text-xs text-muted-foreground">{i.due_date && `Venc. ${new Date(i.due_date).toLocaleDateString("pt-BR")}`}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold tabular-nums">{brl(i.amount_cents)}</p>
-                      <Badge variant="outline" className={i.status === "paid" ? "border-emerald-300 text-emerald-700 bg-emerald-50" : "border-amber-300 text-amber-700 bg-amber-50"}>
+                      <Badge variant="outline" className={i.status === "paid" ? "border-emerald-300 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40" : "border-amber-300 dark:border-amber-800 text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40"}>
                         {i.status === "paid" ? "Pago" : "Pendente"}
                       </Badge>
                     </div>
@@ -382,7 +384,7 @@ export default function AdminPacientes() {
                 <div className="space-y-2 mb-3">
                   {notes.length === 0 && <p className="text-xs text-muted-foreground">Nenhuma observação ainda.</p>}
                   {notes.map((n) => (
-                    <div key={n.id} className="rounded-lg border bg-muted/30 p-3">
+                    <div key={n.id} className="rounded-lg border border-[hsl(var(--admin-border))] bg-muted/30 p-3">
                       <p className="text-sm whitespace-pre-wrap">{n.note}</p>
                       <p className="text-[11px] text-muted-foreground mt-1">{new Date(n.created_at).toLocaleString("pt-BR")}</p>
                     </div>
@@ -394,7 +396,7 @@ export default function AdminPacientes() {
             </Tabs>
           </div>
         )}
-      </EntityDrawer>
+      </EntityModal>
 
       {/* Modal: novo paciente — cadastro completo (recepção / WhatsApp) */}
       <EntityModal

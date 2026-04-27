@@ -21,6 +21,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useFinance, useUpsertFinance, useDeleteFinance, type FinanceEntry } from "@/admin/hooks/useFinance";
 import { toast } from "@/hooks/use-toast";
 import CommissionsPanel from "@/admin/components/CommissionsPanel";
+import ChargesPanel from "@/admin/components/ChargesPanel";
+import BankReconciliationPanel from "@/admin/components/BankReconciliationPanel";
 
 const TYPE_LABEL: Record<string, string> = { income: "Entrada", expense: "Saída", budget: "Orçamento" };
 const STATUS_OPTIONS = ["pending", "paid", "overdue", "cancelled"] as const;
@@ -181,11 +183,13 @@ export default function AdminFinanceiro() {
       </div>
 
       <Tabs defaultValue="all">
-        <TabsList>
+        <TabsList className="flex flex-wrap h-auto">
           <TabsTrigger value="all">Todos</TabsTrigger>
           <TabsTrigger value="pending">Pendentes</TabsTrigger>
           <TabsTrigger value="paid">Recebidos</TabsTrigger>
           <TabsTrigger value="overdue">Atrasados</TabsTrigger>
+          <TabsTrigger value="charges">Cobranças</TabsTrigger>
+          <TabsTrigger value="reconcile">Conciliação</TabsTrigger>
           <TabsTrigger value="commissions">Comissões</TabsTrigger>
         </TabsList>
         {(["all", "pending", "paid", "overdue"] as const).map((tab) => (
@@ -210,6 +214,8 @@ export default function AdminFinanceiro() {
             )}
           </TabsContent>
         ))}
+        <TabsContent value="charges" className="mt-4"><ChargesPanel /></TabsContent>
+        <TabsContent value="reconcile" className="mt-4"><BankReconciliationPanel /></TabsContent>
         <TabsContent value="commissions" className="mt-4">
           <CommissionsPanel />
         </TabsContent>
