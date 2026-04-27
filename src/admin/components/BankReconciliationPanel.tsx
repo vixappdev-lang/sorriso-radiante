@@ -218,3 +218,91 @@ export default function BankReconciliationPanel() {
     </div>
   );
 }
+
+// ===== Subcomponente: lista filtrável + export CSV =====
+function LinesView({
+  lines,
+  onMatch,
+}: {
+  lines: BankStatementLine[];
+  onMatch: (l: BankStatementLine) => void;
+}) {
+  const [filter, setFilter] = useState<"all" | "unmatched" | "matched">("unmatched");
+  const filtered = useMemo(() => {
+    if (filter === "all") return lines;
+    if (filter === "matched") return lines.filter((l) => !!l.matched_entry_id);
+    return lines.filter((l) => !l.matched_entry_id);
+  }, [lines, filter]);
+
+  function exportCsv() {
+    const rows = filtered.map((l) => [
+      new Date(l.posted_at).toLocaleDateString("pt-BR"),
+      `"${(l.description || "").replace(/"/g, '""')}"`,
+      ((l.amount_cents || 0) / 100).toFixed(2).replace(".", ","),
+      l.matched_entry_id ? "conciliado" : "pendente",
+    ].join(";"));
+    const csv = ["data;descricao;valor;status", ...rows].join("\n");
+    const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `extrato-${filter}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2 sticky top-0 bg-card z-10 pb-2 border-b border-[hsl(var(--admin-border))]">
+        <div className="inline-flex rounded-lg border border-[hsl(var(--admin-border))] p-0.5 bg-muted/30">
+          {[
+            { v: "unmatched", l: `Pendentes (${lines.filter((l) => !l.matched_entry_id).length})` },
+            { v: "matched", l: `Conciliadas (${lines.filter((l) => !!l.matched_entry_id).length})` },
+            { v: "all", l: `Todas (${lines.length})` },
+          ].map((opt) => (
+            <button
+              key={opt.v}
+              onClick={() => setFilter(opt.v as any)}
+              className={`px-2.5 py-1 text-xs rounded-md transition ${filter === opt.v ? "bg-card shadow-sm font-medium" : "text-muted-foreground hover:text-foreground"}`}
+            >
+              <Filter className="h-3 w-3 inline mr-1 -mt-0.5" />{opt.l}
+            </button>
+          ))}
+        </div>
+        <Button size="sm" variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>
+          <Download className="h-3.5 w-3.5 mr-1.5" />Exportar CSV
+        </Button>
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="text-center text-xs text-muted-foreground py-8">Nenhuma linha nesse filtro.</p>
+      ) : (
+        <ul className="space-y-2">
+          {filtered.map((l) => {
+            const matched = !!l.matched_entry_id;
+            return (
+              <li key={l.id} className={`rounded-lg border p-3 ${matched ? "border-emerald-200 dark:border-emerald-900 bg-emerald-50/50 dark:bg-emerald-950/20" : "border-[hsl(var(--admin-border))]"}`}>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{l.description}</p>
+                    <p className="text-xs text-muted-foreground tabular-nums">{new Date(l.posted_at).toLocaleDateString("pt-BR")}</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-sm font-semibold tabular-nums ${l.amount_cents < 0 ? "text-rose-600" : "text-emerald-700"}`}>{brl(l.amount_cents)}</span>
+                    {matched ? (
+                      <Badge variant="outline" className="border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />Conciliado
+                      </Badge>
+                    ) : (
+                      <Button size="sm" variant="outline" onClick={() => onMatch(l)}><LinkIcon className="h-3.5 w-3.5 mr-1.5" />Conciliar</Button>
+                    )}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
