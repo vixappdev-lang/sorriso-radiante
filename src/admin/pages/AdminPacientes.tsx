@@ -697,8 +697,10 @@ function NewQuoteModal({ open, onOpenChange, patient, onCreated }: { open: boole
   );
 }
 
-function QuoteCard({ quote, onChange }: { quote: any; onChange: () => void }) {
+function QuoteCard({ quote, patient, onChange }: { quote: any; patient: Patient; onChange: () => void }) {
   const [copied, setCopied] = useState(false);
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const brand = useClinicBrand();
   const url = `${window.location.origin}/orcamento/${quote.token}`;
   function copyLink() {
     navigator.clipboard.writeText(url);
@@ -711,29 +713,82 @@ function QuoteCard({ quote, onChange }: { quote: any; onChange: () => void }) {
     await supabase.from("patient_quotes").delete().eq("id", quote.id);
     onChange();
   }
+  async function markAccepted() {
+    if (!confirm("Marcar este orçamento como ACEITO/FECHADO? Um PDF profissional será gerado automaticamente.")) return;
+    const { error } = await supabase
+      .from("patient_quotes")
+      .update({ status: "accepted", accepted_at: new Date().toISOString() })
+      .eq("id", quote.id);
+    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    toast({ title: "Orçamento fechado!", description: "PDF profissional pronto para envio." });
+    onChange();
+    // Auto-abre o PDF profissional
+    setTimeout(() => setPdfOpen(true), 250);
+  }
+
   const statusMap: any = {
-    draft: { label: "Rascunho", cls: "bg-slate-100 text-slate-700" },
-    sent: { label: "Enviado", cls: "bg-blue-50 text-blue-700 border-blue-200" },
-    accepted: { label: "Aceito", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-    expired: { label: "Expirado", cls: "bg-rose-50 text-rose-700 border-rose-200" },
+    draft: { label: "Rascunho", cls: "bg-slate-100 text-slate-700 dark:bg-slate-500/10 dark:text-slate-300 border-slate-200 dark:border-slate-500/30" },
+    sent: { label: "Enviado", cls: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/30" },
+    accepted: { label: "Aceito · Fechado", cls: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30" },
+    expired: { label: "Expirado", cls: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/30" },
   };
   const st = statusMap[quote.status] || statusMap.draft;
+  const isAccepted = quote.status === "accepted";
+
   return (
-    <div className="rounded-xl border bg-white p-3">
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <Badge variant="outline" className={cn("text-[10px]", st.cls)}>{st.label}</Badge>
-        <p className="text-sm font-bold tabular-nums">{brl(quote.total_cents)}</p>
+    <>
+      <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-card p-3">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <Badge variant="outline" className={cn("text-[10px]", st.cls)}>{st.label}</Badge>
+          <p className="text-sm font-bold tabular-nums">{brl(quote.total_cents)}</p>
+        </div>
+        <p className="text-xs text-muted-foreground mb-2">
+          {quote.items.length} item(s) · criado em {new Date(quote.created_at).toLocaleDateString("pt-BR")}
+          {quote.accepted_at && <> · aceito em {new Date(quote.accepted_at).toLocaleDateString("pt-BR")}</>}
+        </p>
+        <div className="flex gap-1 flex-wrap">
+          <Button size="sm" variant={isAccepted ? "default" : "outline"} className={cn("flex-1 h-8", isAccepted && "bg-emerald-600 hover:bg-emerald-700 text-white")} onClick={() => setPdfOpen(true)}>
+            <FileText className="h-3 w-3 mr-1" /> {isAccepted ? "Ver PDF · Aceito" : "Ver PDF"}
+          </Button>
+          <Button size="sm" variant="outline" className="h-8" onClick={copyLink} title="Copiar link público">
+            {copied ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+          </Button>
+          <a href={url} target="_blank" rel="noreferrer">
+            <Button size="sm" variant="outline" className="h-8" title="Abrir página pública"><ExternalLink className="h-3 w-3" /></Button>
+          </a>
+          {!isAccepted && (
+            <Button size="sm" variant="outline" className="h-8 border-emerald-300 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/40 dark:text-emerald-300 dark:hover:bg-emerald-500/10" onClick={markAccepted} title="Fechar orçamento">
+              <Check className="h-3 w-3 mr-1" /> Fechar
+            </Button>
+          )}
+          <Button size="sm" variant="ghost" onClick={remove}><Trash2 className="h-3 w-3 text-rose-500" /></Button>
+        </div>
       </div>
-      <p className="text-xs text-muted-foreground mb-2">{quote.items.length} item(s) · criado em {new Date(quote.created_at).toLocaleDateString("pt-BR")}</p>
-      <div className="flex gap-1">
-        <Button size="sm" variant="outline" className="flex-1 h-8" onClick={copyLink}>
-          {copied ? <Check className="h-3 w-3 mr-1 text-emerald-600" /> : <Copy className="h-3 w-3 mr-1" />} Copiar link
-        </Button>
-        <a href={url} target="_blank" rel="noreferrer">
-          <Button size="sm" variant="outline" className="h-8"><ExternalLink className="h-3 w-3" /></Button>
-        </a>
-        <Button size="sm" variant="ghost" onClick={remove}><Trash2 className="h-3 w-3 text-rose-500" /></Button>
-      </div>
-    </div>
+
+      <PdfPreviewModal
+        open={pdfOpen}
+        onOpenChange={setPdfOpen}
+        title={isAccepted ? `Plano de tratamento aceito · ${patient.name}` : `Orçamento · ${patient.name}`}
+        description={`Documento profissional pronto para envio digital · ${brl(quote.total_cents)}`}
+        filename={`orcamento-${patient.name.replace(/\s+/g, "_")}-${quote.id.slice(0, 8)}.pdf`}
+        buildDoc={() => generateQuotePdf({
+          clinic: { name: brand.name, phone: brand.phone, email: brand.email, address: brand.address, cep: brand.cep },
+          patient: { name: patient.name, phone: patient.phone, email: patient.email },
+          quote: {
+            id: quote.id,
+            items: quote.items as any,
+            subtotal_cents: quote.subtotal_cents,
+            discount_cents: quote.discount_cents || 0,
+            total_cents: quote.total_cents,
+            notes: quote.notes,
+            status: quote.status,
+            created_at: quote.created_at,
+            accepted_at: quote.accepted_at,
+            expires_at: quote.expires_at,
+          },
+        })}
+      />
+    </>
   );
 }
+
