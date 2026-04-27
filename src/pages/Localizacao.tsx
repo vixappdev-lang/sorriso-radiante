@@ -23,7 +23,7 @@ export default function Localizacao() {
           <div className="lg:col-span-3 rounded-2xl overflow-hidden border border-border/70 shadow-soft aspect-[4/3] lg:aspect-auto lg:min-h-[460px]">
             <iframe
               title={`Localização da ${clinicName} no mapa`}
-              src="https://www.google.com/maps?q=Av.+Ven%C3%A2ncio+Flores+Aracruz+ES&output=embed"
+              src="https://www.google.com/maps?q=Aracruz+ES+Centro&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="w-full h-full border-0"
