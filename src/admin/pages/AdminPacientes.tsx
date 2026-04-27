@@ -277,11 +277,14 @@ export default function AdminPacientes() {
             </div>
 
             <Tabs defaultValue="resumo">
-              <TabsList className="grid grid-cols-6 w-full bg-muted/60 p-1 h-auto gap-1">
+              <TabsList className="grid grid-cols-3 sm:grid-cols-9 w-full bg-muted/60 p-1 h-auto gap-1">
                 <TabsTrigger value="resumo" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><UserIcon className="h-3 w-3" /> Resumo</TabsTrigger>
+                <TabsTrigger value="anamnese" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><FileSignature className="h-3 w-3" /> Anamn.</TabsTrigger>
+                <TabsTrigger value="prontuario" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><ClipboardEdit className="h-3 w-3" /> Prontu.</TabsTrigger>
+                <TabsTrigger value="imagens" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><ImagePlus className="h-3 w-3" /> Imagens</TabsTrigger>
                 <TabsTrigger value="odontograma" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><Smile className="h-3 w-3" /> Dentes</TabsTrigger>
                 <TabsTrigger value="orcamento" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><ClipboardList className="h-3 w-3" /> Orçam.</TabsTrigger>
-                <TabsTrigger value="historico" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><History className="h-3 w-3" /> Histórico</TabsTrigger>
+                <TabsTrigger value="historico" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><History className="h-3 w-3" /> Histór.</TabsTrigger>
                 <TabsTrigger value="financeiro" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><DollarSign className="h-3 w-3" /> Financ.</TabsTrigger>
                 <TabsTrigger value="obs" className="text-[10px] gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md"><StickyNote className="h-3 w-3" /> Obs</TabsTrigger>
               </TabsList>
