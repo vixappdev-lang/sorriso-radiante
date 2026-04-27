@@ -477,8 +477,8 @@ export default function AdminPacientes() {
           </TabsContent>
 
           <TabsContent value="clinico" className="mt-4 space-y-3">
-            <div className="rounded-lg border bg-amber-50/40 p-3 space-y-2">
-              <p className="text-[11px] uppercase tracking-wider text-amber-800 font-semibold">Anamnese rápida</p>
+            <div className="rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50/60 dark:bg-amber-500/10 p-3 space-y-2">
+              <p className="text-[11px] uppercase tracking-wider text-amber-800 dark:text-amber-300 font-semibold">Anamnese rápida</p>
               <div><Label className="text-xs">Alergias (medicamentos, anestésicos, materiais)</Label><Textarea rows={2} value={newPatient.allergies} onChange={(e) => setNewPatient({ ...newPatient, allergies: e.target.value })} placeholder="Ex.: penicilina, látex…" /></div>
               <div><Label className="text-xs">Condições médicas relevantes</Label><Textarea rows={2} value={newPatient.medical_conditions} onChange={(e) => setNewPatient({ ...newPatient, medical_conditions: e.target.value })} placeholder="Diabetes, hipertensão, gestante, cardíaco…" /></div>
               <div><Label className="text-xs">Medicamentos em uso</Label><Textarea rows={2} value={newPatient.current_medications} onChange={(e) => setNewPatient({ ...newPatient, current_medications: e.target.value })} placeholder="Anticoagulantes, antidepressivos…" /></div>
