@@ -70,7 +70,7 @@ export default function LocationModal({ open, onOpenChange }: Props) {
           {/* Mini-mapa preview */}
           <div className="rounded-xl overflow-hidden border border-border/70 aspect-video shadow-soft">
             <iframe
-              title="Mapa LyneCloud"
+              title={`Mapa ${clinicName}`}
               src={`https://www.google.com/maps?q=${LAT},${LNG}&z=16&output=embed`}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
