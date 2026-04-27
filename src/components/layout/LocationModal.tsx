@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Navigation, Clock, Phone, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import { CLINIC_INFO } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { toast } from "@/hooks/use-toast";
 
 const ADDRESS_FULL = "Av. Venâncio Flores, 350 - Sala 04, Centro, Aracruz - ES, 29190-036";
