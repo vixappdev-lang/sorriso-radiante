@@ -220,5 +220,5 @@ export const CLINIC_INFO = {
   },
   email: "contato@lynecloud.com.br",
   hours: "Seg–Sex 8h–19h • Sáb 8h–13h",
-  mapsQuery: "Av.+Ven%C3%A2ncio+Flores+Aracruz+ES",
+  mapsQuery: "Aracruz+ES+Centro",
 };
