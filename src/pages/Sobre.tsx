@@ -35,7 +35,7 @@ export default function Sobre() {
               Uma clínica feita por pessoas, para pessoas.
             </h2>
             <p className="mt-5 text-muted-foreground leading-relaxed">
-              A LyneCloud nasceu do sonho da Dra. Camila LyneCloud em criar um espaço onde o paciente não fosse só
+              A {clinicName} nasceu do sonho da Dra. Camila Andrade em criar um espaço onde o paciente não fosse só
               mais um número. Aqui, cada sorriso tem uma história, e cada plano de tratamento é desenhado para você.
             </p>
             <p className="mt-3 text-muted-foreground leading-relaxed">
