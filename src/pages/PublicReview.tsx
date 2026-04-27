@@ -57,6 +57,7 @@ function Confetti() {
 
 export default function PublicReview() {
   const { token = "" } = useParams();
+  const CLINIC_NAME = useClinicName();
   const [invite, setInvite] = useState<Invite | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
