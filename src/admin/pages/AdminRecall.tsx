@@ -38,7 +38,7 @@ export default function AdminRecall() {
   const { data: tasks = [] } = useRecallTasks("all");
   const upsert = useUpsertRecall();
   const del = useDeleteRecall();
-  const { brand } = useClinicBrand();
+  const brand = useClinicBrand();
 
   const [open, setOpen] = useState<"new" | RecallTask | null>(null);
   const emptyForm = { id: "", patient_name: "", patient_phone: "", treatment: "", due_date: todayStr(), notes: "", status: "pending" };
