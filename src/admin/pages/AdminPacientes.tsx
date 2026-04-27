@@ -26,6 +26,9 @@ import { cn } from "@/lib/utils";
 import PatientAnamnesisTab from "@/admin/components/patient/PatientAnamnesisTab";
 import PatientRecordsTab from "@/admin/components/patient/PatientRecordsTab";
 import PatientImagesTab from "@/admin/components/patient/PatientImagesTab";
+import PdfPreviewModal from "@/admin/components/PdfPreviewModal";
+import { generateQuotePdf } from "@/admin/lib/pdf";
+import { useClinicBrand } from "@/hooks/useClinicBrand";
 import { FileSignature, ClipboardEdit, ImagePlus } from "lucide-react";
 
 type Patient = {
