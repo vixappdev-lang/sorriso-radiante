@@ -58,7 +58,7 @@ export default function Home() {
 
             <p className="mt-5 text-base sm:text-lg text-white/75 max-w-xl leading-relaxed">
               Tecnologia de ponta, profissionais especialistas e um atendimento que acolhe.
-              Na LyneCloud, cada detalhe é pensado para o seu conforto e para um resultado natural que dura.
+              Na {clinicName}, cada detalhe é pensado para o seu conforto e para um resultado natural que dura.
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
