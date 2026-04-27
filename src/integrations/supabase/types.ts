@@ -44,6 +44,42 @@ export type Database = {
         }
         Relationships: []
       }
+      anamnesis_templates: {
+        Row: {
+          active: boolean
+          created_at: string
+          description: string | null
+          id: string
+          is_default: boolean
+          name: string
+          questions: Json
+          specialty: string | null
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          name: string
+          questions?: Json
+          specialty?: string | null
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean
+          name?: string
+          questions?: Json
+          specialty?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       api_keys: {
         Row: {
           created_at: string
@@ -170,6 +206,96 @@ export type Database = {
         }
         Relationships: []
       }
+      bank_statement_lines: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          description: string | null
+          id: string
+          matched_at: string | null
+          matched_by: string | null
+          matched_entry_id: string | null
+          posted_at: string
+          raw_id: string | null
+          statement_id: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          matched_at?: string | null
+          matched_by?: string | null
+          matched_entry_id?: string | null
+          posted_at: string
+          raw_id?: string | null
+          statement_id: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          matched_at?: string | null
+          matched_by?: string | null
+          matched_entry_id?: string | null
+          posted_at?: string
+          raw_id?: string | null
+          statement_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_statement_lines_matched_entry_id_fkey"
+            columns: ["matched_entry_id"]
+            isOneToOne: false
+            referencedRelation: "financial_entries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bank_statement_lines_statement_id_fkey"
+            columns: ["statement_id"]
+            isOneToOne: false
+            referencedRelation: "bank_statements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bank_statements: {
+        Row: {
+          account: string | null
+          bank_name: string | null
+          created_at: string
+          id: string
+          imported_by: string | null
+          period_end: string | null
+          period_start: string | null
+          reconciled_lines: number
+          total_lines: number
+        }
+        Insert: {
+          account?: string | null
+          bank_name?: string | null
+          created_at?: string
+          id?: string
+          imported_by?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          reconciled_lines?: number
+          total_lines?: number
+        }
+        Update: {
+          account?: string | null
+          bank_name?: string | null
+          created_at?: string
+          id?: string
+          imported_by?: string | null
+          period_end?: string | null
+          period_start?: string | null
+          reconciled_lines?: number
+          total_lines?: number
+        }
+        Relationships: []
+      }
       chatpro_config: {
         Row: {
           endpoint: string
@@ -263,6 +389,60 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: Json
+        }
+        Relationships: []
+      }
+      clinical_records: {
+        Row: {
+          appointment_id: string | null
+          attachments: Json
+          content: string | null
+          created_at: string
+          created_by: string | null
+          fields: Json
+          id: string
+          patient_name: string
+          patient_phone: string
+          professional_name: string | null
+          professional_slug: string | null
+          record_date: string
+          specialty: string | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          attachments?: Json
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          fields?: Json
+          id?: string
+          patient_name: string
+          patient_phone: string
+          professional_name?: string | null
+          professional_slug?: string | null
+          record_date?: string
+          specialty?: string | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          attachments?: Json
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          fields?: Json
+          id?: string
+          patient_name?: string
+          patient_phone?: string
+          professional_name?: string | null
+          professional_slug?: string | null
+          record_date?: string
+          specialty?: string | null
+          title?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -488,6 +668,48 @@ export type Database = {
         }
         Relationships: []
       }
+      goals: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          metric: string
+          notes: string | null
+          period: string
+          professional_slug: string | null
+          reference_month: string
+          scope: string
+          target_value: number
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          metric?: string
+          notes?: string | null
+          period?: string
+          professional_slug?: string | null
+          reference_month?: string
+          scope?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          metric?: string
+          notes?: string | null
+          period?: string
+          professional_slug?: string | null
+          reference_month?: string
+          scope?: string
+          target_value?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       landing_pages: {
         Row: {
           active: boolean
@@ -665,6 +887,110 @@ export type Database = {
         }
         Relationships: []
       }
+      patient_anamnesis: {
+        Row: {
+          answers: Json
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          patient_name: string
+          patient_phone: string
+          signature_data: string | null
+          signature_hash: string | null
+          signature_ip: string | null
+          signed_at: string | null
+          status: string
+          template_id: string | null
+          template_snapshot: Json
+          token: string
+          updated_at: string
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          patient_name: string
+          patient_phone: string
+          signature_data?: string | null
+          signature_hash?: string | null
+          signature_ip?: string | null
+          signed_at?: string | null
+          status?: string
+          template_id?: string | null
+          template_snapshot?: Json
+          token?: string
+          updated_at?: string
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          patient_name?: string
+          patient_phone?: string
+          signature_data?: string | null
+          signature_hash?: string | null
+          signature_ip?: string | null
+          signed_at?: string | null
+          status?: string
+          template_id?: string | null
+          template_snapshot?: Json
+          token?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "patient_anamnesis_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "anamnesis_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      patient_images: {
+        Row: {
+          caption: string | null
+          category: string
+          created_at: string
+          id: string
+          pair_id: string | null
+          patient_phone: string
+          storage_path: string
+          taken_at: string | null
+          tooth_fdi: number | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          pair_id?: string | null
+          patient_phone: string
+          storage_path: string
+          taken_at?: string | null
+          tooth_fdi?: number | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          id?: string
+          pair_id?: string | null
+          patient_phone?: string
+          storage_path?: string
+          taken_at?: string | null
+          tooth_fdi?: number | null
+          uploaded_by?: string | null
+        }
+        Relationships: []
+      }
       patient_invoices: {
         Row: {
           amount_cents: number
@@ -806,6 +1132,83 @@ export type Database = {
         }
         Relationships: []
       }
+      payment_charges: {
+        Row: {
+          amount_cents: number
+          bank_slip_url: string | null
+          billing_type: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          due_date: string | null
+          external_id: string | null
+          financial_entry_id: string | null
+          id: string
+          invoice_url: string | null
+          paid_at: string | null
+          patient_name: string | null
+          patient_phone: string | null
+          payment_url: string | null
+          pix_payload: string | null
+          pix_qr_code: string | null
+          provider: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number
+          bank_slip_url?: string | null
+          billing_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          external_id?: string | null
+          financial_entry_id?: string | null
+          id?: string
+          invoice_url?: string | null
+          paid_at?: string | null
+          patient_name?: string | null
+          patient_phone?: string | null
+          payment_url?: string | null
+          pix_payload?: string | null
+          pix_qr_code?: string | null
+          provider?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          bank_slip_url?: string | null
+          billing_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          due_date?: string | null
+          external_id?: string | null
+          financial_entry_id?: string | null
+          id?: string
+          invoice_url?: string | null
+          paid_at?: string | null
+          patient_name?: string | null
+          patient_phone?: string | null
+          payment_url?: string | null
+          pix_payload?: string | null
+          pix_qr_code?: string | null
+          provider?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_charges_financial_entry_id_fkey"
+            columns: ["financial_entry_id"]
+            isOneToOne: false
+            referencedRelation: "financial_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       professional_schedules: {
         Row: {
           break_end: string | null
@@ -937,6 +1340,48 @@ export type Database = {
           slug?: string
           title?: string
           treatment_slug?: string | null
+        }
+        Relationships: []
+      }
+      recall_tasks: {
+        Row: {
+          appointment_id: string | null
+          created_at: string
+          due_date: string
+          id: string
+          notes: string | null
+          patient_name: string
+          patient_phone: string
+          sent_at: string | null
+          status: string
+          treatment: string | null
+          updated_at: string
+        }
+        Insert: {
+          appointment_id?: string | null
+          created_at?: string
+          due_date: string
+          id?: string
+          notes?: string | null
+          patient_name: string
+          patient_phone: string
+          sent_at?: string | null
+          status?: string
+          treatment?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appointment_id?: string | null
+          created_at?: string
+          due_date?: string
+          id?: string
+          notes?: string | null
+          patient_name?: string
+          patient_phone?: string
+          sent_at?: string | null
+          status?: string
+          treatment?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1142,6 +1587,7 @@ export type Database = {
           cost_cents: number
           created_at: string
           current_qty: number
+          expiry_alert_days: number
           id: string
           image_url: string | null
           min_qty: number
@@ -1156,6 +1602,7 @@ export type Database = {
           cost_cents?: number
           created_at?: string
           current_qty?: number
+          expiry_alert_days?: number
           id?: string
           image_url?: string | null
           min_qty?: number
@@ -1170,6 +1617,7 @@ export type Database = {
           cost_cents?: number
           created_at?: string
           current_qty?: number
+          expiry_alert_days?: number
           id?: string
           image_url?: string | null
           min_qty?: number
@@ -1179,6 +1627,50 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      stock_lots: {
+        Row: {
+          cost_cents: number | null
+          created_at: string
+          expiry_date: string | null
+          id: string
+          item_id: string
+          lot_code: string | null
+          notes: string | null
+          qty: number
+          updated_at: string
+        }
+        Insert: {
+          cost_cents?: number | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          item_id: string
+          lot_code?: string | null
+          notes?: string | null
+          qty?: number
+          updated_at?: string
+        }
+        Update: {
+          cost_cents?: number | null
+          created_at?: string
+          expiry_date?: string | null
+          id?: string
+          item_id?: string
+          lot_code?: string | null
+          notes?: string | null
+          qty?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_lots_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "stock_items"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stock_movements: {
         Row: {
@@ -1727,6 +2219,15 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      submit_anamnesis_with_token: {
+        Args: {
+          _answers: Json
+          _signature_data: string
+          _signature_ip: string
+          _token: string
+        }
+        Returns: string
       }
       submit_review_with_token: {
         Args: { _comment: string; _rating: number; _token: string }
