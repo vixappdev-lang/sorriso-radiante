@@ -452,3 +452,134 @@ export function pdfToBlobUrl(doc: jsPDF): string {
 export function downloadPdf(doc: jsPDF, filename: string) {
   doc.save(filename);
 }
+
+/* ========================================================================== */
+/*                         TEMPLATE DE RECEITA / DOCUMENTOS                   */
+/* ========================================================================== */
+
+export type PrescriptionTemplatePdfInput = {
+  clinic: ClinicHeader;
+  template: {
+    name: string;
+    documentTitle: string;
+    layout: "classic" | "modern" | "compact";
+    primaryColor: string;
+    accentColor: string;
+    logoText: string;
+    watermark: string;
+    introText: string;
+    bodyText: string;
+    instructions: string;
+    footerText: string;
+    signatureName: string;
+    signatureRole: string;
+    registration: string;
+  };
+  sample?: { patientName?: string; date?: string };
+};
+
+function hexToRgb(hex: string, fallback = BRAND) {
+  const clean = String(hex || "").replace("#", "").trim();
+  if (!/^[0-9a-f]{6}$/i.test(clean)) return fallback;
+  return { r: parseInt(clean.slice(0, 2), 16), g: parseInt(clean.slice(2, 4), 16), b: parseInt(clean.slice(4, 6), 16) };
+}
+
+export function generatePrescriptionTemplatePdf(input: PrescriptionTemplatePdfInput): jsPDF {
+  const doc = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
+  const primary = hexToRgb(input.template.primaryColor);
+  const accent = hexToRgb(input.template.accentColor, { r: 44, g: 164, b: 120 });
+  const patient = input.sample?.patientName || "Nome do paciente";
+  const date = input.sample?.date || new Date().toLocaleDateString("pt-BR");
+
+  if (input.template.layout === "modern") {
+    rgb(doc, primary, "fill");
+    doc.rect(0, 0, PAGE.w, 28, "F");
+    doc.setTextColor(255, 255, 255);
+    setFont(doc, 17, "bold");
+    doc.text(input.template.logoText || input.clinic.name, MARGIN.x, 15);
+    setFont(doc, 8.5, "normal");
+    doc.text([input.clinic.phone, input.clinic.email].filter(Boolean).join("  ·  "), MARGIN.x, 21);
+  } else {
+    rgb(doc, primary, "fill");
+    doc.rect(0, 0, PAGE.w, input.template.layout === "compact" ? 3 : 5, "F");
+    rgb(doc, INK, "text");
+    setFont(doc, 16, "bold");
+    doc.text(input.template.logoText || input.clinic.name, MARGIN.x, 18);
+    rgb(doc, MUTED, "text");
+    setFont(doc, 8.5, "normal");
+    doc.text([input.clinic.phone, input.clinic.email, input.clinic.address].filter(Boolean).join(" · "), MARGIN.x, 24, { maxWidth: CONTENT_W });
+    rgb(doc, LINE, "stroke");
+    doc.line(MARGIN.x, 30, PAGE.w - MARGIN.x, 30);
+  }
+
+  if (input.template.watermark) {
+    doc.saveGraphicsState();
+    doc.setGState(new (doc as any).GState({ opacity: 0.055 }));
+    rgb(doc, primary, "text");
+    setFont(doc, 42, "bold");
+    doc.text(input.template.watermark.toUpperCase(), PAGE.w / 2, 150, { align: "center", angle: -32 });
+    doc.restoreGraphicsState();
+  }
+
+  let y = input.template.layout === "modern" ? 42 : 43;
+  rgb(doc, primary, "text");
+  setFont(doc, 15, "bold");
+  doc.text((input.template.documentTitle || "Receita").toUpperCase(), MARGIN.x, y);
+  rgb(doc, accent, "fill");
+  doc.rect(MARGIN.x, y + 3, 34, 1.2, "F");
+  y += 16;
+
+  rgb(doc, LINE, "stroke");
+  doc.roundedRect(MARGIN.x, y - 5, CONTENT_W, 17, 2, 2);
+  rgb(doc, MUTED, "text");
+  setFont(doc, 8, "bold");
+  doc.text("PACIENTE", MARGIN.x + 4, y);
+  doc.text("DATA", PAGE.w - MARGIN.x - 28, y);
+  rgb(doc, INK, "text");
+  setFont(doc, 10.5, "normal");
+  doc.text(patient, MARGIN.x + 4, y + 6);
+  doc.text(date, PAGE.w - MARGIN.x - 28, y + 6);
+  y += 24;
+
+  const c = new Cursor(doc, input.clinic, input.template.documentTitle || "Documento clínico");
+  c.y = y;
+  if (input.template.introText) c.paragraph(input.template.introText, 9.5);
+  c.spacer(3);
+
+  rgb(doc, primary, "stroke");
+  doc.setLineWidth(0.35);
+  doc.roundedRect(MARGIN.x, c.y, CONTENT_W, 82, 2, 2);
+  c.y += 8;
+  setFont(doc, 10.5, "normal");
+  rgb(doc, INK, "text");
+  const body = doc.splitTextToSize(input.template.bodyText || "Prescrição / orientações clínicas", CONTENT_W - 14);
+  doc.text(body, MARGIN.x + 7, c.y);
+  c.y += Math.max(70, body.length * 5.2);
+
+  if (input.template.instructions) {
+    c.sectionTitle("Orientações ao paciente");
+    c.paragraph(input.template.instructions, 9.5);
+  }
+
+  c.ensure(45);
+  c.y = Math.max(c.y + 8, PAGE.h - 68);
+  rgb(doc, LINE, "stroke");
+  doc.line(PAGE.w - MARGIN.x - 76, c.y, PAGE.w - MARGIN.x, c.y);
+  c.y += 5;
+  rgb(doc, INK, "text");
+  setFont(doc, 10, "bold");
+  doc.text(input.template.signatureName || "Profissional responsável", PAGE.w - MARGIN.x, c.y, { align: "right" });
+  c.y += 4;
+  rgb(doc, MUTED, "text");
+  setFont(doc, 8.5, "normal");
+  doc.text([input.template.signatureRole, input.template.registration].filter(Boolean).join(" · "), PAGE.w - MARGIN.x, c.y, { align: "right" });
+
+  rgb(doc, LINE, "stroke");
+  doc.line(MARGIN.x, PAGE.h - 20, PAGE.w - MARGIN.x, PAGE.h - 20);
+  rgb(doc, MUTED, "text");
+  setFont(doc, 7.5, "normal");
+  doc.text(input.template.footerText || `${input.clinic.name} · documento clínico`, MARGIN.x, PAGE.h - 14, { maxWidth: CONTENT_W });
+  doc.text([input.clinic.address, input.clinic.cep ? `CEP ${input.clinic.cep}` : ""].filter(Boolean).join(" · "), MARGIN.x, PAGE.h - 9, { maxWidth: CONTENT_W });
+
+  return doc;
+}
