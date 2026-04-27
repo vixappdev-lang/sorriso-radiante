@@ -6,7 +6,7 @@ import { CLINIC_INFO } from "@/data/clinic";
 import { useClinicName } from "@/hooks/useClinicBrand";
 import { toast } from "@/hooks/use-toast";
 
-const ADDRESS_FULL = "Av. Venâncio Flores, 350 - Sala 04, Centro, Aracruz - ES, 29190-036";
+const ADDRESS_FULL = "Rua Exemplo, 123 - Sala 01, Centro, Aracruz - ES, 29190-000";
 const LAT = -19.8203;
 const LNG = -40.2741;
 

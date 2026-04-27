@@ -66,9 +66,9 @@ export default function Footer() {
             <p className="text-sm text-white/75 leading-relaxed flex items-start gap-2.5">
               <MapPin className="h-4 w-4 mt-0.5 text-primary-glow shrink-0" />
               <span>
-                Av. Venâncio Flores, 350 — Sala 04<br/>
+                Rua Exemplo, 123 — Sala 01<br/>
                 Centro, Aracruz — ES<br/>
-                CEP 29190-036
+                CEP 29190-000
               </span>
             </p>
             <button

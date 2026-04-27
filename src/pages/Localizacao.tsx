@@ -10,7 +10,7 @@ export default function Localizacao() {
     <SiteLayout>
       <SEO
         title={`Localização — ${clinicName} em Aracruz/ES`}
-        description={`Av. Venâncio Flores, 350 — Centro, Aracruz/ES. Como chegar, horários e estacionamento da ${clinicName}.`}
+        description={`Rua Exemplo, 123 — Centro, Aracruz/ES. Como chegar, horários e estacionamento da ${clinicName}.`}
       />
       <PageHero
         eyebrow="Localização"
@@ -23,7 +23,7 @@ export default function Localizacao() {
           <div className="lg:col-span-3 rounded-2xl overflow-hidden border border-border/70 shadow-soft aspect-[4/3] lg:aspect-auto lg:min-h-[460px]">
             <iframe
               title={`Localização da ${clinicName} no mapa`}
-              src="https://www.google.com/maps?q=Av.+Ven%C3%A2ncio+Flores+Aracruz+ES&output=embed"
+              src="https://www.google.com/maps?q=Aracruz+ES+Centro&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               className="w-full h-full border-0"
@@ -32,9 +32,9 @@ export default function Localizacao() {
 
           <aside className="lg:col-span-2 grid gap-4 content-start">
             <Info icon={MapPin} title="Endereço">
-              Av. Venâncio Flores, 350 — Sala 04<br />
+              Rua Exemplo, 123 — Sala 01<br />
               Centro, Aracruz — ES<br />
-              CEP 29190-036
+              CEP 29190-000
             </Info>
             <Info icon={Clock} title="Horário de funcionamento">
               Segunda a Sexta: 8h às 19h<br />
