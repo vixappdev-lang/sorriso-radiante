@@ -4,6 +4,7 @@ import { Menu, Phone, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
 
 // Topo enxuto: apenas o essencial
