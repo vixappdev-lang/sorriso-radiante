@@ -52,6 +52,7 @@ const STEPS: { key: StepKey; label: string; icon: any }[] = [
 export default function PublicBooking() {
   const { slug = "", token = "" } = useParams();
   const accessor = token || slug;
+  const CLINIC_NAME = useClinicName();
 
   const [link, setLink] = useState<LinkRow | null>(null);
   const [loading, setLoading] = useState(true);
