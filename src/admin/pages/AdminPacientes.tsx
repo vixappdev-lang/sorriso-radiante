@@ -8,7 +8,7 @@ import {
 import PageHeader from "@/admin/components/PageHeader";
 import EmptyState from "@/admin/components/EmptyState";
 import DataTable, { type Column } from "@/admin/components/DataTable";
-import EntityDrawer from "@/admin/components/EntityDrawer";
+import EntityModal from "@/admin/components/EntityModal";
 import EntityModal from "@/admin/components/EntityModal";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
