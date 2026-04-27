@@ -38,6 +38,7 @@ import AdminRelatorios from "@/admin/pages/AdminRelatorios";
 import AdminConfiguracoes from "@/admin/pages/AdminConfiguracoes";
 import AdminEstoque from "@/admin/pages/AdminEstoque";
 import PublicQuote from "./pages/PublicQuote.tsx";
+import PublicAnamnesis from "./pages/PublicAnamnesis.tsx";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => (
             <Route path="/area-cliente" element={<AreaCliente />} />
             <Route path="/apresentacao" element={<Apresentacao />} />
             <Route path="/orcamento/:token" element={<PublicQuote />} />
+            <Route path="/anamnese/:token" element={<PublicAnamnesis />} />
 
             {/* Painel admin */}
             <Route path="/admin/login" element={<AdminLogin />} />
