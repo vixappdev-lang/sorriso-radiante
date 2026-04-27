@@ -23,6 +23,7 @@ const fadeUp = {
 export default function Home() {
   const { open } = useScheduleModal();
   const [contactOpen, setContactOpen] = useState(false);
+  const clinicName = useClinicName();
 
   return (
     <SiteLayout>
