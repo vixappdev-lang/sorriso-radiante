@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Building2, Clock, Plug, Users as UsersIcon, Palette, Webhook, Key, UserCircle2, Plus, Copy, Trash2, Send, CheckCircle2, XCircle, Eye, EyeOff, CreditCard } from "lucide-react";
+import { Building2, Clock, Plug, Users as UsersIcon, Palette, Webhook, Key, UserCircle2, Plus, Copy, Trash2, Send, CheckCircle2, XCircle, Eye, EyeOff, CreditCard, FilePenLine, Download, Printer, RotateCcw, Type, LayoutTemplate } from "lucide-react";
 import PageHeader from "@/admin/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,11 +17,15 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import PdfPreviewModal from "@/admin/components/PdfPreviewModal";
+import { generatePrescriptionTemplatePdf } from "@/admin/lib/pdf";
+import { useClinicBrand } from "@/hooks/useClinicBrand";
 
 const SECTIONS = [
   { key: "general", label: "Geral", icon: Building2 },
   { key: "hours", label: "Horários", icon: Clock },
   { key: "payments", label: "Pagamentos", icon: CreditCard },
+  { key: "prescription", label: "Receitas", icon: FilePenLine },
   { key: "integrations", label: "Integrações", icon: Plug },
   { key: "client_area", label: "Área do Cliente", icon: UserCircle2 },
   { key: "branding", label: "Branding", icon: Palette },
@@ -68,6 +72,7 @@ export default function AdminConfiguracoes() {
         {section === "general" && <SectionGeneral initial={get("general")} onSave={(v: any) => save("general", v)} />}
         {section === "hours" && <SectionHours />}
         {section === "payments" && <SectionPayments initial={get("payments")} onSave={(v: any) => save("payments", v)} />}
+        {section === "prescription" && <SectionPrescriptionTemplate initial={get("prescription_template")} onSave={(v: any) => save("prescription_template", v)} />}
         {section === "integrations" && <SectionIntegrations initial={get("integrations")} onSave={(v: any) => save("integrations", v)} />}
         {section === "client_area" && <SectionClientArea initial={get("client_area")} onSave={(v: any) => save("client_area", v)} />}
         {section === "branding" && <SectionBranding initial={get("branding")} onSave={(v: any) => save("branding", v)} />}
