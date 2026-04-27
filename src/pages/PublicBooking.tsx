@@ -24,7 +24,7 @@ type DbProfessional = {
   photo_url: string | null;
 };
 
-const CLINIC_NAME = "LyneCloud";
+
 
 type LinkRow = {
   id: string;
