@@ -50,7 +50,7 @@ export default function Contato() {
             <ContactCard icon={MessageCircle} title="WhatsApp" subtitle="Resposta em minutos" link="https://wa.me/5527981120322" linkText="(27) 98112-0322" />
             <ContactCard icon={Phone} title="Telefone" subtitle="Seg–Sex 8h–19h" link="tel:+5527981120322" linkText="(27) 98112-0322" />
             <ContactCard icon={Mail} title="E-mail" subtitle="Respondemos em até 24h" link="mailto:contato@lynecloud.com.br" linkText="contato@lynecloud.com.br" />
-            <ContactCard icon={MapPin} title="Endereço" subtitle="Av. Venâncio Flores, 350 — Aracruz/ES" />
+            <ContactCard icon={MapPin} title="Endereço" subtitle="Rua Exemplo, 123 — Aracruz/ES" />
           </div>
 
           <div className="lg:col-span-3">
