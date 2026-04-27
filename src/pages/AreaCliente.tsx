@@ -404,6 +404,7 @@ function ClientApp({ session, config }: any) {
 /* ───────────────────────── VIEWS ───────────────────────── */
 
 function HomeView({ config, profile, upcoming, openInvoices, setSection, navigate, bookingSlug }: any) {
+  const BRAND = useClinicName();
   const next = upcoming[0];
   const totalDue = openInvoices.reduce((s: number, i: any) => s + (i.amount_cents || 0), 0);
   return (
