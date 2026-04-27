@@ -28,11 +28,10 @@ const IMAGES: GalleryItem[] = [
 
 const CATEGORIES = ["Todos", "Ambiente", "Resultados", "Equipe"] as const;
 
-import { useState } from "react";
-
 export default function Galeria() {
   const [filter, setFilter] = useState<typeof CATEGORIES[number]>("Todos");
   const filtered = filter === "Todos" ? IMAGES : IMAGES.filter((i) => i.category === filter);
+  const clinicName = useClinicName();
 
   return (
     <SiteLayout>
