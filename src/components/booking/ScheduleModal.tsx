@@ -51,6 +51,7 @@ interface Props {
 export default function ScheduleModal({ open, onOpenChange, presetTreatment }: Props) {
   const [submitted, setSubmitted] = useState<FormData | null>(null);
   const [step, setStep] = useState<1 | 2>(1);
+  const clinicName = useClinicName();
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
