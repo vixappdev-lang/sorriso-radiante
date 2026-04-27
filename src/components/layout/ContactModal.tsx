@@ -12,6 +12,7 @@ interface Props {
 
 export default function ContactModal({ open, onOpenChange }: Props) {
   const { open: openSchedule } = useScheduleModal();
+  const clinicName = useClinicName();
 
   const channels = [
     {
@@ -19,7 +20,7 @@ export default function ContactModal({ open, onOpenChange }: Props) {
       title: "WhatsApp",
       subtitle: "Resposta em minutos",
       action: CLINIC_INFO.whatsapp.display,
-      href: `https://wa.me/${CLINIC_INFO.whatsapp.number}?text=${encodeURIComponent("Olá! Gostaria de mais informações sobre a LyneCloud.")}`,
+      href: `https://wa.me/${CLINIC_INFO.whatsapp.number}?text=${encodeURIComponent(`Olá! Gostaria de mais informações sobre a ${clinicName}.`)}`,
       accent: "bg-[#25D366]/10 text-[#128C7E]",
       external: true,
     },
