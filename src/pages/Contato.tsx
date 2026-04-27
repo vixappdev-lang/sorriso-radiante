@@ -24,6 +24,7 @@ type Data = z.infer<typeof schema>;
 export default function Contato() {
   const [sent, setSent] = useState(false);
   const form = useForm<Data>({ resolver: zodResolver(schema), mode: "onBlur" });
+  const clinicName = useClinicName();
 
   const onSubmit = async () => {
     await new Promise((r) => setTimeout(r, 600));
