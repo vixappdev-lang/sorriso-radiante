@@ -220,7 +220,7 @@ export default function Header() {
   );
 }
 
-function Logo({ light = false }: { light?: boolean }) {
+function Logo({ light = false, name = "LyneCloud" }: { light?: boolean; name?: string }) {
   return (
     <span className="flex items-center gap-2.5">
       <span className={cn(
@@ -236,7 +236,7 @@ function Logo({ light = false }: { light?: boolean }) {
           "font-display text-lg font-semibold tracking-tight transition-colors duration-300",
           light ? "text-white" : "text-foreground"
         )}>
-          LyneCloud
+          {name}
         </span>
         <span className={cn(
           "text-[10px] uppercase tracking-[0.22em] font-semibold transition-colors duration-300",
