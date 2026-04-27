@@ -559,7 +559,9 @@ function Odontogram({ teeth, onChange }: { teeth: Record<string, ToothStatus>; o
             onClick={() => setSelectedStatus(s)}
             className={cn(
               "px-2.5 py-1 rounded-md text-xs font-medium border flex items-center gap-1.5 transition",
-              selectedStatus === s ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white"
+              selectedStatus === s
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-[hsl(var(--admin-border))] bg-card hover:border-[hsl(var(--admin-border-strong))]"
             )}
           >
             <span className={cn("h-2.5 w-2.5 rounded-full", TOOTH_STATUS[s].color.replace("fill-", "bg-"))} />
@@ -568,14 +570,14 @@ function Odontogram({ teeth, onChange }: { teeth: Record<string, ToothStatus>; o
         ))}
       </div>
 
-      <div className="rounded-xl border bg-slate-50/40 p-4 space-y-2">
+      <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-muted/30 p-4 space-y-2">
         <p className="text-[10px] uppercase tracking-wider text-muted-foreground text-center">Superior</p>
         <div className="flex justify-center gap-1">
           {[...TEETH_LAYOUT.upperRight, ...TEETH_LAYOUT.upperLeft].map((n) => (
             <Tooth key={n} num={n} status={teeth[n]} selectedStatus={selectedStatus} onClick={() => onChange(n, selectedStatus)} />
           ))}
         </div>
-        <div className="border-t border-slate-300 my-2" />
+        <div className="border-t border-[hsl(var(--admin-border))] my-2" />
         <div className="flex justify-center gap-1">
           {[...TEETH_LAYOUT.lowerRight, ...TEETH_LAYOUT.lowerLeft].map((n) => (
             <Tooth key={n} num={n} status={teeth[n]} selectedStatus={selectedStatus} onClick={() => onChange(n, selectedStatus)} />
