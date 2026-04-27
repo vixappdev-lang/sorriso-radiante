@@ -12,13 +12,13 @@ import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { toast } from "@/hooks/use-toast";
 import SEO from "@/components/SEO";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
-
-const BRAND = "LyneCloud";
 
 type Section = "home" | "appointments" | "history" | "invoices" | "profile";
 
 export default function AreaCliente() {
+  const BRAND = useClinicName();
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [config, setConfig] = useState<any>({
