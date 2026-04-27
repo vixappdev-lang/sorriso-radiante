@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
 import { Camera, Sparkles } from "lucide-react";
+import { useState } from "react";
 import SEO from "@/components/SEO";
 import SiteLayout from "@/components/layout/SiteLayout";
 import PageHero from "@/components/layout/PageHero";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 type GalleryItem = {
   src: string;
