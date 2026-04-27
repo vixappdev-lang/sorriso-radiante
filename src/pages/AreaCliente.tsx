@@ -554,6 +554,7 @@ function InvoicesView({ items }: any) {
 }
 
 function ProfileView({ profile, session }: any) {
+  const BRAND = useClinicName();
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-semibold text-slate-900 tracking-tight">Meu perfil</h2>
