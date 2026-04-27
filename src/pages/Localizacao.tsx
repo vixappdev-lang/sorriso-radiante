@@ -32,9 +32,9 @@ export default function Localizacao() {
 
           <aside className="lg:col-span-2 grid gap-4 content-start">
             <Info icon={MapPin} title="Endereço">
-              Av. Venâncio Flores, 350 — Sala 04<br />
+              Rua Exemplo, 123 — Sala 01<br />
               Centro, Aracruz — ES<br />
-              CEP 29190-036
+              CEP 29190-000
             </Info>
             <Info icon={Clock} title="Horário de funcionamento">
               Segunda a Sexta: 8h às 19h<br />
