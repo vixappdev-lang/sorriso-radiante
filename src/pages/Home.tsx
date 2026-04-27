@@ -150,7 +150,7 @@ export default function Home() {
       <section className="section bg-soft">
         <div className="container-edge">
           <motion.div {...fadeUp} className="max-w-2xl">
-            <span className="eyebrow"><Stethoscope className="h-3.5 w-3.5" /> Por que escolher a LyneCloud</span>
+            <span className="eyebrow"><Stethoscope className="h-3.5 w-3.5" /> Por que escolher a {clinicName}</span>
             <h2 className="font-display font-semibold h-section mt-3 text-foreground text-balance">
               Cuidado clínico premium, do diagnóstico ao acompanhamento.
             </h2>
