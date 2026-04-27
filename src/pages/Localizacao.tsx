@@ -2,13 +2,15 @@ import { Clock, MapPin, Phone, Car, TrainFront } from "lucide-react";
 import SEO from "@/components/SEO";
 import SiteLayout from "@/components/layout/SiteLayout";
 import PageHero from "@/components/layout/PageHero";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function Localizacao() {
+  const clinicName = useClinicName();
   return (
     <SiteLayout>
       <SEO
-        title="Localização — LyneCloud em Aracruz/ES"
-        description="Av. Venâncio Flores, 350 — Centro, Aracruz/ES. Como chegar, horários e estacionamento da LyneCloud."
+        title={`Localização — ${clinicName} em Aracruz/ES`}
+        description={`Av. Venâncio Flores, 350 — Centro, Aracruz/ES. Como chegar, horários e estacionamento da ${clinicName}.`}
       />
       <PageHero
         eyebrow="Localização"
@@ -20,7 +22,7 @@ export default function Localizacao() {
         <div className="container-edge grid lg:grid-cols-5 gap-8 lg:gap-10">
           <div className="lg:col-span-3 rounded-2xl overflow-hidden border border-border/70 shadow-soft aspect-[4/3] lg:aspect-auto lg:min-h-[460px]">
             <iframe
-              title="Localização da LyneCloud no mapa"
+              title={`Localização da ${clinicName} no mapa`}
               src="https://www.google.com/maps?q=Av.+Ven%C3%A2ncio+Flores+Aracruz+ES&output=embed"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
