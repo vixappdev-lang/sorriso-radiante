@@ -55,8 +55,8 @@ export default function Header() {
       )}
     >
       <div className="container-edge flex h-16 items-center justify-between sm:h-20">
-        <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label="LyneCloud — início">
-          <Logo light={transparent} />
+        <Link to="/" className="flex items-center gap-2.5 shrink-0" aria-label={`${clinicName} — início`}>
+          <Logo light={transparent} name={clinicName} />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-0.5" aria-label="Principal">
