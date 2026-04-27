@@ -66,6 +66,7 @@ export default function AreaCliente() {
 /* ───────────────────────── LOGIN ───────────────────────── */
 
 function LoginScreen({ config }: any) {
+  const BRAND = useClinicName();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
