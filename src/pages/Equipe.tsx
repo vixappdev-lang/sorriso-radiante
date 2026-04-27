@@ -6,14 +6,16 @@ import PageHero from "@/components/layout/PageHero";
 import { Button } from "@/components/ui/button";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
 import { DENTISTS } from "@/data/clinic";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 export default function Equipe() {
   const { open } = useScheduleModal();
+  const clinicName = useClinicName();
   return (
     <SiteLayout>
       <SEO
-        title="Equipe — LyneCloud"
-        description="Conheça os especialistas da LyneCloud: implantodontistas, ortodontistas, endodontistas e odontopediatras com formação de excelência."
+        title={`Equipe — ${clinicName}`}
+        description={`Conheça os especialistas da ${clinicName}: implantodontistas, ortodontistas, endodontistas e odontopediatras com formação de excelência.`}
       />
       <PageHero
         eyebrow="Nossa equipe"
