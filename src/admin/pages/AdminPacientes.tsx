@@ -24,6 +24,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import StatusPill from "@/admin/components/StatusPill";
 import { cn } from "@/lib/utils";
+import PatientAnamnesisTab from "@/admin/components/patient/PatientAnamnesisTab";
+import PatientRecordsTab from "@/admin/components/patient/PatientRecordsTab";
+import PatientImagesTab from "@/admin/components/patient/PatientImagesTab";
+import { FileSignature, ClipboardEdit, ImagePlus } from "lucide-react";
 
 type Patient = {
   phone: string;
