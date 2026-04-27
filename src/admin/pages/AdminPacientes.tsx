@@ -674,7 +674,7 @@ function NewQuoteModal({ open, onOpenChange, patient, onCreated }: { open: boole
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg border p-3">
+          <div className="rounded-lg border border-[hsl(var(--admin-border))] p-3 bg-card">
             <p className="text-[10px] uppercase text-muted-foreground">Subtotal</p>
             <p className="font-semibold tabular-nums mt-1">{brl(subtotal)}</p>
           </div>
@@ -682,9 +682,9 @@ function NewQuoteModal({ open, onOpenChange, patient, onCreated }: { open: boole
             <Label className="text-xs">Desconto (R$)</Label>
             <Input type="number" step="0.01" value={discount} onChange={(e) => setDiscount(e.target.value)} className="mt-1" />
           </div>
-          <div className="rounded-lg border p-3 bg-emerald-50/50">
-            <p className="text-[10px] uppercase text-emerald-700">Total</p>
-            <p className="font-bold tabular-nums mt-1 text-emerald-800">{brl(total)}</p>
+          <div className="rounded-lg border border-emerald-200 dark:border-emerald-500/30 p-3 bg-emerald-50/70 dark:bg-emerald-500/10">
+            <p className="text-[10px] uppercase text-emerald-700 dark:text-emerald-400">Total</p>
+            <p className="font-bold tabular-nums mt-1 text-emerald-800 dark:text-emerald-300">{brl(total)}</p>
           </div>
         </div>
 
