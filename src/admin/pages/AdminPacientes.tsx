@@ -26,6 +26,9 @@ import { cn } from "@/lib/utils";
 import PatientAnamnesisTab from "@/admin/components/patient/PatientAnamnesisTab";
 import PatientRecordsTab from "@/admin/components/patient/PatientRecordsTab";
 import PatientImagesTab from "@/admin/components/patient/PatientImagesTab";
+import PdfPreviewModal from "@/admin/components/PdfPreviewModal";
+import { generateQuotePdf } from "@/admin/lib/pdf";
+import { useClinicBrand } from "@/hooks/useClinicBrand";
 import { FileSignature, ClipboardEdit, ImagePlus } from "lucide-react";
 
 type Patient = {
@@ -326,7 +329,7 @@ export default function AdminPacientes() {
               </TabsContent>
 
               <TabsContent value="anamnese" className="mt-4">
-                <PatientAnamnesisTab patientPhone={drawer.phone} patientName={drawer.name} />
+                <PatientAnamnesisTab patientPhone={drawer.phone} patientName={drawer.name} patientEmail={drawer.email} />
               </TabsContent>
 
               <TabsContent value="prontuario" className="mt-4">
@@ -344,7 +347,7 @@ export default function AdminPacientes() {
               <TabsContent value="orcamento" className="mt-4 space-y-3">
                 <Button onClick={() => setNewQuoteOpen(true)} size="sm" className="w-full"><Plus className="h-3.5 w-3.5 mr-1.5" /> Novo orçamento</Button>
                 {quotes.length === 0 && <p className="text-xs text-muted-foreground text-center py-6">Nenhum orçamento ainda.</p>}
-                {quotes.map((q) => <QuoteCard key={q.id} quote={q} onChange={() => loadPatientData(drawer.phone)} />)}
+                {quotes.map((q) => <QuoteCard key={q.id} quote={q} patient={drawer} onChange={() => loadPatientData(drawer.phone)} />)}
               </TabsContent>
 
               <TabsContent value="historico" className="mt-4">
@@ -474,8 +477,8 @@ export default function AdminPacientes() {
           </TabsContent>
 
           <TabsContent value="clinico" className="mt-4 space-y-3">
-            <div className="rounded-lg border bg-amber-50/40 p-3 space-y-2">
-              <p className="text-[11px] uppercase tracking-wider text-amber-800 font-semibold">Anamnese rápida</p>
+            <div className="rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50/60 dark:bg-amber-500/10 p-3 space-y-2">
+              <p className="text-[11px] uppercase tracking-wider text-amber-800 dark:text-amber-300 font-semibold">Anamnese rápida</p>
               <div><Label className="text-xs">Alergias (medicamentos, anestésicos, materiais)</Label><Textarea rows={2} value={newPatient.allergies} onChange={(e) => setNewPatient({ ...newPatient, allergies: e.target.value })} placeholder="Ex.: penicilina, látex…" /></div>
               <div><Label className="text-xs">Condições médicas relevantes</Label><Textarea rows={2} value={newPatient.medical_conditions} onChange={(e) => setNewPatient({ ...newPatient, medical_conditions: e.target.value })} placeholder="Diabetes, hipertensão, gestante, cardíaco…" /></div>
               <div><Label className="text-xs">Medicamentos em uso</Label><Textarea rows={2} value={newPatient.current_medications} onChange={(e) => setNewPatient({ ...newPatient, current_medications: e.target.value })} placeholder="Anticoagulantes, antidepressivos…" /></div>
@@ -556,7 +559,9 @@ function Odontogram({ teeth, onChange }: { teeth: Record<string, ToothStatus>; o
             onClick={() => setSelectedStatus(s)}
             className={cn(
               "px-2.5 py-1 rounded-md text-xs font-medium border flex items-center gap-1.5 transition",
-              selectedStatus === s ? "border-slate-900 bg-slate-900 text-white" : "border-slate-200 bg-white"
+              selectedStatus === s
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-[hsl(var(--admin-border))] bg-card hover:border-[hsl(var(--admin-border-strong))]"
             )}
           >
             <span className={cn("h-2.5 w-2.5 rounded-full", TOOTH_STATUS[s].color.replace("fill-", "bg-"))} />
@@ -565,14 +570,14 @@ function Odontogram({ teeth, onChange }: { teeth: Record<string, ToothStatus>; o
         ))}
       </div>
 
-      <div className="rounded-xl border bg-slate-50/40 p-4 space-y-2">
+      <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-muted/30 p-4 space-y-2">
         <p className="text-[10px] uppercase tracking-wider text-muted-foreground text-center">Superior</p>
         <div className="flex justify-center gap-1">
           {[...TEETH_LAYOUT.upperRight, ...TEETH_LAYOUT.upperLeft].map((n) => (
             <Tooth key={n} num={n} status={teeth[n]} selectedStatus={selectedStatus} onClick={() => onChange(n, selectedStatus)} />
           ))}
         </div>
-        <div className="border-t border-slate-300 my-2" />
+        <div className="border-t border-[hsl(var(--admin-border))] my-2" />
         <div className="flex justify-center gap-1">
           {[...TEETH_LAYOUT.lowerRight, ...TEETH_LAYOUT.lowerLeft].map((n) => (
             <Tooth key={n} num={n} status={teeth[n]} selectedStatus={selectedStatus} onClick={() => onChange(n, selectedStatus)} />
@@ -586,13 +591,13 @@ function Odontogram({ teeth, onChange }: { teeth: Record<string, ToothStatus>; o
 }
 
 function Tooth({ num, status, selectedStatus, onClick }: { num: number; status?: ToothStatus; selectedStatus: ToothStatus; onClick: () => void }) {
-  const fillClass = status ? TOOTH_STATUS[status].color : "fill-white stroke-slate-300";
+  const fillClass = status ? TOOTH_STATUS[status].color : "fill-card stroke-[hsl(var(--admin-border-strong))]";
   return (
     <button onClick={onClick} className="group flex flex-col items-center" title={`Dente ${num}${status ? ` — ${TOOTH_STATUS[status].label}` : ""}`}>
       <svg width="22" height="28" viewBox="0 0 22 28" className="transition group-hover:scale-110">
-        <path d="M11 2 C5 2, 2 6, 2 12 C2 18, 4 24, 7 26 C8 27, 9 27, 11 24 C13 27, 14 27, 15 26 C18 24, 20 18, 20 12 C20 6, 17 2, 11 2 Z" className={cn("stroke-slate-400 stroke-1", fillClass)} />
+        <path d="M11 2 C5 2, 2 6, 2 12 C2 18, 4 24, 7 26 C8 27, 9 27, 11 24 C13 27, 14 27, 15 26 C18 24, 20 18, 20 12 C20 6, 17 2, 11 2 Z" className={cn("stroke-[hsl(var(--admin-border-strong))] stroke-1", fillClass)} />
       </svg>
-      <span className="text-[8px] text-slate-500 tabular-nums">{num}</span>
+      <span className="text-[8px] text-muted-foreground tabular-nums">{num}</span>
     </button>
   );
 }
@@ -669,7 +674,7 @@ function NewQuoteModal({ open, onOpenChange, patient, onCreated }: { open: boole
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg border p-3">
+          <div className="rounded-lg border border-[hsl(var(--admin-border))] p-3 bg-card">
             <p className="text-[10px] uppercase text-muted-foreground">Subtotal</p>
             <p className="font-semibold tabular-nums mt-1">{brl(subtotal)}</p>
           </div>
@@ -677,9 +682,9 @@ function NewQuoteModal({ open, onOpenChange, patient, onCreated }: { open: boole
             <Label className="text-xs">Desconto (R$)</Label>
             <Input type="number" step="0.01" value={discount} onChange={(e) => setDiscount(e.target.value)} className="mt-1" />
           </div>
-          <div className="rounded-lg border p-3 bg-emerald-50/50">
-            <p className="text-[10px] uppercase text-emerald-700">Total</p>
-            <p className="font-bold tabular-nums mt-1 text-emerald-800">{brl(total)}</p>
+          <div className="rounded-lg border border-emerald-200 dark:border-emerald-500/30 p-3 bg-emerald-50/70 dark:bg-emerald-500/10">
+            <p className="text-[10px] uppercase text-emerald-700 dark:text-emerald-400">Total</p>
+            <p className="font-bold tabular-nums mt-1 text-emerald-800 dark:text-emerald-300">{brl(total)}</p>
           </div>
         </div>
 
@@ -697,8 +702,10 @@ function NewQuoteModal({ open, onOpenChange, patient, onCreated }: { open: boole
   );
 }
 
-function QuoteCard({ quote, onChange }: { quote: any; onChange: () => void }) {
+function QuoteCard({ quote, patient, onChange }: { quote: any; patient: Patient; onChange: () => void }) {
   const [copied, setCopied] = useState(false);
+  const [pdfOpen, setPdfOpen] = useState(false);
+  const brand = useClinicBrand();
   const url = `${window.location.origin}/orcamento/${quote.token}`;
   function copyLink() {
     navigator.clipboard.writeText(url);
@@ -711,29 +718,82 @@ function QuoteCard({ quote, onChange }: { quote: any; onChange: () => void }) {
     await supabase.from("patient_quotes").delete().eq("id", quote.id);
     onChange();
   }
+  async function markAccepted() {
+    if (!confirm("Marcar este orçamento como ACEITO/FECHADO? Um PDF profissional será gerado automaticamente.")) return;
+    const { error } = await supabase
+      .from("patient_quotes")
+      .update({ status: "accepted", accepted_at: new Date().toISOString() })
+      .eq("id", quote.id);
+    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    toast({ title: "Orçamento fechado!", description: "PDF profissional pronto para envio." });
+    onChange();
+    // Auto-abre o PDF profissional
+    setTimeout(() => setPdfOpen(true), 250);
+  }
+
   const statusMap: any = {
-    draft: { label: "Rascunho", cls: "bg-slate-100 text-slate-700" },
-    sent: { label: "Enviado", cls: "bg-blue-50 text-blue-700 border-blue-200" },
-    accepted: { label: "Aceito", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
-    expired: { label: "Expirado", cls: "bg-rose-50 text-rose-700 border-rose-200" },
+    draft: { label: "Rascunho", cls: "bg-slate-100 text-slate-700 dark:bg-slate-500/10 dark:text-slate-300 border-slate-200 dark:border-slate-500/30" },
+    sent: { label: "Enviado", cls: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-300 dark:border-blue-500/30" },
+    accepted: { label: "Aceito · Fechado", cls: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30" },
+    expired: { label: "Expirado", cls: "bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/30" },
   };
   const st = statusMap[quote.status] || statusMap.draft;
+  const isAccepted = quote.status === "accepted";
+
   return (
-    <div className="rounded-xl border bg-white p-3">
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <Badge variant="outline" className={cn("text-[10px]", st.cls)}>{st.label}</Badge>
-        <p className="text-sm font-bold tabular-nums">{brl(quote.total_cents)}</p>
+    <>
+      <div className="rounded-xl border border-[hsl(var(--admin-border))] bg-card p-3">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <Badge variant="outline" className={cn("text-[10px]", st.cls)}>{st.label}</Badge>
+          <p className="text-sm font-bold tabular-nums">{brl(quote.total_cents)}</p>
+        </div>
+        <p className="text-xs text-muted-foreground mb-2">
+          {quote.items.length} item(s) · criado em {new Date(quote.created_at).toLocaleDateString("pt-BR")}
+          {quote.accepted_at && <> · aceito em {new Date(quote.accepted_at).toLocaleDateString("pt-BR")}</>}
+        </p>
+        <div className="flex gap-1 flex-wrap">
+          <Button size="sm" variant={isAccepted ? "default" : "outline"} className={cn("flex-1 h-8", isAccepted && "bg-emerald-600 hover:bg-emerald-700 text-white")} onClick={() => setPdfOpen(true)}>
+            <FileText className="h-3 w-3 mr-1" /> {isAccepted ? "Ver PDF · Aceito" : "Ver PDF"}
+          </Button>
+          <Button size="sm" variant="outline" className="h-8" onClick={copyLink} title="Copiar link público">
+            {copied ? <Check className="h-3 w-3 text-emerald-600" /> : <Copy className="h-3 w-3" />}
+          </Button>
+          <a href={url} target="_blank" rel="noreferrer">
+            <Button size="sm" variant="outline" className="h-8" title="Abrir página pública"><ExternalLink className="h-3 w-3" /></Button>
+          </a>
+          {!isAccepted && (
+            <Button size="sm" variant="outline" className="h-8 border-emerald-300 text-emerald-700 hover:bg-emerald-50 dark:border-emerald-500/40 dark:text-emerald-300 dark:hover:bg-emerald-500/10" onClick={markAccepted} title="Fechar orçamento">
+              <Check className="h-3 w-3 mr-1" /> Fechar
+            </Button>
+          )}
+          <Button size="sm" variant="ghost" onClick={remove}><Trash2 className="h-3 w-3 text-rose-500" /></Button>
+        </div>
       </div>
-      <p className="text-xs text-muted-foreground mb-2">{quote.items.length} item(s) · criado em {new Date(quote.created_at).toLocaleDateString("pt-BR")}</p>
-      <div className="flex gap-1">
-        <Button size="sm" variant="outline" className="flex-1 h-8" onClick={copyLink}>
-          {copied ? <Check className="h-3 w-3 mr-1 text-emerald-600" /> : <Copy className="h-3 w-3 mr-1" />} Copiar link
-        </Button>
-        <a href={url} target="_blank" rel="noreferrer">
-          <Button size="sm" variant="outline" className="h-8"><ExternalLink className="h-3 w-3" /></Button>
-        </a>
-        <Button size="sm" variant="ghost" onClick={remove}><Trash2 className="h-3 w-3 text-rose-500" /></Button>
-      </div>
-    </div>
+
+      <PdfPreviewModal
+        open={pdfOpen}
+        onOpenChange={setPdfOpen}
+        title={isAccepted ? `Plano de tratamento aceito · ${patient.name}` : `Orçamento · ${patient.name}`}
+        description={`Documento profissional pronto para envio digital · ${brl(quote.total_cents)}`}
+        filename={`orcamento-${patient.name.replace(/\s+/g, "_")}-${quote.id.slice(0, 8)}.pdf`}
+        buildDoc={() => generateQuotePdf({
+          clinic: { name: brand.name, phone: brand.phone, email: brand.email, address: brand.address, cep: brand.cep },
+          patient: { name: patient.name, phone: patient.phone, email: patient.email },
+          quote: {
+            id: quote.id,
+            items: quote.items as any,
+            subtotal_cents: quote.subtotal_cents,
+            discount_cents: quote.discount_cents || 0,
+            total_cents: quote.total_cents,
+            notes: quote.notes,
+            status: quote.status,
+            created_at: quote.created_at,
+            accepted_at: quote.accepted_at,
+            expires_at: quote.expires_at,
+          },
+        })}
+      />
+    </>
   );
 }
+
