@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle, Phone, Mail, HeadphonesIcon, ArrowRight } from "lucide-react";
 import { CLINIC_INFO } from "@/data/clinic";
 import { useScheduleModal } from "@/components/booking/ScheduleModalProvider";
+import { useClinicName } from "@/hooks/useClinicBrand";
 
 interface Props {
   open: boolean;
