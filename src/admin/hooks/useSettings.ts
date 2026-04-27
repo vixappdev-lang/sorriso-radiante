@@ -109,7 +109,13 @@ export function useUpsertSetting() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: TablesInsert<"clinic_settings">) => {
-      const { data, error } = await supabase.from("clinic_settings").upsert(payload as any, { onConflict: "key" }).select().single();
+      // Chaves que precisam ser legíveis pelo site público (anônimos)
+      const PUBLIC_KEYS = new Set(["general", "branding"]);
+      const finalPayload: any = { ...payload };
+      if (PUBLIC_KEYS.has(payload.key) && finalPayload.is_public === undefined) {
+        finalPayload.is_public = true;
+      }
+      const { data, error } = await supabase.from("clinic_settings").upsert(finalPayload, { onConflict: "key" }).select().single();
       if (error) throw error;
       return data;
     },
