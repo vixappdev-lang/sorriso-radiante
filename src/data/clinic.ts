@@ -205,10 +205,10 @@ export const CLINIC_INFO = {
   city: "Aracruz",
   state: "ES",
   address: {
-    street: "Av. Venâncio Flores, 350 — Sala 04",
+    street: "Rua Exemplo, 123 — Sala 01",
     district: "Centro",
     cityState: "Aracruz — ES",
-    zip: "CEP 29190-036",
+    zip: "CEP 29190-000",
   },
   phone: {
     display: "(27) 98112-0322",
