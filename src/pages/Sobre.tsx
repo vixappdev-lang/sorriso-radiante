@@ -49,7 +49,7 @@ export default function Sobre() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: "easeOut" }}
             src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=1200&q=80"
-            alt="Ambiente acolhedor da LyneCloud"
+            alt={`Ambiente acolhedor da ${clinicName}`}
             className="rounded-3xl shadow-elegant w-full aspect-[4/3] object-cover"
             loading="lazy"
           />
