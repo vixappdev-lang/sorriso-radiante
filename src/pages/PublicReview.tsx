@@ -5,9 +5,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import SEO from "@/components/SEO";
+import { useClinicName } from "@/hooks/useClinicBrand";
 import { cn } from "@/lib/utils";
 
-const CLINIC_NAME = "LyneCloud";
 
 type Invite = {
   id: string;
